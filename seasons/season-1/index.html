@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Season 1 — Parallel Development with Agents · agents-101</title>
+<meta name="description" content="Season 1 covers parallel agent development: multiple sessions, parallel subagents, Claude workflows, and enterprise-grade async AI-assisted development.">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --amber:  #FBAF32;
+  --blue:   #4992C1;
+  --navy:   #11172C;
+  --sky:    #1A9ED7;
+  --light:  #F5F8FB;
+  --paper:  #FFFFFF;
+  --ink:    #11172C;
+  --shadow-sm: 0 4px 12px rgba(17,23,44,.10);
+  --shadow-md: 0 8px 24px rgba(17,23,44,.13);
+  --shadow-lg: 0 16px 40px rgba(17,23,44,.18);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Work Sans', sans-serif; color: var(--ink);
+  background: var(--light);
+  background-image: radial-gradient(rgba(73,146,193,.07) 1px, transparent 1.4px);
+  background-size: 28px 28px;
+  min-height: 100vh; display: flex; flex-direction: column;
+}
+
+/* ---- topbar ---- */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 1rem;
+  padding: .6rem clamp(1rem, 4vw, 2.5rem);
+  background: rgba(245,248,251,.94); backdrop-filter: blur(6px);
+  border-bottom: 2px solid var(--navy);
+}
+.topbar .back {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  color: var(--ink); text-decoration: none;
+  background: var(--paper); border: 2px solid var(--navy);
+  border-radius: 999px; padding: .06em .85em;
+  box-shadow: var(--shadow-sm); transition: transform .12s, box-shadow .12s;
+}
+.topbar .back:hover { transform: translate(-1px,-1px); box-shadow: var(--shadow-md); }
+.topbar .breadcrumb {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(1rem, 2vw, 1.25rem); opacity: .72;
+}
+.topbar .breadcrumb a { color: var(--sky); text-decoration: none; }
+.topbar .breadcrumb a:hover { text-decoration: underline; }
+
+/* ---- page ---- */
+.page { flex: 1; display: flex; flex-direction: column; align-items: center; padding: clamp(2rem,6vw,4rem) clamp(1rem,4vw,3rem) 4rem; }
+
+/* ---- season hero ---- */
+.season-hero {
+  width: min(96vw, 1000px); margin-bottom: clamp(2rem,5vw,3.5rem);
+  background: var(--navy); border-radius: 28px;
+  padding: clamp(2rem,5vw,3.5rem) clamp(1.5rem,4vw,3rem);
+  color: #fff; position: relative; overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.season-hero::after {
+  content: "S1";
+  position: absolute; right: -1.5rem; bottom: -2rem;
+  font-family: 'Fraunces', serif; font-weight: 700; font-size: 10rem;
+  color: rgba(255,255,255,.05); line-height: 1; pointer-events: none;
+  user-select: none;
+}
+.season-tag {
+  display: inline-block; font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.95rem, 2vw, 1.3rem); letter-spacing: .1em;
+  color: var(--navy); background: var(--amber); border-radius: 999px;
+  padding: .15em 1em; margin-bottom: 1rem;
+}
+.season-hero h1 {
+  font-family: 'Fraunces', serif; font-weight: 700;
+  font-size: clamp(2rem, 6vw, 3.8rem); line-height: 1.05;
+  letter-spacing: -.02em; color: #fff; margin-bottom: .8rem;
+}
+.season-hero h1 .accent { color: var(--amber); }
+.season-hero p {
+  font-size: clamp(.95rem, 2vw, 1.15rem); line-height: 1.6;
+  opacity: .88; max-width: 600px;
+}
+.season-meta {
+  display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.4rem;
+}
+.season-meta .badge {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.9rem, 1.8vw, 1.15rem);
+  background: rgba(255,255,255,.1); color: #fff;
+  border: 1.5px solid rgba(255,255,255,.25); border-radius: 999px;
+  padding: .15em .85em;
+}
+
+/* ---- topics ---- */
+.topics-label {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem); letter-spacing: .06em;
+  color: rgba(17,23,44,.5); margin-bottom: .8rem;
+  align-self: flex-start; width: min(96vw, 1000px);
+}
+.topics {
+  display: grid; gap: clamp(.9rem, 2vw, 1.4rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+  width: min(96vw, 1000px); margin-bottom: clamp(2rem,5vw,3rem);
+}
+.topic-card {
+  background: var(--paper); border: 2px solid var(--navy); border-radius: 18px;
+  padding: clamp(1rem, 2.2vw, 1.5rem); box-shadow: var(--shadow-sm);
+}
+.topic-card .topic-num {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: 1.05rem; color: var(--amber); margin-bottom: .35rem;
+}
+.topic-card h3 {
+  font-family: 'Fraunces', serif; font-weight: 700;
+  font-size: clamp(1rem, 2vw, 1.28rem); letter-spacing: -.01em; margin-bottom: .3rem;
+}
+.topic-card p { font-size: clamp(.82rem, 1.7vw, .96rem); line-height: 1.5; color: rgba(17,23,44,.72); }
+
+/* ---- episodes grid ---- */
+.ep-label {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem); letter-spacing: .06em;
+  color: rgba(17,23,44,.5); margin-bottom: .8rem;
+  align-self: flex-start; width: min(96vw, 1000px);
+}
+.episodes {
+  display: grid; gap: clamp(1rem, 2.5vw, 1.8rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  width: min(96vw, 1000px); margin-bottom: clamp(2rem,5vw,3rem);
+}
+.ep-card {
+  position: relative; display: flex; flex-direction: column;
+  background: var(--paper); border: 2px solid var(--navy); border-radius: 22px;
+  padding: clamp(1.2rem, 2.6vw, 1.8rem); color: var(--ink);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.ep-card::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 6px;
+  background: var(--accent, var(--amber)); border-radius: 22px 22px 0 0;
+}
+.ep-card.coming-soon { opacity: .58; }
+.ep-num {
+  align-self: flex-start; font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: 1.4rem; color: #fff; background: var(--accent, var(--amber));
+  border: 2px solid var(--navy); border-radius: 10px;
+  padding: .14em .55em; margin-bottom: .8rem; box-shadow: var(--shadow-sm);
+}
+.ep-card h2 {
+  font-family: 'Fraunces', serif; font-weight: 700;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem); letter-spacing: -.01em; margin-bottom: .4rem;
+}
+.ep-card p { font-size: clamp(.88rem, 1.8vw, 1rem); line-height: 1.5; color: rgba(17,23,44,.78); flex: 1; }
+.ep-meta { margin-top: .9rem; display: flex; align-items: center; gap: .6rem; }
+.ep-chip {
+  font-family: 'Caveat', cursive; font-weight: 700; font-size: 1rem;
+  background: rgba(251,175,50,.15); border: 2px solid var(--navy);
+  border-radius: 999px; padding: .05em .7em;
+}
+.ep-go { margin-left: auto; font-family: 'Caveat', cursive; font-weight: 700; font-size: 1.15rem; color: var(--accent, var(--amber)); }
+.ep-card-link { text-decoration: none; display: contents; }
+a.ep-card { text-decoration: none; transition: transform .18s, box-shadow .18s; }
+a.ep-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
+a.ep-card:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+
+/* ---- coming soon banner ---- */
+.coming-soon-banner {
+  width: min(96vw, 1000px); background: var(--paper);
+  border: 2px dashed var(--navy); border-radius: 20px;
+  padding: clamp(1.4rem,3.5vw,2.2rem); text-align: center;
+  box-shadow: var(--shadow-sm); margin-bottom: clamp(2rem,5vw,3rem);
+}
+.coming-soon-banner h3 {
+  font-family: 'Fraunces', serif; font-weight: 700;
+  font-size: clamp(1.2rem, 2.6vw, 1.7rem); margin-bottom: .5rem;
+}
+.coming-soon-banner p { font-size: clamp(.9rem, 1.9vw, 1.05rem); color: rgba(17,23,44,.7); line-height: 1.5; }
+.coming-soon-banner .watch-badge {
+  display: inline-block; margin-top: 1rem;
+  font-family: 'Caveat', cursive; font-weight: 700; font-size: 1.1rem;
+  background: var(--amber); color: var(--navy); border: 2px solid var(--navy);
+  border-radius: 999px; padding: .2em 1.2em; box-shadow: var(--shadow-sm);
+}
+
+/* ---- footer ---- */
+footer.site {
+  margin-top: clamp(1.5rem,4vw,2.5rem); border-top: 2px dashed rgba(17,23,44,.18);
+  width: min(96vw, 1000px); padding-top: 1.2rem;
+  font-family: 'Caveat', cursive; font-size: 1.1rem;
+  color: rgba(17,23,44,.52); text-align: center;
+}
+footer.site a { color: var(--sky); text-decoration: none; }
+footer.site a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="../../">← Home</a>
+  <span class="breadcrumb"><a href="../../">agents-101</a> / Season 1</span>
+</div>
+
+<div class="page">
+
+  <!-- Season Hero -->
+  <div class="season-hero">
+    <span class="season-tag">SEASON 1</span>
+    <h1>Parallel Development <span class="accent">with Agents.</span></h1>
+    <p>How to run multiple agents simultaneously — across sessions, within a session, and across complex workflows — to multiply your team's throughput without multiplying chaos.</p>
+    <div class="season-meta">
+      <span class="badge">🤖 Multi-Agent</span>
+      <span class="badge">⚡ Parallel Sessions</span>
+      <span class="badge">🔄 Claude Workflows</span>
+      <span class="badge">🏢 Enterprise Scale</span>
+      <span class="badge">Episodes Coming Soon</span>
+    </div>
+  </div>
+
+  <!-- Topics this season covers -->
+  <p class="topics-label">WHAT THIS SEASON COVERS</p>
+  <div class="topics">
+
+    <div class="topic-card">
+      <div class="topic-num">Topic 01</div>
+      <h3>Multiple Sessions in Parallel</h3>
+      <p>Run independent Claude Code sessions simultaneously on different features, branches, or services — then coordinate the output.</p>
+    </div>
+
+    <div class="topic-card">
+      <div class="topic-num">Topic 02</div>
+      <h3>Parallel Subagents in One Session</h3>
+      <p>Spawn multiple subagents from a single orchestrator session using the Agent tool — fan out work, fan in results.</p>
+    </div>
+
+    <div class="topic-card">
+      <div class="topic-num">Topic 03</div>
+      <h3>Multi-Session Subagent Meshes</h3>
+      <p>Coordinate subagents spawned across multiple parent sessions — patterns for shared state, deduplication, and merge strategies.</p>
+    </div>
+
+    <div class="topic-card">
+      <div class="topic-num">Topic 04</div>
+      <h3>Claude Workflows &amp; Automation</h3>
+      <p>Scheduled agents, hooks, skills, and MCP integrations that turn one-off tasks into repeatable, automated engineering pipelines.</p>
+    </div>
+
+    <div class="topic-card">
+      <div class="topic-num">Topic 05</div>
+      <h3>Enterprise Guardrails</h3>
+      <p>Permission models, approval gates, cost controls, and observability patterns that make parallel agent usage safe at scale.</p>
+    </div>
+
+    <div class="topic-card">
+      <div class="topic-num">Topic 06</div>
+      <h3>Migration &amp; Planning Agents</h3>
+      <p>Using agent parallelism for large-scale codebase migrations, dependency upgrades, and multi-repo planning tasks.</p>
+    </div>
+
+  </div>
+
+  <!-- Episodes -->
+  <p class="ep-label">EPISODES</p>
+
+  <div class="episodes">
+    <!-- No episodes yet — coming soon cards -->
+    <div class="ep-card coming-soon" style="--accent: #4992C1">
+      <span class="ep-num">Ep 1</span>
+      <h2>Why Parallel? The Throughput Argument</h2>
+      <p>The mental model for parallel agent development — why sequential is the wrong default, and how to think in concurrent workstreams.</p>
+      <div class="ep-meta">
+        <span class="ep-chip">~18 slides</span>
+        <span class="ep-go">coming soon</span>
+      </div>
+    </div>
+
+    <div class="ep-card coming-soon" style="--accent: #FBAF32">
+      <span class="ep-num">Ep 2</span>
+      <h2>Multiple Sessions — The Basics</h2>
+      <p>How to structure work for parallel Claude Code sessions: branching strategy, context isolation, and coordination checkpoints.</p>
+      <div class="ep-meta">
+        <span class="ep-chip">~22 slides</span>
+        <span class="ep-go">coming soon</span>
+      </div>
+    </div>
+
+    <div class="ep-card coming-soon" style="--accent: #1A9ED7">
+      <span class="ep-num">Ep 3</span>
+      <h2>Spawning Subagents — Inside One Session</h2>
+      <p>The Agent tool deep-dive: fan-out patterns, passing context, collecting results, and avoiding runaway subagent cost spirals.</p>
+      <div class="ep-meta">
+        <span class="ep-chip">~24 slides</span>
+        <span class="ep-go">coming soon</span>
+      </div>
+    </div>
+
+    <div class="ep-card coming-soon" style="--accent: #6C5CE7">
+      <span class="ep-num">Ep 4</span>
+      <h2>Cross-Session Coordination</h2>
+      <p>Patterns for agents in different sessions that need to share state — worktrees, shared memory files, and merge orchestration.</p>
+      <div class="ep-meta">
+        <span class="ep-chip">~20 slides</span>
+        <span class="ep-go">coming soon</span>
+      </div>
+    </div>
+
+    <div class="ep-card coming-soon" style="--accent: #2EAF7D">
+      <span class="ep-num">Ep 5</span>
+      <h2>Claude Workflows &amp; Scheduled Agents</h2>
+      <p>Building always-on engineering automation: scheduled agents, hooks pipelines, and multi-step workflow definitions.</p>
+      <div class="ep-meta">
+        <span class="ep-chip">~20 slides</span>
+        <span class="ep-go">coming soon</span>
+      </div>
+    </div>
+
+    <div class="ep-card coming-soon" style="--accent: #E0483A">
+      <span class="ep-num">Ep 6</span>
+      <h2>Enterprise Safety &amp; Cost Controls</h2>
+      <p>Permissions, approval gates, spend guardrails, and observability for teams running agents at scale across multiple projects.</p>
+      <div class="ep-meta">
+        <span class="ep-chip">~18 slides</span>
+        <span class="ep-go">coming soon</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Coming soon notice -->
+  <div class="coming-soon-banner">
+    <h3>Episodes are in production.</h3>
+    <p>Each episode will be a self-contained HTML slide deck — open it, arrow through, done in 10 minutes.<br>Watch the GitHub repo for new releases.</p>
+    <a class="watch-badge" href="https://github.com/jiteshsureka/agents-101" target="_blank" rel="noopener">★ Watch on GitHub</a>
+  </div>
+
+  <footer class="site">
+    agents-101 · Season 1 ·
+    <a href="../../">Home</a> ·
+    <a href="https://github.com/jiteshsureka/agents-101">GitHub</a> ·
+    <a href="https://brainstation-23.com">BrainStation 23</a>
+  </footer>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{EPISODE_TITLE}} — {{EPISODE_DESC}}</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<!-- Episode-specific overrides (keep minimal — shared rules live in storybook.css) -->
+<style>
+</style>
+</head>
+<body data-ep-label="S{{SEASON_NUM}}·E{{EP_NUM}} · {{EPISODE_TITLE}}" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ============ SLIDE 1: TITLE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto">SEASON {{SEASON_NUM}} · EPISODE {{EP_NUM}}</div>
+    <h1 class="auto">{{EPISODE_TITLE_UPPER}}</h1>
+    <div class="panel">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l frag pop">
+        <span class="who c-sky">AGENT</span>
+        <!-- Opening hook line here -->
+      </div>
+    </div>
+    <div class="caption navy frag"><!-- One-sentence framing of what the viewer will learn --></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2: CONTEXT / WHY THIS MATTERS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff">THE PROBLEM</div>
+    <h2><!-- Why does this matter? --></h2>
+    <div class="row">
+      <div class="mini-panel frag pop">
+        <div class="strip">BEFORE</div>
+        <div class="bubble"><!-- What life looks like without this --></div>
+      </div>
+      <div class="mini-panel frag pop">
+        <div class="strip" style="background:var(--sky)">AFTER</div>
+        <div class="bubble"><!-- What this episode enables --></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3: CORE CONCEPT ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto">THE CONCEPT</div>
+    <h2><!-- Core concept heading --></h2>
+    <div class="loop frag">
+      <div class="node"><!-- Step 1 --></div>
+      <div class="arr">→</div>
+      <div class="node"><!-- Step 2 --></div>
+      <div class="arr">→</div>
+      <div class="node"><!-- Step 3 --></div>
+    </div>
+    <div class="caption frag"><!-- Explain the loop / concept --></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: DEEP DIVE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto">HOW IT WORKS</div>
+    <h2><!-- Detail heading --></h2>
+    <!-- Add row of mini-panels, a panel with character, or map-row here -->
+  </div>
+</section>
+
+<!-- ============ SLIDE 5: LIVE EXAMPLE / DEMO ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">SHOW ME</div>
+    <h2><!-- "In Practice: ..." --></h2>
+    <!-- Code block or diagram showing the pattern in action -->
+    <pre class="caption frag" style="text-align:left;font-family:monospace;font-size:clamp(.72rem,1.5vw,.92rem);max-width:min(90vw,760px)">
+<!-- example code / commands here -->
+    </pre>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: GOTCHAS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff">WATCH OUT</div>
+    <h2><!-- "Common Pitfalls" or specific gotcha --></h2>
+    <div class="row">
+      <!-- mini-panels for each gotcha -->
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: SUMMARY ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto">WRAP UP</div>
+    <h2><!-- "What You Now Know" --></h2>
+    <div class="row frag">
+      <!-- recap chips -->
+      <span class="tag"><!-- Key takeaway 1 --></span>
+      <span class="tag"><!-- Key takeaway 2 --></span>
+      <span class="tag"><!-- Key takeaway 3 --></span>
+    </div>
+    <div class="char-summary frag"><!-- One-sentence call to action or next step --></div>
+  </div>
+</section>
+
+</main><!-- /deck -->
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<div class="hint">← → to navigate · space to advance</div>
+<script src="../../assets/deck.js"></script>
+</body>
+</html>

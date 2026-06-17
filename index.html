@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>agents-101 — Enterprise AI Agent Development · BrainStation 23</title>
+<meta name="description" content="A storybook series on enterprise AI agent development — parallel agents, multi-session workflows, Claude skills, and more. By BrainStation 23.">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --amber:  #FBAF32;
+  --blue:   #4992C1;
+  --navy:   #11172C;
+  --sky:    #1A9ED7;
+  --light:  #F5F8FB;
+  --paper:  #FFFFFF;
+  --ink:    #11172C;
+  --shadow-sm: 0 4px 12px rgba(17,23,44,.10);
+  --shadow-md: 0 8px 24px rgba(17,23,44,.13);
+  --shadow-lg: 0 16px 40px rgba(17,23,44,.18);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Work Sans', sans-serif; color: var(--ink);
+  background: var(--light);
+  background-image: radial-gradient(rgba(73,146,193,.07) 1px, transparent 1.4px);
+  background-size: 28px 28px;
+  min-height: 100vh; display: flex; flex-direction: column;
+}
+
+/* ---- topbar ---- */
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  padding: .6rem clamp(1rem, 4vw, 2.5rem);
+  background: rgba(245,248,251,.94); backdrop-filter: blur(6px);
+  border-bottom: 2px solid var(--navy);
+}
+.topbar .brand {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(1.2rem, 2.6vw, 1.6rem);
+  color: var(--ink); display: inline-flex; align-items: center; gap: .4em;
+  text-decoration: none;
+}
+.topbar .brand .logo {
+  width: clamp(28px, 4vw, 36px); height: auto;
+}
+.topbar .brand .dot { color: var(--amber); }
+.topbar .nav-links {
+  display: flex; gap: clamp(.5rem, 1.5vw, 1.2rem); align-items: center;
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.95rem, 1.9vw, 1.2rem);
+}
+.topbar .nav-links a {
+  color: var(--ink); text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: border-color .15s;
+}
+.topbar .nav-links a:hover { border-bottom-color: var(--amber); }
+.topbar .gh {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.95rem, 1.9vw, 1.2rem);
+  color: var(--ink); text-decoration: none;
+  background: var(--paper); border: 2px solid var(--navy);
+  border-radius: 999px; padding: .06em .9em;
+  box-shadow: var(--shadow-sm);
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.topbar .gh:hover { transform: translate(-1px,-1px); box-shadow: var(--shadow-md); }
+
+/* ---- page body ---- */
+.page { flex: 1; display: flex; flex-direction: column; align-items: center; padding: clamp(2rem,6vw,4.5rem) clamp(1rem,4vw,3rem) 4rem; }
+
+/* ---- hero ---- */
+.hero { text-align: center; max-width: 800px; margin-bottom: clamp(2.5rem,6vw,4rem); }
+.kicker {
+  display: inline-block; font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(1rem, 2.2vw, 1.4rem); color: var(--navy);
+  background: var(--amber); border: 2px solid var(--navy);
+  padding: .18em 1em; border-radius: 999px;
+  box-shadow: var(--shadow-sm); margin-bottom: 1.2rem;
+}
+h1 {
+  font-family: 'Fraunces', serif; font-weight: 700;
+  letter-spacing: -.02em; line-height: 1.04;
+  font-size: clamp(2.2rem, 7vw, 4.2rem); margin-bottom: .6rem;
+}
+h1 .pop { color: var(--sky); }
+.sub {
+  font-size: clamp(1rem, 2.2vw, 1.25rem); line-height: 1.55;
+  font-weight: 500; color: rgba(17,23,44,.72);
+  max-width: 600px; margin: .7rem auto 0;
+}
+
+/* ---- section grid ---- */
+.sections-label {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem); letter-spacing: .06em;
+  color: rgba(17,23,44,.55); margin-bottom: 1rem; align-self: flex-start;
+  width: min(96vw, 1100px);
+}
+.sections {
+  display: grid; gap: clamp(1.2rem, 2.8vw, 2rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  width: min(96vw, 1100px); margin-bottom: clamp(2rem,5vw,3.5rem);
+}
+.sec-card {
+  position: relative; display: flex; flex-direction: column;
+  background: var(--paper); border: 2px solid var(--navy); border-radius: 22px;
+  padding: clamp(1.4rem, 2.8vw, 2rem); text-decoration: none; color: var(--ink);
+  box-shadow: var(--shadow-md);
+  transition: transform .18s ease, box-shadow .18s ease;
+  overflow: hidden;
+}
+.sec-card::before {
+  content: ""; position: absolute; inset: 0 0 auto 0; height: 6px;
+  background: var(--accent, var(--amber)); border-radius: 22px 22px 0 0;
+}
+.sec-card:hover { transform: translateY(-5px) rotate(-.3deg); box-shadow: var(--shadow-lg); }
+.sec-card:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
+.sec-icon { font-size: clamp(2rem, 4vw, 2.8rem); margin-bottom: .6rem; }
+.sec-card h2 {
+  font-family: 'Fraunces', serif; font-weight: 700;
+  font-size: clamp(1.2rem, 2.4vw, 1.6rem); margin-bottom: .4rem;
+  letter-spacing: -.01em;
+}
+.sec-card p { font-size: clamp(.88rem, 1.8vw, 1rem); line-height: 1.5; color: rgba(17,23,44,.75); font-weight: 500; flex: 1; }
+.sec-arrow { margin-top: 1rem; font-family: 'Caveat', cursive; font-weight: 700; font-size: 1.2rem; color: var(--accent, var(--amber)); }
+.sec-card:hover .sec-arrow { text-decoration: underline; }
+
+/* ---- about strip ---- */
+.about-strip {
+  width: min(96vw, 1100px);
+  background: var(--navy); color: #fff; border-radius: 22px;
+  padding: clamp(1.6rem,4vw,2.6rem) clamp(1.4rem,4vw,2.4rem);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 1.4rem;
+  box-shadow: var(--shadow-lg); margin-bottom: clamp(2rem,5vw,3.5rem);
+}
+.about-strip .about-text h3 {
+  font-family: 'Fraunces', serif; font-weight: 700;
+  font-size: clamp(1.3rem, 3vw, 2rem); margin-bottom: .4rem;
+}
+.about-strip .about-text p { font-size: clamp(.9rem,1.9vw,1.1rem); line-height: 1.55; opacity: .88; max-width: 560px; }
+.about-strip .about-cta {
+  margin-left: auto;
+  font-family: 'Caveat', cursive; font-weight: 700; font-size: clamp(1rem,2.2vw,1.3rem);
+  color: var(--navy); background: var(--amber); text-decoration: none;
+  border: 2px solid var(--amber); border-radius: 999px; padding: .3em 1.2em;
+  transition: transform .12s, box-shadow .12s; box-shadow: var(--shadow-sm);
+}
+.about-strip .about-cta:hover { transform: translate(-1px,-1px); box-shadow: var(--shadow-md); }
+
+/* ---- footer ---- */
+footer.site {
+  margin-top: clamp(2rem,5vw,3.5rem);
+  border-top: 2px dashed rgba(17,23,44,.2);
+  width: min(96vw, 1100px); padding-top: 1.5rem;
+  font-family: 'Caveat', cursive; font-size: 1.1rem;
+  color: rgba(17,23,44,.55); text-align: center;
+}
+footer.site a { color: var(--sky); text-decoration: none; }
+footer.site a:hover { text-decoration: underline; }
+
+@media (max-width: 640px) {
+  .topbar .nav-links { display: none; }
+  .about-strip { flex-direction: column; }
+  .about-strip .about-cta { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="brand" href="./">
+    <svg class="logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="40" height="40" rx="10" fill="#11172C"/>
+      <text x="20" y="27" font-family="monospace" font-size="14" font-weight="bold" text-anchor="middle" fill="#FBAF32">A</text>
+      <circle cx="32" cy="10" r="5" fill="#4992C1"/>
+      <circle cx="8" cy="10" r="5" fill="#1A9ED7"/>
+    </svg>
+    agents<span class="dot">-101</span>
+  </a>
+  <nav class="nav-links">
+    <a href="seasons/season-1/">Season 1</a>
+    <a href="skills/">Skills</a>
+    <a href="vlogs/">Vlogs &amp; Blogs</a>
+    <a href="resources/">Resources</a>
+  </nav>
+  <a class="gh" href="https://github.com/jiteshsureka/agents-101" target="_blank" rel="noopener">GitHub ↗</a>
+</div>
+
+<div class="page">
+  <header class="hero">
+    <span class="kicker">enterprise AI agent series ✦ BrainStation 23</span>
+    <h1>Agents at <span class="pop">Enterprise Scale.</span></h1>
+    <p class="sub">A storybook series for engineers — slide decks on parallel agent development, multi-session workflows, Claude skills, and production-grade AI-assisted software delivery.</p>
+  </header>
+
+  <p class="sections-label">EXPLORE</p>
+
+  <div class="sections">
+
+    <a class="sec-card" href="seasons/season-1/" style="--accent: #4992C1">
+      <div class="sec-icon">🎬</div>
+      <h2>Seasons &amp; Episodes</h2>
+      <p>Structured learning paths. Each season covers a focused topic through illustrated slide-deck episodes you can arrow through in minutes.</p>
+      <div class="sec-arrow">Browse seasons →</div>
+    </a>
+
+    <a class="sec-card" href="skills/" style="--accent: #FBAF32">
+      <div class="sec-icon">⚡</div>
+      <h2>Skills Directory</h2>
+      <p>Claude Code skills available to your team — what they do, when to use them, and real-world use cases for enterprise development.</p>
+      <div class="sec-arrow">Explore skills →</div>
+    </a>
+
+    <a class="sec-card" href="vlogs/" style="--accent: #1A9ED7">
+      <div class="sec-icon">📹</div>
+      <h2>Vlogs &amp; Blogs</h2>
+      <p>Deep-dives, war stories, and lessons learned from shipping AI-assisted software at BrainStation 23. Written and video formats.</p>
+      <div class="sec-arrow">Read &amp; watch →</div>
+    </a>
+
+    <a class="sec-card" href="resources/" style="--accent: #6C5CE7">
+      <div class="sec-icon">🔗</div>
+      <h2>Agent Resources</h2>
+      <p>Curated links to official docs, MCP servers, workflow templates, migration playbooks, and community tools for enterprise agent development.</p>
+      <div class="sec-arrow">View resources →</div>
+    </a>
+
+  </div>
+
+  <div class="about-strip">
+    <div class="about-text">
+      <h3>Built by engineers, for engineers.</h3>
+      <p>This series documents how BrainStation 23 uses AI agents for enterprise software delivery — migrations, parallel development, planning, and beyond. Open source &amp; free to learn from.</p>
+    </div>
+    <a class="about-cta" href="https://brainstation-23.com" target="_blank" rel="noopener">Visit BrainStation 23 ↗</a>
+  </div>
+
+  <footer class="site">
+    agents-101 · made with Claude Code ·
+    <a href="https://github.com/jiteshsureka/agents-101">source on GitHub</a> ·
+    <a href="https://brainstation-23.com">BrainStation 23</a>
+  </footer>
+</div>
+
+</body>
+</html>
