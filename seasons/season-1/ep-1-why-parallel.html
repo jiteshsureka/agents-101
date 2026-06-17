@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S1·E1 — Why Parallel? The Throughput Argument · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+.num-big {
+  font-family: 'Fraunces', serif; font-weight: 700;
+  font-size: clamp(3rem, 13vw, 7.5rem); line-height: .88; color: var(--navy);
+}
+.num-big .unit {
+  font-size: .28em; font-family: 'Work Sans', sans-serif; font-weight: 700; opacity: .68;
+}
+.seq-flow {
+  display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: center; gap: .45rem; max-width: min(92vw, 900px);
+}
+.seq-flow .step {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.85rem, 1.8vw, 1.25rem);
+  background: var(--paper); border: 2px solid var(--navy);
+  border-radius: 12px; padding: .3em .8em; box-shadow: var(--shadow-sm);
+}
+.seq-flow .step.wait {
+  background: rgba(224,72,58,.12); border-color: var(--red); color: var(--red);
+}
+.seq-flow .arr { font-family: 'Caveat', cursive; font-size: 1.3rem; opacity: .6; }
+
+.checklist {
+  list-style: none; display: flex; flex-direction: column;
+  gap: .5rem; text-align: left; max-width: min(88vw, 660px); width: 100%;
+}
+.checklist li {
+  font-weight: 600; font-size: clamp(.82rem, 1.7vw, 1.05rem);
+  padding: .38em .9em; border-radius: 12px;
+  border: 2px solid var(--navy); background: var(--paper);
+  box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: .55rem;
+}
+.checklist li.yes { border-color: var(--green); background: rgba(46,175,125,.08); }
+.checklist li.no  { border-color: var(--red);   background: rgba(224,72,58,.08); }
+.checklist li .icon { font-size: 1.1em; flex-shrink: 0; }
+
+.iso-grid {
+  display: flex; gap: clamp(.7rem, 2vw, 1.5rem);
+  flex-wrap: wrap; justify-content: center;
+}
+.iso-box {
+  background: var(--paper); border: 2.5px solid var(--navy);
+  border-radius: 18px; box-shadow: var(--shadow-md);
+  padding: clamp(.7rem, 1.8vw, 1.2rem) clamp(.9rem, 2.2vw, 1.6rem);
+  text-align: center; min-width: clamp(130px, 18vw, 200px);
+}
+.iso-box .iso-title {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(1.05rem, 2.1vw, 1.5rem); margin-bottom: .45rem;
+}
+.iso-box .iso-detail {
+  font-size: clamp(.6rem, 1.2vw, .82rem); font-weight: 600;
+  color: rgba(17,23,44,.62); line-height: 1.6;
+}
+
+.par-bars { display: flex; flex-direction: column; gap: .55rem; width: 100%; padding: .4rem; }
+.par-row  { display: flex; align-items: center; gap: .6rem; }
+.par-label { font-family: 'Caveat', cursive; font-weight: 700; font-size: clamp(.8rem,1.6vw,1rem); min-width: 58px; text-align: right; opacity: .75; }
+.par-bar  {
+  flex: 1; height: clamp(26px,4vh,40px); border-radius: 10px;
+  border: 2px solid var(--navy); display: flex; align-items: center;
+  padding: 0 .75rem; font-weight: 700; font-size: clamp(.68rem,1.4vw,.9rem);
+  font-family: 'Caveat', cursive;
+}
+.par-bar.working { background: rgba(46,175,125,.2); border-color: var(--green); }
+.par-bar.waiting { background: rgba(224,72,58,.1);  border-color: var(--red); }
+</style>
+</head>
+<body data-ep-label="S1·E1 · Why Parallel?" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ============ SLIDE 1: TITLE ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">SEASON 1 · EPISODE 1</div>
+    <h1 class="auto" style="color:#fff;font-size:clamp(2.8rem,11vw,6.5rem);line-height:.92">
+      WHY <span style="color:var(--amber)">PARALLEL?</span>
+    </h1>
+    <p class="auto" style="color:rgba(255,255,255,.65);font-family:'Caveat',cursive;font-weight:700;font-size:clamp(1rem,2.4vw,1.5rem);letter-spacing:.06em">THE THROUGHPUT ARGUMENT</p>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,700px)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">RIFAT · SENIOR ENGINEER, NOP-STATION</span>
+        "We adopted Claude Code three months ago. Everyone loves it. But our sprint velocity hasn't changed. What are we doing wrong?"
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2: THE PROBLEM — SEQUENTIAL WORKFLOW ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff">THE PROBLEM</div>
+    <h2 class="auto">Rifat's Current Workflow</h2>
+    <div class="seq-flow frag">
+      <div class="step">Pick Ticket</div>
+      <div class="arr">→</div>
+      <div class="step">Open Claude</div>
+      <div class="arr">→</div>
+      <div class="step wait">⏳ Wait…</div>
+      <div class="arr">→</div>
+      <div class="step">Review</div>
+      <div class="arr">→</div>
+      <div class="step">Next Ticket</div>
+    </div>
+    <div class="panel frag pop">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">HABIB · BACKEND ENGINEER</span>
+        "Same for me. I give Claude a task, then I just… sit there watching the cursor blink."
+      </div>
+    </div>
+    <div class="caption frag">One Claude session. One ticket at a time. Sequential by default — and nobody questioned it.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3: THE MATH ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff">THE MATH</div>
+    <h2 class="auto">One Session = One Stream</h2>
+    <div class="row" style="margin-top:.4rem;align-items:stretch">
+      <div class="mini-panel frag pop">
+        <div class="strip">YOUR DAY</div>
+        <div class="num-big" style="margin:.55rem 0">8<span class="unit"> hrs</span></div>
+        <div class="bubble" style="font-size:clamp(.68rem,1.3vw,.88rem)">1 session × 8 hours<br>= 8 AI-hours/day</div>
+      </div>
+      <div class="mini-panel frag pop" style="border-color:var(--red)">
+        <div class="strip" style="background:var(--red)">BUT REALLY…</div>
+        <div class="par-bars" style="margin:.4rem 0">
+          <div class="par-row">
+            <div class="par-label">Claude</div>
+            <div class="par-bar working">Working ✓</div>
+          </div>
+          <div class="par-row">
+            <div class="par-label">You</div>
+            <div class="par-bar waiting">Waiting… 😶</div>
+          </div>
+        </div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.2vw,.82rem)">Half your day spent waiting on output</div>
+      </div>
+    </div>
+    <div class="caption frag">While Claude finishes ticket A, you watch a progress spinner. That time is the gap we need to close.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: THE INSIGHT ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">THE INSIGHT</div>
+    <div class="bigq auto" style="font-size:clamp(1.9rem,7.5vw,5rem)">
+      You are the bottleneck.
+    </div>
+    <div class="caption frag amber">Claude doesn't sleep. It doesn't check Slack. It doesn't need a coffee break. You do.</div>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">AGENT · SESSION A</span>
+        "OrderService refactor complete. 47 files changed. Tests passing. Ready for next task."
+        <br><span style="opacity:.55;font-size:.88em">← Rifat is still reviewing the previous ticket from an hour ago</span>
+      </div>
+    </div>
+    <div class="caption frag">The bottleneck isn't the AI. It's the fact that <strong>you can only steer one session at a time</strong> — until you decide to change that.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5: CPU ANALOGY ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto">THE ANALOGY</div>
+    <h2 class="auto">Single-Core vs Multi-Core</h2>
+    <div class="row" style="margin-top:.5rem;align-items:flex-start;gap:1.2rem">
+      <div class="mini-panel frag pop" style="width:clamp(175px,28vw,310px)">
+        <div class="strip" style="background:var(--red)">BEFORE · SINGLE-CORE</div>
+        <div class="loop" style="flex-direction:column;gap:.4rem;margin:.5rem 0;width:100%">
+          <div class="node" style="width:100%;text-align:center">Session A · active</div>
+          <div class="arr" style="transform:rotate(90deg)">→</div>
+          <div class="node" style="width:100%;text-align:center;opacity:.28">(no session)</div>
+          <div class="arr" style="transform:rotate(90deg);opacity:.28">→</div>
+          <div class="node" style="width:100%;text-align:center;opacity:.28">(no session)</div>
+        </div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">1 stream of work</div>
+      </div>
+      <div style="font-family:'Fraunces',serif;font-size:clamp(2rem,5vw,3.5rem);align-self:center;opacity:.3;line-height:1">→</div>
+      <div class="mini-panel frag pop" style="width:clamp(175px,28vw,310px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)">AFTER · MULTI-CORE</div>
+        <div style="display:flex;flex-direction:column;gap:.4rem;margin:.5rem 0;width:100%">
+          <div class="loop"><div class="node" style="flex:1;text-align:center">Session A</div></div>
+          <div class="loop"><div class="node" style="flex:1;text-align:center">Session B</div></div>
+          <div class="loop"><div class="node" style="flex:1;text-align:center">Session C</div></div>
+        </div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">3 streams — same clock speed</div>
+      </div>
+    </div>
+    <div class="caption frag">Same engineer. Same AI model. More throughput — by running concurrent streams instead of one sequential pipe.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: THE MANAGER MODEL ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff">THE MODEL</div>
+    <h2 class="auto">Think Like a Manager</h2>
+    <div class="caption frag">A manager doesn't wait for Dev 1 to finish before giving Dev 2 a task. They assign all three, then rotate attention.</div>
+    <div class="row frag" style="margin-top:.4rem">
+      <div class="mini-panel pop">
+        <div class="strip" style="background:var(--sky)">SESSION A</div>
+        <svg class="char" style="margin:.4rem 0"><use href="#ch-agent"/></svg>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">Email validation<br>feature ticket</div>
+      </div>
+      <div class="mini-panel pop">
+        <div class="strip" style="background:var(--sky)">SESSION B</div>
+        <svg class="char" style="margin:.4rem 0"><use href="#ch-agent"/></svg>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">Unit tests for<br>OrderService</div>
+      </div>
+      <div class="mini-panel pop">
+        <div class="strip" style="background:var(--sky)">SESSION C</div>
+        <svg class="char" style="margin:.4rem 0"><use href="#ch-agent"/></svg>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">API changelog<br>for v2.3 release</div>
+      </div>
+    </div>
+    <div class="caption frag" style="margin-top:.3rem">You rotate attention every 20 minutes. All three run simultaneously. You review at end of day.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: THE NEW MATH ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff">THE NEW MATH</div>
+    <h2 class="auto">1 Dev × 3 Sessions × 8h = ?</h2>
+    <div class="row" style="margin-top:.5rem;align-items:stretch">
+      <div class="mini-panel frag pop" style="width:clamp(175px,28vw,300px)">
+        <div class="strip" style="background:var(--blue)">BEFORE</div>
+        <div class="num-big" style="margin:.55rem 0;font-size:clamp(2.2rem,9vw,5.5rem)">8<span class="unit"><br>AI-hrs/day</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">1 session × 8h<br>Sequential.</div>
+      </div>
+      <div class="mini-panel frag pop" style="width:clamp(175px,28vw,300px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)">AFTER</div>
+        <div class="num-big" style="margin:.55rem 0;font-size:clamp(2.2rem,9vw,5.5rem);color:var(--green)">~24<span class="unit"><br>AI-hrs/day</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">3 sessions × 8h<br>Parallel.</div>
+      </div>
+    </div>
+    <div class="caption frag amber">Even 2 sessions = ~60% throughput gain. You don't need to go all-in on day one.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8: WHAT PARALLELIZES ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff">GREEN LIGHT</div>
+    <h2 class="auto">Tasks That Run Well in Parallel</h2>
+    <ul class="checklist">
+      <li class="yes frag pop"><span class="icon">✓</span> Independent features — no shared code between them</li>
+      <li class="yes frag pop"><span class="icon">✓</span> Tests for code you finished yesterday</li>
+      <li class="yes frag pop"><span class="icon">✓</span> API docs, changelogs, or release notes</li>
+      <li class="yes frag pop"><span class="icon">✓</span> Work across separate microservices or modules</li>
+      <li class="yes frag pop"><span class="icon">✓</span> Isolated refactors with clean module boundaries</li>
+    </ul>
+    <div class="caption frag">The test: if two tasks don't touch the same files and don't need each other's output — they can run in parallel.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9: WHAT DOESN'T PARALLELIZE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff">RED LIGHT</div>
+    <h2 class="auto">Tasks That Don't Parallelize</h2>
+    <ul class="checklist">
+      <li class="no frag pop"><span class="icon">✗</span> Task B needs Task A's output before it can start</li>
+      <li class="no frag pop"><span class="icon">✗</span> Both sessions would modify the same source file</li>
+      <li class="no frag pop"><span class="icon">✗</span> Session B depends on Session A's running service</li>
+      <li class="no frag pop"><span class="icon">✗</span> Deeply coupled changes — one PR breaks the other</li>
+    </ul>
+    <div class="caption frag">The parallel check: <em>"Could I hand these two tasks to different people right now?"</em> If no — don't parallelize yet.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: SESSION ISOLATION ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto">ARCHITECTURE</div>
+    <h2 class="auto">Sessions Are Islands</h2>
+    <div class="iso-grid frag">
+      <div class="iso-box">
+        <div class="iso-title" style="color:var(--blue)">Session A</div>
+        <div class="iso-detail">Own context window<br>Own tool access<br>Own branch view<br>Branch: feature/email-val</div>
+      </div>
+      <div class="iso-box">
+        <div class="iso-title" style="color:var(--sky)">Session B</div>
+        <div class="iso-detail">Own context window<br>Own tool access<br>Own branch view<br>Branch: feature/order-tests</div>
+      </div>
+      <div class="iso-box">
+        <div class="iso-title" style="color:var(--green)">Session C</div>
+        <div class="iso-detail">Own context window<br>Own tool access<br>Own branch view<br>Branch: docs/changelog-v2.3</div>
+      </div>
+    </div>
+    <div class="caption frag">No shared memory. No cross-talk. Three completely independent AI workers — each in its own environment, on its own branch.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11: TEAM SCALE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--purple);color:#fff">ENTERPRISE SCALE</div>
+    <h2 class="auto">Multiply Across the Team</h2>
+    <div class="row frag" style="margin-top:.5rem;gap:.8rem;align-items:center;flex-wrap:wrap;justify-content:center">
+      <div style="font-family:'Fraunces',serif;font-size:clamp(1.3rem,3.8vw,2.6rem);font-weight:700;text-align:center">
+        5 devs<br><span style="font-size:.6em;opacity:.5;font-family:'Work Sans',sans-serif;font-weight:700">at nop-station</span>
+      </div>
+      <div style="font-family:'Fraunces',serif;font-size:clamp(2rem,5vw,3.5rem);opacity:.35">×</div>
+      <div style="font-family:'Fraunces',serif;font-size:clamp(1.3rem,3.8vw,2.6rem);font-weight:700;text-align:center">
+        3 sessions<br><span style="font-size:.6em;opacity:.5;font-family:'Work Sans',sans-serif;font-weight:700">per developer</span>
+      </div>
+      <div style="font-family:'Fraunces',serif;font-size:clamp(2rem,5vw,3.5rem);opacity:.35">=</div>
+      <div style="font-family:'Fraunces',serif;font-size:clamp(1.8rem,5.5vw,3.8rem);font-weight:700;color:var(--green);text-align:center">
+        15 AI streams<br><span style="font-size:.5em;opacity:.7;font-family:'Work Sans',sans-serif;font-weight:700">running simultaneously</span>
+      </div>
+    </div>
+    <div class="caption frag">Same headcount. Same Claude subscription. Radically different output ceiling — just by changing the workflow.</div>
+    <div class="row frag" style="margin-top:.3rem">
+      <span class="tag" style="border-color:var(--purple)">SAME HEADCOUNT</span>
+      <span class="tag" style="border-color:var(--green)">DIFFERENT CEILING</span>
+      <span class="tag">ZERO EXTRA HIRES</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12: RIFAT'S MORNING ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff">LIVE EXAMPLE</div>
+    <h2 class="auto">Rifat's Monday — Before &amp; After</h2>
+    <div class="row" style="margin-top:.4rem;align-items:flex-start;gap:1.1rem">
+      <div class="mini-panel frag pop" style="width:clamp(190px,32vw,340px)">
+        <div class="strip" style="background:var(--red)">SEQUENTIAL</div>
+        <div style="text-align:left;width:100%;font-size:clamp(.62rem,1.3vw,.82rem);font-weight:600;line-height:2;padding:.3rem .1rem">
+          <div>9:00 — Start ticket A</div>
+          <div style="opacity:.5">10:15 — Review A's output</div>
+          <div>11:00 — Start ticket B</div>
+          <div style="opacity:.5">1:00 — Review B's output</div>
+          <div>1:45 — Start ticket C</div>
+          <div style="opacity:.5">3:30 — Review C's output</div>
+          <div style="color:var(--red);font-weight:700">5:30 — Done. 😮‍💨</div>
+        </div>
+      </div>
+      <div class="mini-panel frag pop" style="width:clamp(190px,32vw,340px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)">PARALLEL</div>
+        <div style="text-align:left;width:100%;font-size:clamp(.62rem,1.3vw,.82rem);font-weight:600;line-height:2;padding:.3rem .1rem">
+          <div>9:00 — Launch sessions A, B &amp; C</div>
+          <div style="opacity:.5">10:00 — Rotate: steer B &amp; C</div>
+          <div style="opacity:.5">11:30 — Ticket C complete ✓</div>
+          <div style="opacity:.5">12:30 — Ticket B complete ✓</div>
+          <div style="opacity:.5">1:30 — Ticket A complete ✓</div>
+          <div style="color:var(--green);font-weight:700">2:00 — 3 PRs open. 🎉</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag">Same tickets. Same Claude. Different workflow. Rifat's afternoon is now his to plan.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13: SPRINT BOARD ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff">THE PROOF</div>
+    <h2 class="auto">Sprint Velocity — Before vs After</h2>
+    <div class="row" style="margin-top:.4rem;align-items:stretch">
+      <div class="mini-panel frag pop" style="width:clamp(185px,28vw,300px)">
+        <div class="strip" style="background:var(--blue)">WEEK 1 · SEQUENTIAL</div>
+        <div style="text-align:left;width:100%;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.85;padding:.35rem .1rem">
+          Team: 5 engineers<br>
+          Sessions/dev: 1<br>
+          Tickets closed: <strong>12</strong><br>
+          PRs merged: <strong>12</strong><br>
+          Avg close: 2.1 days
+        </div>
+      </div>
+      <div class="mini-panel frag pop" style="width:clamp(185px,28vw,300px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)">WEEK 3 · PARALLEL</div>
+        <div style="text-align:left;width:100%;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.85;padding:.35rem .1rem">
+          Team: 5 engineers<br>
+          Sessions/dev: 3<br>
+          Tickets closed: <strong style="color:var(--green)">31</strong><br>
+          PRs merged: <strong style="color:var(--green)">31</strong><br>
+          Avg close: 0.9 days
+        </div>
+      </div>
+    </div>
+    <div class="caption frag">Same team. Same Claude plan. Different workflow — and the numbers make the argument for you.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14: WATCH OUT — GOTCHAS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff">WATCH OUT</div>
+    <h2 class="auto">Parallel Isn't Free</h2>
+    <ul class="checklist">
+      <li class="frag pop" style="border-color:var(--amber)">
+        <span class="icon">⚠️</span>
+        <div><strong>Cost:</strong> 3 sessions ≈ 3× token usage. Focused prompts reduce waste.</div>
+      </li>
+      <li class="frag pop" style="border-color:var(--amber)">
+        <span class="icon">⚠️</span>
+        <div><strong>Context tax:</strong> Each session needs its own full context from scratch. Write it clearly.</div>
+      </li>
+      <li class="frag pop" style="border-color:var(--amber)">
+        <span class="icon">⚠️</span>
+        <div><strong>Merge overhead:</strong> More PRs = more review cycles. Smaller PRs help compensate.</div>
+      </li>
+      <li class="frag pop" style="border-color:var(--amber)">
+        <span class="icon">⚠️</span>
+        <div><strong>Mental load:</strong> Context-switching sessions has a real cognitive cost.</div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ SLIDE 15: THE COST EQUATION ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">WHEN IT PAYS</div>
+    <h2 class="auto">The Parallelism Payoff Test</h2>
+    <div class="row" style="margin-top:.4rem;align-items:stretch">
+      <div class="mini-panel frag pop" style="width:clamp(190px,30vw,310px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)">WORTH IT WHEN…</div>
+        <ul style="list-style:none;margin:.5rem 0;text-align:left;font-size:clamp(.68rem,1.4vw,.9rem);font-weight:600;line-height:1.9;padding:0 .2rem">
+          <li>✓ Each task takes &gt; 20 minutes</li>
+          <li>✓ Tasks are fully independent</li>
+          <li>✓ Merge is straightforward</li>
+          <li>✓ You have 2+ tickets queued</li>
+          <li>✓ Sessions don't share any files</li>
+        </ul>
+      </div>
+      <div class="mini-panel frag pop" style="width:clamp(190px,30vw,310px);border-color:var(--red)">
+        <div class="strip" style="background:var(--red)">SKIP IT WHEN…</div>
+        <ul style="list-style:none;margin:.5rem 0;text-align:left;font-size:clamp(.68rem,1.4vw,.9rem);font-weight:600;line-height:1.9;padding:0 .2rem">
+          <li>✗ Tasks are short (&lt; 15 min)</li>
+          <li>✗ Deep dependency between tickets</li>
+          <li>✗ Only 1 ticket in the queue</li>
+          <li>✗ Already in deep flow on one task</li>
+          <li>✗ Touching the same config/schema</li>
+        </ul>
+      </div>
+    </div>
+    <div class="caption frag">Default trigger: start a new session whenever you notice yourself waiting on Claude. That moment is your signal.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 16: MENTAL OVERHEAD (HABIB) ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff">REAL TALK</div>
+    <h2 class="auto">Context-Switching Has a Cost</h2>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">HABIB · BACKEND ENGINEER</span>
+        "First week I tried this, I kept forgetting which session I was in. I pasted the wrong fix into the wrong terminal twice."
+      </div>
+    </div>
+    <div class="caption frag">Fix: set a 20–25 minute rotation timer. Before you switch sessions, write one line in a scratch note: where you left off and what the session was doing. Treat it like a standup for your future self.</div>
+    <div class="row frag" style="margin-top:.3rem">
+      <span class="tag" style="border-color:var(--blue)">20-MIN ROTATIONS</span>
+      <span class="tag" style="border-color:var(--sky)">WRITE BEFORE SWITCHING</span>
+      <span class="tag">FOCUS WHEN IN A SESSION</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 17: THE SHIFT ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">THE SHIFT</div>
+    <h2 class="auto" style="color:#fff">Change One Question</h2>
+    <div class="row frag" style="margin-top:.5rem;gap:1.1rem;align-items:stretch">
+      <div class="mini-panel" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.2);width:clamp(175px,28vw,310px)">
+        <div class="strip" style="background:var(--red)">OLD QUESTION</div>
+        <div class="bubble" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);color:#fff;margin-top:.5rem;font-size:clamp(.75rem,1.5vw,.98rem)">
+          "What should I give Claude next?"
+        </div>
+      </div>
+      <div class="mini-panel" style="background:rgba(255,255,255,.06);border-color:var(--green);width:clamp(175px,28vw,310px)">
+        <div class="strip" style="background:var(--green)">NEW QUESTION</div>
+        <div class="bubble" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);color:#fff;margin-top:.5rem;font-size:clamp(.75rem,1.5vw,.98rem)">
+          "What <strong style="color:var(--amber)">3 things</strong> can Claude run <strong style="color:var(--green)">simultaneously</strong> right now?"
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);margin-top:.5rem">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-amber">RIFAT</span>
+        "Shazzad — let's try this tomorrow morning. I'll set up three worktrees before standup."
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 18: WRAP UP ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto">WRAP UP</div>
+    <h2 class="auto">The Throughput Argument</h2>
+    <div class="row frag" style="margin-top:.4rem">
+      <span class="tag" style="border-color:var(--blue)">THROUGHPUT &gt; LATENCY</span>
+      <span class="tag" style="border-color:var(--green)">MANAGER MODEL</span>
+      <span class="tag" style="border-color:var(--sky)">SESSION ISOLATION</span>
+      <span class="tag" style="border-color:var(--amber)">START WITH 2 SESSIONS</span>
+    </div>
+    <div class="caption frag amber">The bottleneck was never the AI. It was the workflow.</div>
+    <div class="char-summary frag">
+      Next → <strong>Episode 2:</strong> Shazzad tries it for the first time.<br>
+      Worktrees, launch prompts, rotation cadence, and three PRs before 4pm.
+    </div>
+  </div>
+</section>
+
+</main><!-- /deck -->
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<div class="hint">← → to navigate · space to advance</div>
+<script src="../../assets/deck.js"></script>
+</body>
+</html>

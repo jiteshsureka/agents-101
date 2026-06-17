@@ -1,6 +1,6 @@
 # agents-101 — CLAUDE.md
 
-Enterprise AI Agent Development storybook series by BrainStation 23.
+Enterprise AI Agent Development storybook series by nop-station (www.nop-station.com).
 HTML slide decks, navigated with arrow keys. Hosted on GitHub Pages at jiteshsureka.github.io/agents-101.
 
 ## Repo structure
@@ -12,13 +12,13 @@ seasons/season-N/ep-N-*.html   — episode slide decks
 skills/index.html              — skills directory
 vlogs/index.html               — vlogs & blogs index
 resources/index.html           — curated agent resource links
-assets/storybook.css           — shared BS23-themed CSS (edit here → all decks change)
+assets/storybook.css           — shared nop-station-themed CSS (edit here → all decks change)
 assets/deck.js                 — deck controller + character sprites
 .claude/skills/new-episode/    — skill for creating new episode decks
 .github/workflows/pages.yml    — auto-deploys main branch to GitHub Pages
 ```
 
-## Brand tokens (BS23 palette)
+## Brand tokens (nop-station palette)
 
 ```
 --amber:  #FBAF32   primary CTA / accent

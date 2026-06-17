@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S1·E2 — Multiple Sessions: The Basics · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+/* ── Episode-specific helpers ── */
+.checklist {
+  list-style: none; display: flex; flex-direction: column;
+  gap: .5rem; text-align: left; max-width: min(88vw, 660px); width: 100%;
+}
+.checklist li {
+  font-weight: 600; font-size: clamp(.82rem, 1.7vw, 1.05rem);
+  padding: .38em .9em; border-radius: 12px;
+  border: 2px solid var(--navy); background: var(--paper);
+  box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: .55rem;
+}
+.checklist li.yes { border-color: var(--green); background: rgba(46,175,125,.08); }
+.checklist li.no  { border-color: var(--red);   background: rgba(224,72,58,.08); }
+.checklist li .icon { font-size: 1.1em; flex-shrink: 0; }
+
+/* code block */
+pre.code-block {
+  background: var(--navy); color: #e2e8f0;
+  border: 2px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  padding: clamp(.7rem,1.8vw,1.2rem) clamp(.9rem,2vw,1.4rem);
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.62rem, 1.35vw, .88rem); line-height: 1.65;
+  text-align: left; max-width: min(92vw, 780px); width: 100%;
+  overflow-x: auto; white-space: pre;
+}
+pre.code-block .comment { color: #64748b; }
+pre.code-block .cmd     { color: var(--amber); }
+pre.code-block .flag    { color: #7dd3fc; }
+pre.code-block .path    { color: #86efac; }
+pre.code-block .note    { color: #c4b5fd; }
+
+/* rotation cycle diagram */
+.rotation-cycle {
+  display: flex; align-items: center; justify-content: center;
+  gap: clamp(.4rem,1.2vw,.9rem); flex-wrap: wrap;
+  max-width: min(92vw, 860px);
+}
+.rc-node {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.85rem,1.8vw,1.2rem);
+  background: var(--paper); border: 2px solid var(--navy);
+  border-radius: 12px; padding: .35em .9em; box-shadow: var(--shadow-sm);
+  display: flex; flex-direction: column; align-items: center; gap: .15em;
+}
+.rc-node .rc-sub {
+  font-size: .68em; font-family: 'Work Sans', sans-serif;
+  font-weight: 600; opacity: .62; letter-spacing: 0;
+}
+.rc-arr { font-family: 'Caveat', cursive; font-size: clamp(1.1rem,2.2vw,1.6rem); opacity: .5; }
+
+/* ticket card */
+.ticket-grid { display: flex; gap: clamp(.7rem,1.8vw,1.3rem); flex-wrap: wrap; justify-content: center; }
+.ticket {
+  background: var(--paper); border: 2px solid var(--navy); border-radius: 18px;
+  box-shadow: var(--shadow-md); padding: clamp(.7rem,1.8vw,1.2rem);
+  width: clamp(170px, 26vw, 260px); text-align: left;
+}
+.ticket .t-label {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.8rem,1.7vw,1.1rem); color: #fff;
+  border-radius: 8px; padding: .15em .7em; margin-bottom: .5rem;
+  display: inline-block;
+}
+.ticket h3 {
+  font-family: 'Fraunces', serif; font-weight: 700;
+  font-size: clamp(.88rem,1.8vw,1.15rem); line-height: 1.2;
+  margin-bottom: .35rem; color: var(--navy);
+}
+.ticket .t-safe {
+  font-size: clamp(.6rem,1.2vw,.8rem); font-weight: 600;
+  color: var(--green); display: flex; align-items: center; gap: .3rem;
+}
+.ticket .t-type {
+  font-size: clamp(.6rem,1.15vw,.78rem); font-weight: 600;
+  color: rgba(17,23,44,.55); margin-top: .15rem;
+}
+
+/* pr cards */
+.pr-grid { display: flex; gap: clamp(.7rem,1.6vw,1.2rem); flex-wrap: wrap; justify-content: center; }
+.pr-card {
+  background: var(--paper); border: 2px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-md); padding: clamp(.6rem,1.6vw,1.1rem);
+  width: clamp(165px,25vw,250px); text-align: left;
+}
+.pr-card .pr-num {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.78rem,1.6vw,1rem); color: var(--sky); margin-bottom: .3rem;
+}
+.pr-card h3 {
+  font-family: 'Work Sans', sans-serif; font-weight: 700;
+  font-size: clamp(.78rem,1.6vw,1rem); line-height: 1.3; margin-bottom: .3rem;
+}
+.pr-card .pr-stats {
+  font-size: clamp(.6rem,1.15vw,.78rem); font-weight: 600;
+  color: rgba(17,23,44,.6); line-height: 1.6;
+}
+.pr-card .pr-badge {
+  display: inline-block; font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.7rem,1.4vw,.9rem); background: rgba(46,175,125,.15);
+  border: 1.5px solid var(--green); color: var(--green);
+  border-radius: 999px; padding: .05em .65em; margin-top: .35rem;
+}
+</style>
+</head>
+<body data-ep-label="S1·E2 · Multiple Sessions — The Basics" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ============ SLIDE 1: TITLE ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">SEASON 1 · EPISODE 2</div>
+    <h1 class="auto" style="color:#fff;font-size:clamp(2rem,8vw,5.2rem);line-height:.95">
+      MULTIPLE<br><span style="color:var(--amber)">SESSIONS</span><br>
+      <span style="font-size:.55em;color:rgba(255,255,255,.7)">The Basics</span>
+    </h1>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,700px)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-amber">SHAZZAD · FULL-STACK ENGINEER, NOP-STATION</span>
+        "Rifat sold me on the idea yesterday. I'm trying it today — three sessions, three tickets, before 4pm. Watch me."
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2: RECAP FROM EP1 ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff">RECAP · EP 1</div>
+    <h2 class="auto">Where We Left Off</h2>
+    <div class="row frag" style="margin-top:.4rem">
+      <span class="tag" style="border-color:var(--blue)">THROUGHPUT &gt; LATENCY</span>
+      <span class="tag" style="border-color:var(--green)">MANAGER MODEL</span>
+      <span class="tag" style="border-color:var(--sky)">SESSION ISOLATION</span>
+    </div>
+    <div class="caption frag">Ep 1 argued <em>why</em> parallel. You are the bottleneck. Three sessions = ~3× AI-hours per day. The mental model: manager directing three agents, not engineer waiting on one.</div>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-amber">SHAZZAD</span>
+        "I get the <em>why</em>. Show me the <em>how</em>. What do I actually type?"
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3: WHAT IS A SESSION ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto">FOUNDATIONS</div>
+    <h2 class="auto">What Is a Claude Code Session?</h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:stretch">
+      <div class="mini-panel pop" style="width:clamp(170px,25vw,280px)">
+        <div class="strip" style="background:var(--blue)">CONTEXT WINDOW</div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">Everything Claude knows about your task — your prompt, your files, the conversation so far.</div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(170px,25vw,280px)">
+        <div class="strip" style="background:var(--sky)">TOOL ACCESS</div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">Read, Write, Edit, Bash, Grep — all scoped to the working directory you launched Claude in.</div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(170px,25vw,280px)">
+        <div class="strip" style="background:var(--green)">STATE</div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">The conversation history, any memory files, and the files on disk in that working directory.</div>
+      </div>
+    </div>
+    <div class="caption frag">A session is ephemeral and isolated. It knows only what you told it — and nothing about what's happening in any other terminal.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: SESSION ISOLATION ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto">ISOLATION</div>
+    <h2 class="auto">Three Sessions. Three Separate Rooms.</h2>
+    <div class="row frag" style="margin-top:.4rem;gap:1rem;align-items:stretch">
+      <div class="mini-panel pop" style="width:clamp(175px,26vw,290px);border-color:var(--blue)">
+        <div class="strip" style="background:var(--blue)">SESSION A</div>
+        <div style="font-size:clamp(.62rem,1.25vw,.82rem);font-weight:600;line-height:1.7;margin:.4rem 0;text-align:left;padding:0 .1rem">
+          Working dir: <code>../nopstation-email-val/</code><br>
+          Branch: <code>feature/email-validation</code><br>
+          Knows: checkout A only<br>
+          Memory: context A only
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(175px,26vw,290px);border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)">SESSION B</div>
+        <div style="font-size:clamp(.62rem,1.25vw,.82rem);font-weight:600;line-height:1.7;margin:.4rem 0;text-align:left;padding:0 .1rem">
+          Working dir: <code>../nopstation-order-tests/</code><br>
+          Branch: <code>feature/order-tests</code><br>
+          Knows: checkout B only<br>
+          Memory: context B only
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(175px,26vw,290px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)">SESSION C</div>
+        <div style="font-size:clamp(.62rem,1.25vw,.82rem);font-weight:600;line-height:1.7;margin:.4rem 0;text-align:left;padding:0 .1rem">
+          Working dir: <code>../nopstation-api-changelog/</code><br>
+          Branch: <code>docs/api-v2.3-changelog</code><br>
+          Knows: checkout C only<br>
+          Memory: context C only
+        </div>
+      </div>
+    </div>
+    <div class="caption frag">No shared memory. No cross-talk. Session A has no idea Session B exists — and that's exactly what you want.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5: GIT WORKTREES ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">THE PRIMITIVE</div>
+    <h2 class="auto">Git Worktrees — The Essential Tool</h2>
+    <div class="caption frag">A worktree is a second (or third) checkout of your repo into a separate directory — each on its own branch. No stashing. No checkout switching. Multiple branches active simultaneously on disk.</div>
+    <div class="row frag" style="margin-top:.4rem;align-items:stretch">
+      <div class="mini-panel pop" style="width:clamp(175px,28vw,300px);border-color:var(--red)">
+        <div class="strip" style="background:var(--red)">WITHOUT WORKTREES</div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">
+          One working dir. Must stash changes to switch branches. Can't run two Claude sessions on two branches simultaneously.
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(175px,28vw,300px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)">WITH WORKTREES</div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">
+          Three directories. Three branches. Three Claude sessions. All live simultaneously. No stash needed.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: WORKTREE COMMANDS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">SHOW ME</div>
+    <h2 class="auto">Worktree Commands</h2>
+    <pre class="code-block frag">
+<span class="comment"># Create three isolated worktrees (run from main repo dir)</span>
+<span class="cmd">git worktree add</span> <span class="path">../nopstation-email-val</span>    <span class="flag">feature/email-validation</span>
+<span class="cmd">git worktree add</span> <span class="path">../nopstation-order-tests</span>  <span class="flag">feature/order-tests</span>
+<span class="cmd">git worktree add</span> <span class="path">../nopstation-api-changelog</span> <span class="flag">docs/api-v2.3-changelog</span>
+
+<span class="comment"># Verify all three are active</span>
+<span class="cmd">git worktree list</span>
+
+<span class="comment"># When you're done with a worktree</span>
+<span class="cmd">git worktree remove</span> <span class="path">../nopstation-email-val</span></pre>
+    <div class="caption frag">Each path is now a fully functional repo checkout on its own branch. Open a terminal in each one and launch Claude.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: CHOOSING TICKETS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff">SELECTION</div>
+    <h2 class="auto">The Parallelizability Check</h2>
+    <div class="caption frag" style="margin-bottom:.3rem">Run every ticket through these four questions before you assign it to a parallel session:</div>
+    <ul class="checklist">
+      <li class="yes frag pop"><span class="icon">✓</span> Independent files — no overlap with other parallel tickets?</li>
+      <li class="yes frag pop"><span class="icon">✓</span> No shared state — different DB tables, different config, different modules?</li>
+      <li class="yes frag pop"><span class="icon">✓</span> No ticket-to-ticket dependency — neither task needs the other's output?</li>
+      <li class="yes frag pop"><span class="icon">✓</span> Each task will take more than 15 minutes of Claude time?</li>
+    </ul>
+    <div class="caption frag amber">Pass all four → safe to run in parallel. Fail any one → resolve the dependency first, then parallelize.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8: SHAZZAD'S 3 TICKETS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff">LIVE EXAMPLE</div>
+    <h2 class="auto">Shazzad's Three Tickets</h2>
+    <div class="ticket-grid frag">
+      <div class="ticket">
+        <span class="t-label" style="background:var(--blue)">SESSION A</span>
+        <h3>Add email validation to checkout address form</h3>
+        <div class="t-type">Frontend · React</div>
+        <div class="t-safe">✓ Safe: touches only <code>CheckoutForm.tsx</code></div>
+      </div>
+      <div class="ticket">
+        <span class="t-label" style="background:var(--sky)">SESSION B</span>
+        <h3>Write unit tests for OrderService</h3>
+        <div class="t-type">Backend · Pure test file</div>
+        <div class="t-safe">✓ Safe: new file only, no prod code changes</div>
+      </div>
+      <div class="ticket">
+        <span class="t-label" style="background:var(--green)">SESSION C</span>
+        <h3>Generate API changelog for v2.3.0</h3>
+        <div class="t-type">Docs · Reads existing code</div>
+        <div class="t-safe">✓ Safe: read-only analysis, pure output</div>
+      </div>
+    </div>
+    <div class="caption frag">Three tickets. Zero shared files. Zero dependencies. All pass the check. Ready to go.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9: LAUNCH SEQUENCE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">SHOW ME</div>
+    <h2 class="auto">Launching All Three Sessions</h2>
+    <pre class="code-block frag">
+<span class="comment"># Terminal 1 — Session A (email validation)</span>
+<span class="cmd">cd</span> <span class="path">../nopstation-email-val</span> <span class="flag">&amp;&amp;</span> <span class="cmd">claude</span>
+
+<span class="comment"># Terminal 2 — Session B (order tests)</span>
+<span class="cmd">cd</span> <span class="path">../nopstation-order-tests</span> <span class="flag">&amp;&amp;</span> <span class="cmd">claude</span>
+
+<span class="comment"># Terminal 3 — Session C (API changelog)</span>
+<span class="cmd">cd</span> <span class="path">../nopstation-api-changelog</span> <span class="flag">&amp;&amp;</span> <span class="cmd">claude</span></pre>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-amber">SHAZZAD</span>
+        "All three are loading simultaneously. This genuinely feels illegal."
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: THE LAUNCH PROMPT ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff">THE CRAFT</div>
+    <h2 class="auto">Write a Focused Launch Prompt</h2>
+    <div class="caption frag" style="margin-bottom:.3rem">A lazy prompt wastes tokens and goes off-track. A focused prompt is the most important thing you write per session.</div>
+    <pre class="code-block frag">
+<span class="note">Context:</span>  nop-station checkout flow. React + TypeScript. Zod for validation.
+
+<span class="note">Task:</span>     Add email validation to the address form in checkout.
+          - Validate on blur and on form submit
+          - Show inline error: "Please enter a valid email address"
+          - Reuse existing Zod schema: <span class="path">src/lib/validators.ts → emailSchema</span>
+
+<span class="note">Files:</span>    <span class="path">src/components/checkout/AddressForm.tsx</span> (primary)
+          <span class="path">src/lib/validators.ts</span> (read-only — do not modify)
+
+<span class="note">Do NOT:</span>  Modify auth logic, backend routes, or any file outside src/components/checkout/</pre>
+    <div class="caption frag">Pattern: <strong>Context → Task → Files → Do NOT.</strong> Every session should start with this structure.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11: THE ROTATION CADENCE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff">THE RHYTHM</div>
+    <h2 class="auto">The 20-Minute Rotation Cycle</h2>
+    <div class="rotation-cycle frag">
+      <div class="rc-node" style="border-color:var(--blue)">
+        Session A
+        <span class="rc-sub">give prompt →</span>
+      </div>
+      <div class="rc-arr">→</div>
+      <div class="rc-node" style="border-color:var(--sky)">
+        Session B
+        <span class="rc-sub">check + steer →</span>
+      </div>
+      <div class="rc-arr">→</div>
+      <div class="rc-node" style="border-color:var(--green)">
+        Session C
+        <span class="rc-sub">check + steer →</span>
+      </div>
+      <div class="rc-arr">→</div>
+      <div class="rc-node" style="border-color:var(--blue)">
+        Session A
+        <span class="rc-sub">review diff →</span>
+      </div>
+      <div class="rc-arr">→</div>
+      <div class="rc-node" style="border-color:var(--amber)">
+        ⏱ 20 min
+        <span class="rc-sub">repeat</span>
+      </div>
+    </div>
+    <div class="caption frag">Each rotation: one session gets your full attention for 20 minutes. When the timer fires — switch. Don't wait for the session to "finish".</div>
+    <div class="row frag" style="margin-top:.3rem">
+      <span class="tag" style="border-color:var(--sky)">TIMER-DRIVEN</span>
+      <span class="tag" style="border-color:var(--amber)">NOT COMPLETION-DRIVEN</span>
+      <span class="tag">20–25 MIN SWEET SPOT</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12: WHAT TO CHECK ON ROTATION ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff">THE CHECK</div>
+    <h2 class="auto">60 Seconds to Assess a Session</h2>
+    <ul class="checklist">
+      <li class="yes frag pop"><span class="icon">1.</span> Scan the last 10 lines of output — is it moving in the right direction?</li>
+      <li class="yes frag pop"><span class="icon">2.</span> Run a quick <code>git diff --stat</code> — does the file set match the task?</li>
+      <li class="yes frag pop"><span class="icon">3.</span> Check for a blocking question — if Claude is waiting on you, answer it.</li>
+      <li class="yes frag pop"><span class="icon">4.</span> If it's on track — leave it running and move to the next session.</li>
+    </ul>
+    <div class="caption frag">Most rotations are 60 seconds. You're not reviewing the code — you're checking the heading. Deep review happens at PR time.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13: CONTEXT REFRESH PROMPT ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">SHOW ME</div>
+    <h2 class="auto">The Context Refresh Prompt</h2>
+    <div class="caption frag" style="margin-bottom:.3rem">When you return to a session after 20 minutes, don't assume it remembers where it was. Ground it fast.</div>
+    <pre class="code-block frag">
+<span class="comment"># The context refresh pattern — paste this when you return to a session</span>
+
+<span class="note">Review the diff so far.</span>
+<span class="note">Current task:</span>  Add email validation to CheckoutForm.tsx
+<span class="note">Status:</span>       You implemented blur validation. Submit validation is still missing.
+<span class="note">Next step:</span>    Add validation on form submit — same error message as blur.
+<span class="note">Don't touch:</span>  src/lib/validators.ts (read-only)</pre>
+    <div class="caption frag">This works because it re-anchors the session without repeating the full context. Fast. Precise. Prevents drift.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14: WHEN A SESSION STALLS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff">WATCH OUT</div>
+    <h2 class="auto">When a Session Gets Stuck</h2>
+    <div class="row" style="margin-top:.4rem;align-items:flex-start;gap:1.1rem">
+      <div class="mini-panel frag pop" style="width:clamp(185px,30vw,310px);border-color:var(--red)">
+        <div class="strip" style="background:var(--red)">SIGNS</div>
+        <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .15rem">
+          <li>• Asking a clarifying question</li>
+          <li>• Going in the wrong direction</li>
+          <li>• Modifying files it shouldn't</li>
+          <li>• Loops on the same step</li>
+          <li>• Long output, wrong result</li>
+        </ul>
+      </div>
+      <div class="mini-panel frag pop" style="width:clamp(185px,30vw,310px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)">FIXES</div>
+        <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .15rem">
+          <li>• Answer the question → continue</li>
+          <li>• Paste the error + "fix this only"</li>
+          <li>• "Stop. Revert [file]. Focus on [X]."</li>
+          <li>• Hard reset: new prompt with tight scope</li>
+          <li>• Park the session, handle later</li>
+        </ul>
+      </div>
+    </div>
+    <div class="caption frag">Most stalls take 30 seconds to fix. The mistake is micromanaging healthy sessions instead of fixing the stuck ones.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 15: UNEXPECTED DEPENDENCY ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff">EDGE CASE</div>
+    <h2 class="auto">Mid-Flight: Unexpected Dependency</h2>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">SHAZZAD · HOUR 1</span>
+        "Session B discovered it needs a <code>validateOrder()</code> helper that Session A is also building. They'll conflict."
+      </div>
+    </div>
+    <div class="row frag pop" style="margin-top:.5rem;gap:1rem;align-items:stretch">
+      <div class="mini-panel" style="width:clamp(180px,28vw,290px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)">OPTION 1 · PARK</div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">Park Session B. Let A finish + merge. Then resume B on top of A's output. Safest.</div>
+      </div>
+      <div class="mini-panel" style="width:clamp(180px,28vw,290px);border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)">OPTION 2 · SPLIT</div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">Build the helper in a shared utility PR. Both sessions depend on it. Merge first, then both continue.</div>
+      </div>
+    </div>
+    <div class="caption frag">Unexpected dependencies happen. The fix is never to let both sessions race on the same code. Park one. Sequence properly.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 16: MERGE STRATEGY ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff">MERGE</div>
+    <h2 class="auto">PR Per Session. Merge Independently.</h2>
+    <div class="loop frag" style="margin-top:.4rem">
+      <div class="node">Session A<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">commits done</span></div>
+      <div class="arr">→</div>
+      <div class="node">Open PR A<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">feature/email-validation</span></div>
+      <div class="arr">→</div>
+      <div class="node">Review &amp; Merge</div>
+    </div>
+    <div class="loop frag">
+      <div class="node">Session B<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">commits done</span></div>
+      <div class="arr">→</div>
+      <div class="node">Open PR B<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">feature/order-tests</span></div>
+      <div class="arr">→</div>
+      <div class="node">Review &amp; Merge</div>
+    </div>
+    <div class="loop frag">
+      <div class="node">Session C<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">commits done</span></div>
+      <div class="arr">→</div>
+      <div class="node">Open PR C<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">docs/changelog-v2.3</span></div>
+      <div class="arr">→</div>
+      <div class="node">Review &amp; Merge</div>
+    </div>
+    <div class="caption frag">Three independent PRs. No cross-dependencies. Merge in any order. Reviewers see small, focused diffs.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 17: 3 PRs IN GITHUB ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff">THE OUTPUT</div>
+    <h2 class="auto">Three PRs Before Lunch</h2>
+    <div class="pr-grid frag">
+      <div class="pr-card">
+        <div class="pr-num">PR #214 · feature/email-validation</div>
+        <h3>Add email validation to checkout address form</h3>
+        <div class="pr-stats">+38 lines · −2 lines<br>1 file changed</div>
+        <span class="pr-badge">✓ Ready to review</span>
+      </div>
+      <div class="pr-card">
+        <div class="pr-num">PR #215 · feature/order-tests</div>
+        <h3>Unit tests: OrderService (27 test cases)</h3>
+        <div class="pr-stats">+214 lines · −0 lines<br>1 new file</div>
+        <span class="pr-badge">✓ Ready to review</span>
+      </div>
+      <div class="pr-card">
+        <div class="pr-num">PR #216 · docs/changelog-v2.3</div>
+        <h3>API changelog for v2.3.0 release</h3>
+        <div class="pr-stats">+89 lines · −0 lines<br>CHANGELOG.md</div>
+        <span class="pr-badge">✓ Ready to review</span>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.4rem">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">HABIB</span>
+        "These are so clean. Each one is focused. I can review all three in 20 minutes. What happened?"
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 18: SHAZZAD'S DAY ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff">LIVE EXAMPLE</div>
+    <h2 class="auto">Shazzad's Day, Start to Finish</h2>
+    <div class="row" style="margin-top:.4rem;align-items:flex-start">
+      <div class="mini-panel frag pop" style="width:clamp(210px,38vw,420px)">
+        <div class="strip" style="background:var(--navy)">THE TIMELINE</div>
+        <div style="text-align:left;width:100%;font-size:clamp(.62rem,1.3vw,.84rem);font-weight:600;line-height:2.1;padding:.3rem .1rem">
+          <div>9:00 — Worktrees created, sessions launched</div>
+          <div style="opacity:.65">9:20 — First rotation: check B &amp; C heading</div>
+          <div style="opacity:.65">10:00 — Dependency found (B↔A) — park B</div>
+          <div style="opacity:.65">10:30 — Session A done ✓ → PR #214 opened</div>
+          <div style="opacity:.65">11:00 — Resume Session B on top of A's merge</div>
+          <div style="opacity:.65">12:00 — Session C done ✓ → PR #216 opened</div>
+          <div style="opacity:.65">1:30  — Session B done ✓ → PR #215 opened</div>
+          <div style="opacity:.65">2:30  — All 3 PRs reviewed &amp; merged</div>
+          <div style="color:var(--green);font-weight:700">3:45  — Shazzad leaves early. 🏖️</div>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag amber">Three tickets. One morning. One hiccup handled mid-flight. Still done by 2:30pm.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 19: GOTCHAS — CONTEXT ISOLATION ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff">WATCH OUT</div>
+    <h2 class="auto">Context Isolation Pitfalls</h2>
+    <ul class="checklist">
+      <li class="no frag pop">
+        <span class="icon">✗</span>
+        <div><strong>Vague scope:</strong> "Work on the checkout form" — Claude doesn't know which files to avoid. Be explicit.</div>
+      </li>
+      <li class="no frag pop">
+        <span class="icon">✗</span>
+        <div><strong>Missing constraints:</strong> Forgetting "Do NOT modify validators.ts" — session edits what it shouldn't.</div>
+      </li>
+      <li class="no frag pop">
+        <span class="icon">✗</span>
+        <div><strong>Two sessions, same file:</strong> Both write to <code>src/config/app.ts</code> → guaranteed merge conflict.</div>
+      </li>
+      <li class="yes frag pop">
+        <span class="icon">✓</span>
+        <div><strong>Fix:</strong> Always include "Files: X only" and "Do NOT touch: Y" in every launch prompt.</div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ SLIDE 20: GOTCHAS — GIT CONFLICTS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff">WATCH OUT</div>
+    <h2 class="auto">Git Conflicts — Rare but Real</h2>
+    <div class="row" style="margin-top:.4rem;align-items:stretch;gap:1rem">
+      <div class="mini-panel frag pop" style="width:clamp(175px,28vw,290px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)">PREVENTION</div>
+        <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .15rem">
+          <li>• Run the parallelizability check</li>
+          <li>• Explicit "Files: X only" per session</li>
+          <li>• Different modules per session</li>
+          <li>• No shared config/schema files</li>
+        </ul>
+      </div>
+      <div class="mini-panel frag pop" style="width:clamp(175px,28vw,290px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)">DETECTION</div>
+        <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .15rem">
+          <li>• <code>git diff main --stat</code> before opening PR</li>
+          <li>• GitHub conflict indicator on PR</li>
+          <li>• Check overlapping changed files</li>
+        </ul>
+      </div>
+      <div class="mini-panel frag pop" style="width:clamp(175px,28vw,290px);border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)">RECOVERY</div>
+        <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .15rem">
+          <li>• Rebase one branch onto the other</li>
+          <li>• Manual merge the conflict sections</li>
+          <li>• Or: ask Claude to resolve it in one session</li>
+        </ul>
+      </div>
+    </div>
+    <div class="caption frag">If you ran the parallelizability check upfront, conflicts are rare. When they happen — they're small and resolvable in minutes.</div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 21: COST AWARENESS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--purple);color:#fff">COST</div>
+    <h2 class="auto">3 Sessions ≠ 3× Your Bill</h2>
+    <div class="row" style="margin-top:.4rem;align-items:stretch">
+      <div class="mini-panel frag pop" style="width:clamp(180px,28vw,300px);border-color:var(--red)">
+        <div class="strip" style="background:var(--red)">THE MYTH</div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">"3 sessions = 3× token cost. It'll triple our Claude bill."</div>
+      </div>
+      <div class="mini-panel frag pop" style="width:clamp(180px,28vw,300px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)">THE REALITY</div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">You pay for tokens used — not time open. Idle sessions cost nothing. Focused prompts = less wasted output tokens.</div>
+      </div>
+    </div>
+    <div class="caption frag">Track cost per session with <code>/cost</code> before closing. Tight prompts are cheaper than vague ones. Parallel efficiency offsets the extra sessions.</div>
+    <div class="row frag" style="margin-top:.3rem">
+      <span class="tag" style="border-color:var(--purple)">PAY FOR TOKENS, NOT TIME</span>
+      <span class="tag">FOCUSED PROMPTS = LESS WASTE</span>
+      <span class="tag">TRACK WITH /cost</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 22: WRAP UP ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto">WRAP UP</div>
+    <h2 class="auto">Multiple Sessions — The Basics</h2>
+    <div class="row frag" style="margin-top:.4rem">
+      <span class="tag" style="border-color:var(--amber)">WORKTREES</span>
+      <span class="tag" style="border-color:var(--blue)">FOCUSED PROMPTS</span>
+      <span class="tag" style="border-color:var(--sky)">20-MIN ROTATIONS</span>
+      <span class="tag" style="border-color:var(--green)">PR PER SESSION</span>
+    </div>
+    <div class="panel frag pop" style="margin-top:.4rem">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-amber">SHAZZAD</span>
+        "Left at 3:45pm. Three PRs merged. Rifat owes me coffee. This is now my default workflow."
+      </div>
+    </div>
+    <div class="char-summary frag">
+      Next → <strong>Episode 3:</strong> Subagents inside a single session.<br>
+      The Agent tool, fan-out patterns, and collecting results without runaway costs.
+    </div>
+  </div>
+</section>
+
+</main><!-- /deck -->
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<div class="hint">← → to navigate · space to advance</div>
+<script src="../../assets/deck.js"></script>
+</body>
+</html>

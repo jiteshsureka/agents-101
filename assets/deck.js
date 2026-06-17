@@ -56,7 +56,7 @@
       `<header class="deck-header">
         <a class="home" href="${indexPath}">← Home</a>
         <span class="byline">
-          <span>BrainStation 23</span> ·
+          <a href="https://www.nop-station.com" target="_blank" rel="noopener">nop-station</a> ·
           <a href="${ghRepo}" target="_blank" rel="noopener">agents-101</a>
         </span>
         <span class="deck-ep"></span>
@@ -66,7 +66,7 @@
         </span>
       </header>
       <footer class="deck-footer">
-        <span class="brand">agents-101 · BrainStation 23</span>
+        <span class="brand">agents-101 · nop-station</span>
       </footer>`);
     document.querySelector('.deck-header .deck-ep').textContent = label;
   }

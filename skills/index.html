@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Skills Directory — agents-101 · BrainStation 23</title>
-<meta name="description" content="Claude Code skills available to BrainStation 23 engineers — what they do, when to use them, and real enterprise use cases.">
+<title>Skills Directory — agents-101 · nop-station</title>
+<meta name="description" content="Community Claude Code skills curated by nop-station — what they do, when to install them, and real enterprise use cases.">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -38,6 +38,9 @@ h1 .pop{color:var(--sky);}
 .skill-card .trigger{font-size:clamp(.8rem,1.6vw,.94rem);color:rgba(17,23,44,.7);line-height:1.45;flex:1;}
 .skill-card .invoke{font-family:'Caveat',cursive;font-weight:700;font-size:.95rem;background:rgba(251,175,50,.15);border:1.5px solid var(--navy);border-radius:8px;padding:.2em .65em;align-self:flex-start;margin-top:.2rem;}
 .skill-card .use-case{font-size:clamp(.78rem,1.5vw,.9rem);color:rgba(17,23,44,.58);font-style:italic;}
+.skill-card .repo-link{display:inline-flex;align-items:center;gap:.35em;font-family:'Caveat',cursive;font-weight:700;font-size:.95rem;color:var(--sky);text-decoration:none;border-bottom:1.5px solid transparent;transition:border-color .15s;}
+.skill-card .repo-link:hover{border-bottom-color:var(--sky);}
+.skill-card .install{font-family:'SF Mono','Fira Code',monospace;font-size:clamp(.65rem,1.3vw,.82rem);background:var(--navy);color:#e2e8f0;border-radius:8px;padding:.25em .7em;align-self:flex-start;margin-top:.1rem;}
 footer.site{margin-top:clamp(2rem,4vw,3rem);border-top:2px dashed rgba(17,23,44,.18);width:min(96vw,1060px);padding-top:1.2rem;font-family:'Caveat',cursive;font-size:1.1rem;color:rgba(17,23,44,.52);text-align:center;}
 footer.site a{color:var(--sky);text-decoration:none;}
 footer.site a:hover{text-decoration:underline;}
@@ -57,110 +60,55 @@ footer.site a:hover{text-decoration:underline;}
 
   <div class="filter-row">
     <button class="filter-btn active">All</button>
-    <button class="filter-btn">Code Quality</button>
-    <button class="filter-btn">Testing</button>
-    <button class="filter-btn">Architecture</button>
-    <button class="filter-btn">DevOps</button>
-    <button class="filter-btn">Planning</button>
-    <button class="filter-btn">Security</button>
+    <button class="filter-btn">Framework</button>
+    <button class="filter-btn">Productivity</button>
+    <button class="filter-btn">Code Intelligence</button>
   </div>
 
   <div class="skills">
 
+    <!-- ── SUPERPOWERS ── -->
     <div class="skill-card">
-      <span class="cat" style="--cat-color:#4992C1">Code Quality</span>
-      <h3>/code-review</h3>
-      <p class="trigger">Reviews the current diff for bugs, simplification opportunities, and architectural issues at configurable effort levels (low → ultra).</p>
-      <span class="invoke">/code-review [low|medium|high|ultra]</span>
-      <p class="use-case">Use before every PR. Add <code>--fix</code> to auto-apply findings, <code>--comment</code> to post inline PR comments.</p>
+      <span class="cat" style="--cat-color:#6C5CE7">Framework</span>
+      <h3>superpowers</h3>
+      <p class="trigger">Complete agentic software development methodology built on composable skills. Ships 20+ battle-tested skills: TDD, debugging, collaboration, planning. Slash commands include <code>/brainstorm</code>, <code>/write-plan</code>, <code>/execute-plan</code>.</p>
+      <span class="invoke">/plugin install superpowers@claude-plugins-official</span>
+      <code class="install">npx skills add obra/superpowers</code>
+      <p class="use-case">Install once per team. Establishes a shared methodology so every dev's Claude sessions follow the same structured workflow.</p>
+      <a class="repo-link" href="https://github.com/obra/superpowers" target="_blank" rel="noopener">↗ github.com/obra/superpowers</a>
     </div>
 
+    <!-- ── CAVEMAN ── -->
     <div class="skill-card">
-      <span class="cat" style="--cat-color:#4992C1">Code Quality</span>
-      <h3>/simplify</h3>
-      <p class="trigger">Scans recently changed code for reuse, simplification, and efficiency cleanups — then applies the fixes automatically.</p>
-      <span class="invoke">/simplify</span>
-      <p class="use-case">Run after a feature lands to tighten up the implementation before it's merged to main.</p>
+      <span class="cat" style="--cat-color:#FBAF32">Productivity</span>
+      <h3>caveman</h3>
+      <p class="trigger">Cuts ~65% of output tokens by switching Claude to terse caveman mode — drop filler, keep substance, use fragments. Supports lite / full / ultra intensity levels. Works as Claude Code plugin, Codex plugin, Cursor rule, and 40+ other agents.</p>
+      <span class="invoke">/caveman · /caveman lite|full|ultra</span>
+      <code class="install">npx skills add JuliusBrussee/caveman</code>
+      <p class="use-case">Activate on long sessions or when context window is filling fast. 65% fewer output tokens = meaningfully lower cost and faster responses.</p>
+      <a class="repo-link" href="https://github.com/JuliusBrussee/caveman" target="_blank" rel="noopener">↗ github.com/JuliusBrussee/caveman</a>
     </div>
 
+    <!-- ── CODEGRAPH ── -->
     <div class="skill-card">
-      <span class="cat" style="--cat-color:#2EAF7D">Testing</span>
-      <h3>/tdd-guide</h3>
-      <p class="trigger">Enforces write-tests-first methodology. Generates failing tests before implementation, targets 80%+ behavioral coverage.</p>
-      <span class="invoke">/tdd-guide</span>
-      <p class="use-case">Enterprise teams use this on every new feature to prevent test debt accumulating over sprints.</p>
+      <span class="cat" style="--cat-color:#1A9ED7">Code Intelligence</span>
+      <h3>codegraph</h3>
+      <p class="trigger">Pre-indexed code knowledge graph that auto-syncs on file changes. Exposes symbol relationships, call graphs, and code structure as an MCP server — agents query the graph instead of scanning files. 100% local, zero file contents leave the machine.</p>
+      <span class="invoke">Auto-configured MCP server · no slash command needed</span>
+      <code class="install">npx codegraph install</code>
+      <p class="use-case">Large codebases where Claude repeatedly scans the same files. Wires into Claude Code, Cursor, Codex, Gemini CLI, and Kiro automatically on first run.</p>
+      <a class="repo-link" href="https://github.com/colbymchenry/codegraph" target="_blank" rel="noopener">↗ github.com/colbymchenry/codegraph</a>
     </div>
 
+    <!-- ── GRAPHIFY ── -->
     <div class="skill-card">
-      <span class="cat" style="--cat-color:#2EAF7D">Testing</span>
-      <h3>/test-coverage</h3>
-      <p class="trigger">Analyzes test coverage gaps, identifies untested paths, and generates targeted tests for the most critical missing coverage.</p>
-      <span class="invoke">/test-coverage</span>
-      <p class="use-case">Run on legacy modules before a migration to establish a safety net.</p>
-    </div>
-
-    <div class="skill-card">
-      <span class="cat" style="--cat-color:#6C5CE7">Architecture</span>
-      <h3>/plan</h3>
-      <p class="trigger">Designs a feature implementation plan: analyzes codebase patterns, produces file-level blueprints, data flow, and build order.</p>
-      <span class="invoke">/plan</span>
-      <p class="use-case">Use before starting any feature larger than a single function. Prevents mid-sprint architectural pivots.</p>
-    </div>
-
-    <div class="skill-card">
-      <span class="cat" style="--cat-color:#6C5CE7">Architecture</span>
-      <h3>/feature-dev</h3>
-      <p class="trigger">Full feature development skill: plan → implement → test → review in a guided, checkpointed flow.</p>
-      <span class="invoke">/feature-dev</span>
-      <p class="use-case">Hand off a feature spec and let the agent run the entire cycle with approval gates at key milestones.</p>
-    </div>
-
-    <div class="skill-card">
-      <span class="cat" style="--cat-color:#E0483A">DevOps</span>
-      <h3>/build-fix</h3>
-      <p class="trigger">Auto-resolves build failures, TypeScript errors, and linter issues with minimal surgical diffs. Gets the build green fast.</p>
-      <span class="invoke">/build-fix</span>
-      <p class="use-case">Trigger automatically via CI hook when a build fails to unblock teammates without context-switching.</p>
-    </div>
-
-    <div class="skill-card">
-      <span class="cat" style="--cat-color:#E0483A">DevOps</span>
-      <h3>/pm2</h3>
-      <p class="trigger">Manages PM2 process lifecycle — start, restart, logs, monitoring — for Node.js services in dev and staging environments.</p>
-      <span class="invoke">/pm2</span>
-      <p class="use-case">Use in microservice environments where multiple processes need coordinated restart after deployments.</p>
-    </div>
-
-    <div class="skill-card">
-      <span class="cat" style="--cat-color:#FBAF32">Planning</span>
-      <h3>/prp-plan</h3>
-      <p class="trigger">Generates a Product Requirements Prompt (PRP) from a high-level description — structured enough for agents to implement reliably.</p>
-      <span class="invoke">/prp-plan</span>
-      <p class="use-case">Bridge the gap between product requirements and agent-executable specs. Use at sprint planning.</p>
-    </div>
-
-    <div class="skill-card">
-      <span class="cat" style="--cat-color:#FBAF32">Planning</span>
-      <h3>/prp-implement</h3>
-      <p class="trigger">Implements a PRP document — reads the spec, builds out the feature with tests, then posts a summary of what was done.</p>
-      <span class="invoke">/prp-implement [prp-file]</span>
-      <p class="use-case">Pair with /prp-plan for a fully automated spec-to-code pipeline on well-defined features.</p>
-    </div>
-
-    <div class="skill-card">
-      <span class="cat" style="--cat-color:#E0483A">Security</span>
-      <h3>/security-review</h3>
-      <p class="trigger">Scans for OWASP Top 10, secrets in code, SSRF, injection, unsafe crypto, and authentication flaws in changed files.</p>
-      <span class="invoke">/security-review</span>
-      <p class="use-case">Mandatory before any PR that touches auth, API endpoints, user input, or data persistence layers.</p>
-    </div>
-
-    <div class="skill-card">
-      <span class="cat" style="--cat-color:#1A9ED7">Planning</span>
-      <h3>/multi-plan</h3>
-      <p class="trigger">Plans a complex feature by decomposing it into parallel workstreams that multiple agents or sessions can execute concurrently.</p>
-      <span class="invoke">/multi-plan</span>
-      <p class="use-case">Use for large features where parts are independent — generates a dependency graph and session assignments.</p>
+      <span class="cat" style="--cat-color:#2EAF7D">Code Intelligence</span>
+      <h3>graphify</h3>
+      <p class="trigger">Turns any folder of code, SQL schemas, docs, papers, or images into a queryable knowledge graph. Supports 20+ languages via tree-sitter AST (Python, TS, Go, Rust, Java, C, C++, Ruby, C# and more). All processing is local — no file contents leave your machine.</p>
+      <span class="invoke">/graphify</span>
+      <code class="install">npm install -g @sentropic/graphify &amp;&amp; graphify install</code>
+      <p class="use-case">Map an unfamiliar codebase in minutes. Also useful for combining app code + database schema + infrastructure into one queryable graph at project start.</p>
+      <a class="repo-link" href="https://github.com/safishamsi/graphify" target="_blank" rel="noopener">↗ github.com/safishamsi/graphify</a>
     </div>
 
   </div>
@@ -169,7 +117,7 @@ footer.site a:hover{text-decoration:underline;}
     agents-101 · Skills Directory ·
     <a href="../">Home</a> ·
     <a href="https://github.com/jiteshsureka/agents-101">GitHub</a> ·
-    <a href="https://brainstation-23.com">BrainStation 23</a>
+    <a href="https://www.nop-station.com">nop-station</a>
   </footer>
 </div>
 </body>

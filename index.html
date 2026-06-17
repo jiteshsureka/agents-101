@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>agents-101 — Enterprise AI Agent Development · BrainStation 23</title>
-<meta name="description" content="A storybook series on enterprise AI agent development — parallel agents, multi-session workflows, Claude skills, and more. By BrainStation 23.">
+<title>agents-101 — Enterprise AI Agent Development · nop-station</title>
+<meta name="description" content="A storybook series on enterprise AI agent development — parallel agents, multi-session workflows, Claude skills, and more. By nop-station.">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -162,6 +162,30 @@ footer.site {
 footer.site a { color: var(--sky); text-decoration: none; }
 footer.site a:hover { text-decoration: underline; }
 
+/* ---- star strip ---- */
+.star-strip {
+  width: min(96vw, 1100px);
+  background: var(--navy); color: #fff; border-radius: 16px;
+  padding: clamp(.9rem,2.5vw,1.4rem) clamp(1.2rem,3vw,2rem);
+  display: flex; flex-wrap: wrap; align-items: center; gap: 1rem;
+  box-shadow: var(--shadow-md); margin-bottom: clamp(1.5rem,4vw,2.5rem);
+}
+.star-strip p {
+  font-size: clamp(.88rem,1.8vw,1.05rem); font-weight: 600;
+  opacity: .88; flex: 1; line-height: 1.45; margin: 0;
+}
+.star-strip p strong { color: var(--amber); }
+.star-btn {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(1rem,2vw,1.25rem); white-space: nowrap;
+  color: var(--navy); background: var(--amber);
+  border: 2px solid var(--amber); border-radius: 999px;
+  padding: .22em 1.2em; text-decoration: none;
+  box-shadow: var(--shadow-sm); flex-shrink: 0;
+  transition: transform .12s, box-shadow .12s;
+}
+.star-btn:hover { transform: translate(-1px,-1px); box-shadow: var(--shadow-md); }
+
 @media (max-width: 640px) {
   .topbar .nav-links { display: none; }
   .about-strip { flex-direction: column; }
@@ -186,16 +210,22 @@ footer.site a:hover { text-decoration: underline; }
     <a href="skills/">Skills</a>
     <a href="vlogs/">Vlogs &amp; Blogs</a>
     <a href="resources/">Resources</a>
+    <a href="contribute/">Contribute</a>
   </nav>
   <a class="gh" href="https://github.com/jiteshsureka/agents-101" target="_blank" rel="noopener">GitHub ↗</a>
 </div>
 
 <div class="page">
   <header class="hero">
-    <span class="kicker">enterprise AI agent series ✦ BrainStation 23</span>
+    <span class="kicker">enterprise AI agent series ✦ nop-station</span>
     <h1>Agents at <span class="pop">Enterprise Scale.</span></h1>
     <p class="sub">A storybook series for engineers — slide decks on parallel agent development, multi-session workflows, Claude skills, and production-grade AI-assisted software delivery.</p>
   </header>
+
+  <div class="star-strip">
+    <p>If this series helps your team ship faster — <strong>drop a star on GitHub.</strong> It helps others find it and keeps the series going.</p>
+    <a class="star-btn" href="https://github.com/jiteshsureka/agents-101" target="_blank" rel="noopener">★ Star on GitHub</a>
+  </div>
 
   <p class="sections-label">EXPLORE</p>
 
@@ -218,7 +248,7 @@ footer.site a:hover { text-decoration: underline; }
     <a class="sec-card" href="vlogs/" style="--accent: #1A9ED7">
       <div class="sec-icon">📹</div>
       <h2>Vlogs &amp; Blogs</h2>
-      <p>Deep-dives, war stories, and lessons learned from shipping AI-assisted software at BrainStation 23. Written and video formats.</p>
+      <p>Deep-dives, war stories, and lessons learned from shipping AI-assisted software at nop-station. Written and video formats.</p>
       <div class="sec-arrow">Read &amp; watch →</div>
     </a>
 
@@ -229,20 +259,27 @@ footer.site a:hover { text-decoration: underline; }
       <div class="sec-arrow">View resources →</div>
     </a>
 
+    <a class="sec-card" href="contribute/" style="--accent: #2EAF7D">
+      <div class="sec-icon">🤝</div>
+      <h2>Contribute</h2>
+      <p>Found a bug? Have a skill to share? Submit a PR to add skills, vlogs, or resources — or open an issue to suggest a new episode topic.</p>
+      <div class="sec-arrow">Get involved →</div>
+    </a>
+
   </div>
 
   <div class="about-strip">
     <div class="about-text">
       <h3>Built by engineers, for engineers.</h3>
-      <p>This series documents how BrainStation 23 uses AI agents for enterprise software delivery — migrations, parallel development, planning, and beyond. Open source &amp; free to learn from.</p>
+      <p>This series documents how nop-station uses AI agents for enterprise software delivery — migrations, parallel development, planning, and beyond. Open source &amp; free to learn from.</p>
     </div>
-    <a class="about-cta" href="https://brainstation-23.com" target="_blank" rel="noopener">Visit BrainStation 23 ↗</a>
+    <a class="about-cta" href="https://www.nop-station.com" target="_blank" rel="noopener">Visit nop-station ↗</a>
   </div>
 
   <footer class="site">
     agents-101 · made with Claude Code ·
     <a href="https://github.com/jiteshsureka/agents-101">source on GitHub</a> ·
-    <a href="https://brainstation-23.com">BrainStation 23</a>
+    <a href="https://www.nop-station.com">nop-station</a>
   </footer>
 </div>
 
