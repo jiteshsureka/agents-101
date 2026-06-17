@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S1·E3 — Spawning Subagents · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+/* ---- checklist ---- */
+.checklist {
+  list-style: none; display: flex; flex-direction: column;
+  gap: .5rem; text-align: left; max-width: min(88vw, 660px); width: 100%;
+}
+.checklist li {
+  font-weight: 600; font-size: clamp(.82rem, 1.7vw, 1.05rem);
+  padding: .38em .9em; border-radius: 12px;
+  border: 2px solid var(--navy); background: var(--paper);
+  box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: .55rem;
+}
+.checklist li.yes { border-color: var(--green); background: rgba(46,175,125,.08); }
+.checklist li.no  { border-color: var(--red);   background: rgba(224,72,58,.08); }
+.checklist li .icon { font-size: 1.1em; flex-shrink: 0; }
+
+/* ---- code block ---- */
+pre.code-block {
+  background: var(--navy); color: #e2e8f0;
+  border: 2px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  padding: clamp(.7rem,1.8vw,1.2rem) clamp(.9rem,2vw,1.4rem);
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.62rem,1.35vw,.88rem); line-height: 1.65;
+  text-align: left; max-width: min(92vw, 800px); width: 100%;
+  overflow-x: auto; white-space: pre;
+}
+pre.code-block .comment { color: #64748b; }
+pre.code-block .cmd     { color: var(--amber); }
+pre.code-block .flag    { color: #7dd3fc; }
+pre.code-block .path    { color: #86efac; }
+pre.code-block .note    { color: #c4b5fd; }
+pre.code-block .str     { color: #fca5a5; }
+
+/* ---- fan-out diagram ---- */
+.fanout {
+  display: flex; flex-direction: column; align-items: center;
+  gap: clamp(.5rem, 1.5vw, 1rem); max-width: min(92vw, 900px); width: 100%;
+}
+.fanout-row {
+  display: flex; align-items: center; justify-content: center;
+  gap: clamp(.4rem, 1.2vw, .9rem); flex-wrap: wrap;
+}
+.fanout-node {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.85rem, 1.8vw, 1.15rem);
+  background: var(--paper); border: 2.5px solid var(--navy);
+  border-radius: 14px; padding: .35em 1em;
+  box-shadow: var(--shadow-sm); text-align: center; line-height: 1.3;
+}
+.fanout-node .fsub {
+  font-size: .65em; font-family: 'Work Sans', sans-serif;
+  font-weight: 600; opacity: .6; display: block;
+}
+.fanout-arrows {
+  display: flex; justify-content: center;
+  gap: clamp(1.2rem, 4vw, 3rem); font-size: clamp(1rem, 2.2vw, 1.5rem);
+  opacity: .45; font-family: 'Caveat', cursive; line-height: 1;
+}
+
+/* ---- compare table ---- */
+.compare {
+  display: flex; gap: clamp(.7rem, 1.8vw, 1.3rem);
+  flex-wrap: wrap; justify-content: center;
+  max-width: min(92vw, 860px); width: 100%;
+}
+.compare-col {
+  background: var(--paper); border: 2px solid var(--navy); border-radius: 18px;
+  box-shadow: var(--shadow-md); padding: clamp(.7rem, 1.8vw, 1.2rem);
+  flex: 1; min-width: clamp(200px, 30vw, 340px);
+}
+.compare-col .col-head {
+  font-family: 'Fraunces', serif; font-weight: 700;
+  font-size: clamp(.9rem, 1.9vw, 1.2rem); color: #fff;
+  border-radius: 10px; padding: .2em .8em; margin-bottom: .6rem; display: inline-block;
+}
+.compare-col ul {
+  list-style: none; font-size: clamp(.65rem, 1.3vw, .85rem);
+  font-weight: 600; line-height: 2; padding: 0 .1rem;
+}
+
+/* ---- security findings card ---- */
+.findings-grid {
+  display: flex; gap: clamp(.6rem, 1.5vw, 1.1rem);
+  flex-wrap: wrap; justify-content: center; max-width: min(92vw, 900px);
+}
+.finding-card {
+  background: var(--paper); border: 2px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-sm); padding: clamp(.6rem, 1.5vw, 1rem);
+  width: clamp(180px, 26vw, 270px); text-align: left;
+}
+.finding-card .fc-label {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.78rem, 1.6vw, 1rem); color: #fff;
+  border-radius: 8px; padding: .12em .65em; display: inline-block; margin-bottom: .4rem;
+}
+.finding-card h3 {
+  font-family: 'Work Sans', sans-serif; font-weight: 700;
+  font-size: clamp(.78rem, 1.55vw, .98rem); line-height: 1.3; margin-bottom: .3rem;
+}
+.finding-card .fc-count {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.72rem, 1.4vw, .92rem); color: var(--red);
+}
+.finding-card .fc-time {
+  font-size: clamp(.6rem, 1.1vw, .76rem); font-weight: 600;
+  color: rgba(17,23,44,.5); margin-top: .2rem;
+}
+
+/* ---- decision tree ---- */
+.dtree {
+  display: flex; flex-direction: column; gap: .55rem;
+  max-width: min(88vw, 700px); width: 100%;
+}
+.dtree-row {
+  display: flex; align-items: center; gap: .7rem;
+  background: var(--paper); border: 2px solid var(--navy); border-radius: 14px;
+  padding: .45em .9em; box-shadow: var(--shadow-sm);
+}
+.dtree-q {
+  font-weight: 700; font-size: clamp(.72rem, 1.4vw, .9rem);
+  flex: 1; line-height: 1.4;
+}
+.dtree-a {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.82rem, 1.6vw, 1.05rem); white-space: nowrap;
+  color: #fff; border-radius: 8px; padding: .1em .65em;
+}
+</style>
+</head>
+<body data-ep-label="S1·E3 · Spawning Subagents" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ===== SLIDE 1: TITLE ===== -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">SEASON 1 · EPISODE 3</span><span class="bn">সিজন ১ · এপিসোড ৩</span></div>
+    <h1 class="auto" style="color:#fff;font-size:clamp(1.8rem,7vw,4.8rem);line-height:.95">
+      <span class="en">SPAWNING<br><span style="color:var(--sky)">SUBAGENTS</span><br><span style="font-size:.5em;color:rgba(255,255,255,.7)">Inside One Session</span></span>
+      <span class="bn b" style="color:#fff">সাবএজেন্ট<br><span style="color:var(--sky)">স্পন করা</span><br><span style="font-size:.5em;color:rgba(255,255,255,.7)">একটি সেশনের ভেতরে</span></span>
+    </h1>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,700px)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">HABIB · BACKEND ENGINEER, NOP-STATION</span>
+        <span class="en">"Shazzad had 3 terminals open. I have one. And I'm running 4 agents inside it. Different game entirely."</span>
+        <span class="bn">"শাজ্জাদের ৩টা টার্মিনাল খোলা ছিল। আমার একটা। আর আমি তার ভেতরে ৪টা এজেন্ট চালাচ্ছি। সম্পূর্ণ আলাদা খেলা।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 2: RECAP ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">RECAP · EP 1–2</span><span class="bn">সারসংক্ষেপ · এপিসোড ১–২</span></div>
+    <h2 class="auto"><span class="en">The Story So Far</span><span class="bn">এ পর্যন্ত গল্প</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:stretch;gap:1rem">
+      <div class="mini-panel pop" style="width:clamp(175px,26vw,280px);border-color:var(--blue)">
+        <div class="strip" style="background:var(--blue)">EP 1</div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">
+          <span class="en"><strong>You are the bottleneck.</strong> Claude waits on you between tasks. Manager model: 3 sessions = 3× AI-hours.</span>
+          <span class="bn"><strong>তুমিই বটলনেক।</strong> Claude তোমার জন্য অপেক্ষা করে। ম্যানেজার মডেল: ৩ সেশন = ৩× AI-ঘণ্টা।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(175px,26vw,280px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)">EP 2</div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">
+          <span class="en"><strong>Worktrees + sessions.</strong> You rotate every 20 min. 3 PRs before lunch. You steer each session manually.</span>
+          <span class="bn"><strong>Worktree + সেশন।</strong> তুমি ২০ মিনিট পর পর ঘোরো। দুপুরের আগে ৩টো PR। তুমি প্রতিটো সেশন নিজে পরিচালনা করো।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(175px,26vw,280px);border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)">EP 3 →</div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">
+          <span class="en"><strong>One session. N agents.</strong> Claude orchestrates the fan-out. You write the prompts. Claude does the switching.</span>
+          <span class="bn"><strong>এক সেশন। N এজেন্ট।</strong> Claude ফ্যান-আউট পরিচালনা করে। তুমি প্রম্পট লিখো। Claude সুইচিং করে।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Today's question: what if you don't want to steer every session manually — you just want results?</span><span class="bn">আজকের প্রশ্ন: যদি প্রতিটো সেশন নিজে স্টিয়ার না করে শুধু ফলাফল চাও?</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 3: THE PRIMITIVE ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">THE PRIMITIVE</span><span class="bn">মূল টুল</span></div>
+    <h2 class="auto"><span class="en">What Is a Subagent?</span><span class="bn">সাবএজেন্ট কী?</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:stretch;gap:1rem">
+      <div class="mini-panel pop" style="width:clamp(185px,30vw,310px)">
+        <div class="strip" style="background:var(--navy)"><span class="en">YOU WRITE</span><span class="bn">তুমি লিখো</span></div>
+        <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .1rem">
+          <li><span class="en">• A description (what it does)</span><span class="bn">• একটি বিবরণ (কী করে)</span></li>
+          <li><span class="en">• A prompt (the full task)</span><span class="bn">• একটি প্রম্পট (পুরো কাজ)</span></li>
+          <li><span class="en">• Optional: subagent_type</span><span class="bn">• ঐচ্ছিক: subagent_type</span></li>
+        </ul>
+      </div>
+      <div style="display:flex;align-items:center;font-size:clamp(1.2rem,2.8vw,2rem);opacity:.4;font-family:'Caveat',cursive">→</div>
+      <div class="mini-panel pop" style="width:clamp(185px,30vw,310px);border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)"><span class="en">CLAUDE SPAWNS</span><span class="bn">Claude স্পন করে</span></div>
+        <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .1rem">
+          <li><span class="en">• A sub-Claude with own context</span><span class="bn">• নিজস্ব কনটেক্সট সহ সাব-Claude</span></li>
+          <li><span class="en">• Full tool access (Read, Bash…)</span><span class="bn">• সম্পূর্ণ টুল অ্যাক্সেস</span></li>
+          <li><span class="en">• Runs until task is done</span><span class="bn">• কাজ শেষ না হওয়া পর্যন্ত চলে</span></li>
+        </ul>
+      </div>
+      <div style="display:flex;align-items:center;font-size:clamp(1.2rem,2.8vw,2rem);opacity:.4;font-family:'Caveat',cursive">→</div>
+      <div class="mini-panel pop" style="width:clamp(185px,30vw,310px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">YOU RECEIVE</span><span class="bn">তুমি পাও</span></div>
+        <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .1rem">
+          <li><span class="en">• One message — the result</span><span class="bn">• একটি বার্তা — ফলাফল</span></li>
+          <li><span class="en">• Subagent disappears after</span><span class="bn">• সাবএজেন্ট তারপর বিলীন</span></li>
+          <li><span class="en">• No back-and-forth mid-task</span><span class="bn">• মাঝপথে কোনো আলোচনা নেই</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">That's the whole contract. One prompt in. One message out. No steering. This constraint is also its superpower.</span><span class="bn">এটাই পুরো চুক্তি। এক প্রম্পট ঢোকে। এক বার্তা বের হয়। কোনো স্টিয়ারিং নেই। এই সীমাবদ্ধতাই এর শক্তি।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 4: SESSION vs SUBAGENT ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">COMPARISON</span><span class="bn">তুলনা</span></div>
+    <h2 class="auto"><span class="en">Sessions vs Subagents</span><span class="bn">সেশন বনাম সাবএজেন্ট</span></h2>
+    <div class="compare frag" style="margin-top:.4rem">
+      <div class="compare-col">
+        <span class="col-head" style="background:var(--amber);color:var(--navy)"><span class="en">MULTIPLE SESSIONS (Ep 2)</span><span class="bn">একাধিক সেশন (Ep 2)</span></span>
+        <ul>
+          <li><span class="en">You switch between terminals</span><span class="bn">তুমি টার্মিনালের মধ্যে সুইচ করো</span></li>
+          <li><span class="en">Long-running, open-ended</span><span class="bn">দীর্ঘ-চলমান, উন্মুক্ত</span></li>
+          <li><span class="en">You steer each session</span><span class="bn">তুমি প্রতিটো সেশন পরিচালনা করো</span></li>
+          <li><span class="en">Good: tasks needing guidance</span><span class="bn">ভালো: নির্দেশনা প্রয়োজন এমন কাজ</span></li>
+          <li><span class="en">N terminals open</span><span class="bn">N টার্মিনাল খোলা</span></li>
+        </ul>
+      </div>
+      <div class="compare-col" style="border-color:var(--sky)">
+        <span class="col-head" style="background:var(--sky)"><span class="en">SUBAGENTS / AGENT TOOL (Ep 3)</span><span class="bn">সাবএজেন্ট / Agent টুল (Ep 3)</span></span>
+        <ul>
+          <li><span class="en">Claude switches internally</span><span class="bn">Claude নিজেই সুইচ করে</span></li>
+          <li><span class="en">Batch, well-defined scope</span><span class="bn">ব্যাচ, সুনির্দিষ্ট স্কোপ</span></li>
+          <li><span class="en">You define the task upfront</span><span class="bn">তুমি আগেই কাজ নির্ধারণ করো</span></li>
+          <li><span class="en">Good: fan-out analysis tasks</span><span class="bn">ভালো: ফ্যান-আউট বিশ্লেষণ</span></li>
+          <li><span class="en">One terminal only</span><span class="bn">শুধু এক টার্মিনাল</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="caption frag amber"><span class="en">Not competing — complementary. The question is: does your task need steering, or just execution?</span><span class="bn">প্রতিযোগিতা নয় — পরিপূরক। প্রশ্ন হলো: তোমার কাজে স্টিয়ারিং দরকার, নাকি শুধু এক্সিকিউশন?</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 5: FAN-OUT PATTERN ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">THE PATTERN</span><span class="bn">প্যাটার্ন</span></div>
+    <h2 class="auto"><span class="en">The Fan-Out Pattern</span><span class="bn">ফ্যান-আউট প্যাটার্ন</span></h2>
+    <div class="fanout frag" style="margin-top:.5rem">
+      <!-- Orchestrator -->
+      <div class="fanout-node" style="border-color:var(--sky);background:rgba(26,158,215,.08);min-width:200px;font-size:clamp(1rem,2.2vw,1.4rem)">
+        🎯 <span class="en">Orchestrator</span><span class="bn">অর্কেস্ট্রেটর</span>
+        <span class="fsub"><span class="en">Your Claude session</span><span class="bn">তোমার Claude সেশন</span></span>
+      </div>
+      <!-- Down arrows -->
+      <div class="fanout-arrows frag">
+        <span>↙</span><span>↓</span><span>↓</span><span>↘</span>
+      </div>
+      <!-- Workers -->
+      <div class="fanout-row frag">
+        <div class="fanout-node" style="border-color:var(--blue)">
+          Agent A<span class="fsub">src/auth/</span>
+        </div>
+        <div class="fanout-node" style="border-color:var(--amber)">
+          Agent B<span class="fsub">src/payments/</span>
+        </div>
+        <div class="fanout-node" style="border-color:var(--green)">
+          Agent C<span class="fsub">src/api/</span>
+        </div>
+        <div class="fanout-node" style="border-color:var(--red)">
+          Agent D<span class="fsub">src/admin/</span>
+        </div>
+      </div>
+      <!-- Up arrows -->
+      <div class="fanout-arrows frag">
+        <span>↗</span><span>↑</span><span>↑</span><span>↖</span>
+      </div>
+      <!-- Collect -->
+      <div class="fanout-node frag pop" style="border-color:var(--green);background:rgba(46,175,125,.08);min-width:200px;font-size:clamp(1rem,2.2vw,1.4rem)">
+        📋 <span class="en">Collect + Synthesize</span><span class="bn">সংগ্রহ + সংকলন</span>
+        <span class="fsub"><span class="en">Back in your session</span><span class="bn">তোমার সেশনে ফেরে</span></span>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">All 4 workers run simultaneously. Total time = slowest agent, not the sum. That's the parallelism payoff.</span><span class="bn">৪টো ওয়ার্কার একসাথে চলে। মোট সময় = সবচেয়ে ধীর এজেন্টের সময়, সবার যোগফল নয়। এটাই সমান্তরালতার সুবিধা।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 6: ISOLATION MODES ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">ISOLATION MODES</span><span class="bn">আইসোলেশন মোড</span></div>
+    <h2 class="auto"><span class="en">Worktree vs Shared Directory</span><span class="bn">Worktree বনাম শেয়ার্ড ডিরেক্টরি</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:stretch;gap:1rem">
+      <div class="mini-panel pop" style="width:clamp(190px,31vw,330px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><code>isolation: "worktree"</code></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">
+          <span class="en">Each subagent gets its own git worktree — a separate directory on its own branch. Safe for write operations. Agents can't step on each other's files.</span>
+          <span class="bn">প্রতিটো সাবএজেন্ট নিজের git worktree পায় — আলাদা ব্র্যাঞ্চে আলাদা ডিরেক্টরি। রাইট অপারেশনের জন্য নিরাপদ। এজেন্টরা একে অপরের ফাইল স্পর্শ করতে পারে না।</span>
+        </div>
+        <div class="tag" style="margin-top:.4rem;border-color:var(--green);color:var(--green)"><span class="en">USE FOR: write tasks</span><span class="bn">ব্যবহার করো: রাইট কাজে</span></div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(190px,31vw,330px);border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)"><span class="en">Default (no isolation)</span><span class="bn">ডিফল্ট (কোনো আইসোলেশন নেই)</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">
+          <span class="en">All agents share the same working directory. Fine for read-only tasks (analysis, auditing, report generation). Risky if agents write to disk.</span>
+          <span class="bn">সব এজেন্ট একই ওয়ার্কিং ডিরেক্টরি শেয়ার করে। শুধু পড়ার কাজে ঠিক আছে (বিশ্লেষণ, অডিট, রিপোর্ট)। ডিস্কে লিখলে ঝুঁকিপূর্ণ।</span>
+        </div>
+        <div class="tag" style="margin-top:.4rem;border-color:var(--sky);color:var(--sky)"><span class="en">USE FOR: read-only tasks</span><span class="bn">ব্যবহার করো: শুধু পড়ার কাজে</span></div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Habib's security audit is read-only — agents just read code and report findings. Default isolation is fine. No worktrees needed.</span><span class="bn">হাবিবের সিকিউরিটি অডিট শুধু পড়া — এজেন্টরা কোড পড়ে ফলাফল জানায়। ডিফল্ট আইসোলেশনই যথেষ্ট। Worktree দরকার নেই।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 7: ANATOMY ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">ANATOMY</span><span class="bn">গঠন</span></div>
+    <h2 class="auto"><span class="en">What an Agent Call Looks Like</span><span class="bn">Agent কল কেমন দেখায়</span></h2>
+    <pre class="code-block frag">
+<span class="comment"># Claude Code's Agent tool — the fields you control</span>
+
+<span class="note">Agent(</span>{
+  <span class="flag">description</span>: <span class="str">"Security audit — src/auth/ module"</span>,
+
+  <span class="flag">prompt</span>: <span class="str">"""
+    Read all files in src/auth/. Look for:
+    - SQL/NoSQL injection vulnerabilities
+    - Tokens or secrets stored in plain text
+    - Session handling bugs (fixation, no expiry)
+    - Overly permissive CORS or cookie settings
+
+    Return a markdown list of findings. If none found, say so.
+    Do NOT modify any files. Do NOT spawn subagents.
+  """</span>,
+
+  <span class="comment"># optional — picks a specialized agent type</span>
+  <span class="flag">subagent_type</span>: <span class="str">"security-reviewer"</span>
+})</pre>
+    <div class="caption frag"><span class="en">That's the full surface area. Description (for logging), prompt (the task), optional type. The agent runs and returns one message.</span><span class="bn">এটাই পুরো ইন্টারফেস। বিবরণ (লগিংয়ের জন্য), প্রম্পট (কাজ), ঐচ্ছিক টাইপ। এজেন্ট চলে এবং একটি বার্তা ফেরায়।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 8: WHEN TO USE ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">WHEN TO USE</span><span class="bn">কখন ব্যবহার করবে</span></div>
+    <h2 class="auto"><span class="en">The Subagent Fitness Check</span><span class="bn">সাবএজেন্ট উপযুক্ততা পরীক্ষা</span></h2>
+    <ul class="checklist">
+      <li class="yes frag pop"><span class="icon">✓</span><span class="en"> Batch analysis — same task across N targets (files, modules, PRs)</span><span class="bn"> ব্যাচ বিশ্লেষণ — N লক্ষ্যে একই কাজ (ফাইল, মডিউল, PR)</span></li>
+      <li class="yes frag pop"><span class="icon">✓</span><span class="en"> Parallel read-only work — no shared writes between agents</span><span class="bn"> সমান্তরাল পড়ার কাজ — এজেন্টদের মধ্যে শেয়ার্ড রাইট নেই</span></li>
+      <li class="yes frag pop"><span class="icon">✓</span><span class="en"> Well-defined deliverable — you know exactly what "done" looks like</span><span class="bn"> সুনির্দিষ্ট ফলাফল — "সম্পন্ন" কেমন দেখায় তা জানো</span></li>
+      <li class="yes frag pop"><span class="icon">✓</span><span class="en"> Each subtask takes > 5 min — worth the overhead of spawning</span><span class="bn"> প্রতিটো উপকাজ > ৫ মিনিট — স্পন করার ওভারহেড সার্থক</span></li>
+      <li class="yes frag pop"><span class="icon">✓</span><span class="en"> No mid-flight steering needed — you trust the prompt to guide it</span><span class="bn"> মাঝপথে স্টিয়ারিং দরকার নেই — প্রম্পটই পথ দেখাবে</span></li>
+    </ul>
+    <div class="caption frag amber"><span class="en">Pass all five → reach for subagents. Fail any one → use multiple sessions instead (Ep 2).</span><span class="bn">পাঁচটিতেই পাস → সাবএজেন্ট ব্যবহার করো। যেকোনো একটিতে ফেল → পরিবর্তে একাধিক সেশন (Ep 2)।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 9: WHEN NOT TO USE ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WHEN NOT TO USE</span><span class="bn">কখন ব্যবহার করবে না</span></div>
+    <h2 class="auto"><span class="en">Subagents Are the Wrong Tool When…</span><span class="bn">সাবএজেন্ট ভুল টুল যখন…</span></h2>
+    <ul class="checklist">
+      <li class="no frag pop"><span class="icon">✗</span><span class="en"> The task needs live steering — you'll want to course-correct mid-run</span><span class="bn"> কাজে লাইভ স্টিয়ারিং দরকার — মাঝপথে দিকনির্দেশনা বদলাতে হবে</span></li>
+      <li class="no frag pop"><span class="icon">✗</span><span class="en"> Scope is unknown / exploratory — you're not sure what "done" means yet</span><span class="bn"> স্কোপ অজানা / অন্বেষণমূলক — "সম্পন্ন" এখনো স্পষ্ট নয়</span></li>
+      <li class="no frag pop"><span class="icon">✗</span><span class="en"> Agents write to the same files — race conditions, corrupted output</span><span class="bn"> এজেন্টরা একই ফাইলে লেখে — রেস কন্ডিশন, দূষিত আউটপুট</span></li>
+      <li class="no frag pop"><span class="icon">✗</span><span class="en"> Very short tasks (< 2 min each) — overhead of spawning > benefit</span><span class="bn"> খুব ছোট কাজ (< ২ মিনিট) — স্পনের ওভারহেড > সুবিধা</span></li>
+    </ul>
+    <div class="panel frag pop" style="margin-top:.4rem">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">HABIB</span>
+        <span class="en">"My security audit: same task, 4 modules, read-only, ~20 min each, output format I know. All five checks pass."</span>
+        <span class="bn">"আমার সিকিউরিটি অডিট: একই কাজ, ৪ মডিউল, শুধু পড়া, প্রতিটো ~২০ মিনিট, আউটপুট ফরম্যাট জানি। পাঁচটো চেক পাস।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 10: HABIB'S PROBLEM ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">LIVE EXAMPLE</span><span class="bn">লাইভ উদাহরণ</span></div>
+    <h2 class="auto"><span class="en">Habib's Q3 Problem</span><span class="bn">হাবিবের Q3 সমস্যা</span></h2>
+    <div class="caption frag" style="margin-bottom:.4rem"><span class="en">Four legacy modules all need a security audit before the Q3 release next week. No exceptions.</span><span class="bn">Q3 রিলিজের আগে চারটো লেগ্যাসি মডিউলের সিকিউরিটি অডিট দরকার। কোনো ব্যতিক্রম নেই।</span></div>
+    <div class="findings-grid frag">
+      <div class="finding-card">
+        <span class="fc-label" style="background:var(--blue)">MODULE A</span>
+        <h3><code>src/auth/</code></h3>
+        <div class="fc-count"><span class="en">Injection, tokens, sessions</span><span class="bn">ইনজেকশন, টোকেন, সেশন</span></div>
+        <div class="fc-time"><span class="en">~20 min sequential</span><span class="bn">~২০ মিনিট ক্রমিকভাবে</span></div>
+      </div>
+      <div class="finding-card">
+        <span class="fc-label" style="background:var(--amber);color:var(--navy)">MODULE B</span>
+        <h3><code>src/payments/</code></h3>
+        <div class="fc-count"><span class="en">PCI exposure, card data logging</span><span class="bn">PCI এক্সপোজার, কার্ড ডেটা লগিং</span></div>
+        <div class="fc-time"><span class="en">~25 min sequential</span><span class="bn">~২৫ মিনিট ক্রমিকভাবে</span></div>
+      </div>
+      <div class="finding-card">
+        <span class="fc-label" style="background:var(--sky)">MODULE C</span>
+        <h3><code>src/api/</code></h3>
+        <div class="fc-count"><span class="en">Auth guards, rate limits</span><span class="bn">Auth গার্ড, রেট লিমিট</span></div>
+        <div class="fc-time"><span class="en">~30 min sequential</span><span class="bn">~৩০ মিনিট ক্রমিকভাবে</span></div>
+      </div>
+      <div class="finding-card">
+        <span class="fc-label" style="background:var(--red)">MODULE D</span>
+        <h3><code>src/admin/</code></h3>
+        <div class="fc-count"><span class="en">Privilege escalation, hardcoded creds</span><span class="bn">প্রিভিলেজ এস্কেলেশন, হার্ডকোডেড ক্রেডেনশিয়াল</span></div>
+        <div class="fc-time"><span class="en">~20 min sequential</span><span class="bn">~২০ মিনিট ক্রমিকভাবে</span></div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Sequential total: ~95 minutes + context switching. Habib: "What if I just… spawn four agents?"</span><span class="bn">ক্রমিক মোট: ~৯৫ মিনিট + কনটেক্সট সুইচিং। হাবিব: "যদি শুধু চারটো এজেন্ট স্পন করি?"</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 11: ORCHESTRATOR PROMPT ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">THE CRAFT</span><span class="bn">দক্ষতা</span></div>
+    <h2 class="auto"><span class="en">Writing the Orchestrator Prompt</span><span class="bn">অর্কেস্ট্রেটর প্রম্পট লেখা</span></h2>
+    <div class="caption frag" style="margin-bottom:.3rem"><span class="en">The orchestrator prompt has one job: decompose the task and spawn N subagents. Structure it clearly.</span><span class="bn">অর্কেস্ট্রেটর প্রম্পটের একটাই কাজ: কাজ ভাগ করো এবং N সাবএজেন্ট স্পন করো। স্পষ্টভাবে কাঠামো দাও।</span></div>
+    <div class="row frag" style="align-items:stretch;gap:1rem;margin-top:.2rem">
+      <div class="mini-panel pop" style="width:clamp(175px,28vw,290px)">
+        <div class="strip" style="background:var(--navy)"><span class="en">1 · CONTEXT</span><span class="bn">১ · প্রসঙ্গ</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem"><span class="en">What the codebase is. What kind of audit. Which modules to cover.</span><span class="bn">কোডবেস কী। কী ধরনের অডিট। কোন মডিউল কভার করতে হবে।</span></div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(175px,28vw,290px)">
+        <div class="strip" style="background:var(--sky)"><span class="en">2 · SUBTASK LIST</span><span class="bn">২ · উপকাজের তালিকা</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem"><span class="en">Spawn Agent for src/auth/, Agent for src/payments/, Agent for src/api/, Agent for src/admin/.</span><span class="bn">src/auth/-এর জন্য Agent, src/payments/-এর জন্য Agent, src/api/-এর জন্য Agent, src/admin/-এর জন্য Agent স্পন করো।</span></div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(175px,28vw,290px)">
+        <div class="strip" style="background:var(--green)"><span class="en">3 · OUTPUT FORMAT</span><span class="bn">৩ · আউটপুট ফরম্যাট</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem"><span class="en">Each agent returns a structured markdown block. After all return, compile into a single security report.</span><span class="bn">প্রতিটো এজেন্ট স্ট্রাকচার্ড মার্কডাউন ব্লক ফেরায়। সব ফেরার পর একক সিকিউরিটি রিপোর্ট সংকলন করো।</span></div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">The output format specification is critical. If you don't define it, each agent invents its own structure and synthesis becomes painful.</span><span class="bn">আউটপুট ফরম্যাট স্পেসিফিকেশন গুরুত্বপূর্ণ। না দিলে প্রতিটো এজেন্ট নিজের কাঠামো বানায় এবং সংকলন কঠিন হয়।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 12: SUBAGENT PROMPT PATTERN ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">THE CRAFT</span><span class="bn">দক্ষতা</span></div>
+    <h2 class="auto"><span class="en">The Subagent Prompt Pattern</span><span class="bn">সাবএজেন্ট প্রম্পট প্যাটার্ন</span></h2>
+    <div class="row frag" style="align-items:stretch;gap:1rem;margin-top:.4rem">
+      <div class="mini-panel pop" style="width:clamp(170px,24vw,255px)">
+        <div class="strip" style="background:var(--blue)"><span class="en">SCOPE</span><span class="bn">স্কোপ</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.25vw,.82rem);margin-top:.4rem"><span class="en">Exactly which files/dirs to read. Nothing outside this.</span><span class="bn">ঠিক কোন ফাইল/ডিরেক্টরি পড়তে হবে। এর বাইরে কিছু না।</span></div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(170px,24vw,255px)">
+        <div class="strip" style="background:var(--sky)"><span class="en">DELIVERABLE</span><span class="bn">ফলাফল</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.25vw,.82rem);margin-top:.4rem"><span class="en">What to return. Exact format: markdown findings, severity labels, file:line references.</span><span class="bn">কী ফেরাতে হবে। ঠিক ফরম্যাট: মার্কডাউন ফাইন্ডিং, সিভিয়ারিটি লেবেল, file:line রেফারেন্স।</span></div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(170px,24vw,255px)">
+        <div class="strip" style="background:var(--red)"><span class="en">CONSTRAINTS</span><span class="bn">সীমাবদ্ধতা</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.25vw,.82rem);margin-top:.4rem"><span class="en">Read-only. Do NOT write files. Do NOT spawn subagents. Do NOT run bash commands.</span><span class="bn">শুধু পড়া। ফাইল লিখবে না। সাবএজেন্ট স্পন করবে না। bash কমান্ড চালাবে না।</span></div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(170px,24vw,255px)">
+        <div class="strip" style="background:var(--green)"><span class="en">EMPTY CASE</span><span class="bn">খালি ক্ষেত্র</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.25vw,.82rem);margin-top:.4rem"><span class="en">If no issues found: return "No findings in [module]." Always return something.</span><span class="bn">কোনো সমস্যা না পেলে: "[মডিউল]-এ কোনো ফাইন্ডিং নেই।" সবসময় কিছু ফেরাও।</span></div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">The "Do NOT spawn subagents" line is not optional. Every subagent prompt must have it. Without it, costs spiral.</span><span class="bn">"সাবএজেন্ট স্পন করবে না" লাইনটি ঐচ্ছিক নয়। প্রতিটো সাবএজেন্ট প্রম্পটে থাকতে হবে। ছাড়া হলে খরচ বাড়ে।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 13: CODE ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">SHOW ME</span><span class="bn">দেখাও</span></div>
+    <h2 class="auto"><span class="en">Habib's Orchestrator — The Code</span><span class="bn">হাবিবের অর্কেস্ট্রেটর — কোড</span></h2>
+    <pre class="code-block frag">
+<span class="comment"># Habib asks Claude to fan out 4 security agents in parallel</span>
+
+Spawn 4 subagents simultaneously for a security audit of our nop-station platform.
+
+<span class="note">Each agent should:</span>
+- Read all files in its assigned directory
+- Return findings in this format:
+  <span class="str">## [Module] Security Findings
+  **[SEVERITY]** `file:line` — description of issue</span>
+- If no issues found, return "<span class="str">No findings in [module].</span>"
+- <span class="flag">Do NOT modify files. Do NOT spawn subagents.</span>
+
+<span class="note">Assignments:</span>
+Agent(<span class="flag">description</span>=<span class="str">"Auth security audit"</span>,    <span class="path">prompt</span>=<span class="str">"Audit src/auth/ ..."</span>)
+Agent(<span class="flag">description</span>=<span class="str">"Payments security audit"</span>, <span class="path">prompt</span>=<span class="str">"Audit src/payments/ ..."</span>)
+Agent(<span class="flag">description</span>=<span class="str">"API security audit"</span>,      <span class="path">prompt</span>=<span class="str">"Audit src/api/ ..."</span>)
+Agent(<span class="flag">description</span>=<span class="str">"Admin security audit"</span>,    <span class="path">prompt</span>=<span class="str">"Audit src/admin/ ..."</span>)
+
+<span class="comment"># After all 4 return: compile into a single security report</span>
+<span class="comment"># Sort findings by severity. Count totals per module.</span></pre>
+    <div class="caption frag"><span class="en">All 4 Agent() calls in a single message → Claude spawns them in parallel. You wait. Results come back.</span><span class="bn">একটি বার্তায় সব ৪টো Agent() কল → Claude সমান্তরালে স্পন করে। তুমি অপেক্ষা করো। ফলাফল আসে।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 14: PARALLEL EXECUTION ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">PARALLEL EXECUTION</span><span class="bn">সমান্তরাল এক্সিকিউশন</span></div>
+    <h2 class="auto"><span class="en">Total Time = Slowest Agent</span><span class="bn">মোট সময় = সবচেয়ে ধীর এজেন্ট</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:flex-end;gap:1rem">
+      <div class="mini-panel pop" style="width:clamp(185px,28vw,290px);border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">SEQUENTIAL</span><span class="bn">ক্রমিক</span></div>
+        <div style="margin:.5rem 0;font-family:'Fraunces',serif;font-weight:700;font-size:clamp(2rem,6vw,3.5rem);line-height:1;color:var(--red)">95<span style="font-size:.35em;font-family:'Work Sans',sans-serif;opacity:.7"> <span class="en">min</span><span class="bn">মিনিট</span></span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)"><span class="en">20 + 25 + 30 + 20 = 95 minutes. Plus context-switching overhead.</span><span class="bn">২০ + ২৫ + ৩০ + ২০ = ৯৫ মিনিট। প্লাস কনটেক্সট-সুইচিং ওভারহেড।</span></div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(185px,28vw,290px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">PARALLEL (SUBAGENTS)</span><span class="bn">সমান্তরাল (সাবএজেন্ট)</span></div>
+        <div style="margin:.5rem 0;font-family:'Fraunces',serif;font-weight:700;font-size:clamp(2rem,6vw,3.5rem);line-height:1;color:var(--green)">~30<span style="font-size:.35em;font-family:'Work Sans',sans-serif;opacity:.7"> <span class="en">min</span><span class="bn">মিনিট</span></span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)"><span class="en">All 4 run simultaneously. Total ≈ slowest (src/api/ at 30 min). 3× faster.</span><span class="bn">সব ৪টো একসাথে চলে। মোট ≈ সবচেয়ে ধীর (src/api/ ৩০ মিনিট)। ৩× দ্রুত।</span></div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">This is the math: parallel time = max(individual times), not sum. The bigger N is, the bigger the gap.</span><span class="bn">এটাই গণনা: সমান্তরাল সময় = max(পৃথক সময়), যোগফল নয়। N যত বড়, পার্থক্য তত বেশি।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 15: COLLECTING RESULTS ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">COLLECTING RESULTS</span><span class="bn">ফলাফল সংগ্রহ</span></div>
+    <h2 class="auto"><span class="en">One Message Per Agent. Then Synthesize.</span><span class="bn">প্রতি এজেন্টে এক বার্তা। তারপর সংকলন।</span></h2>
+    <div class="row frag" style="align-items:stretch;gap:.8rem;margin-top:.4rem">
+      <div class="mini-panel pop" style="width:clamp(170px,26vw,270px);border-color:var(--blue)">
+        <div class="strip" style="background:var(--blue)"><span class="en">AGENT A RETURNS</span><span class="bn">AGENT A ফেরায়</span></div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem);margin-top:.4rem;font-family:'SF Mono','Fira Code',monospace;line-height:1.6;text-align:left">
+          ## Auth Findings<br>
+          **HIGH** auth.js:42 — JWT stored in localStorage<br>
+          **MED** login.js:18 — No brute-force limit<br>
+          **LOW** session.js:7 — No secure flag on cookie
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(170px,26vw,270px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">AGENT B RETURNS</span><span class="bn">AGENT B ফেরায়</span></div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem);margin-top:.4rem;font-family:'SF Mono','Fira Code',monospace;line-height:1.6;text-align:left">
+          ## Payments Findings<br>
+          **CRITICAL** payment.js:91 — Card number logged to console<br>
+          **HIGH** stripe.js:14 — Secret key in env comment
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(170px,26vw,270px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">ORCHESTRATOR COMPILES</span><span class="bn">অর্কেস্ট্রেটর সংকলন করে</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">
+          <span class="en">Reads all 4 messages, sorts by severity, counts totals, writes the final security report.</span>
+          <span class="bn">সব ৪টো বার্তা পড়ে, সিভিয়ারিটি অনুযায়ী সাজায়, মোট গণনা করে, চূড়ান্ত সিকিউরিটি রিপোর্ট লেখে।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Structured output format matters here. If each agent returns different structures, synthesis is painful. Enforce a schema upfront.</span><span class="bn">এখানে স্ট্রাকচার্ড আউটপুট ফরম্যাট গুরুত্বপূর্ণ। প্রতিটো এজেন্ট আলাদা কাঠামো ফেরালে সংকলন কঠিন। আগেই স্কিমা বাঁধাই করো।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 16: COST MATH ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--purple);color:#fff"><span class="en">COST</span><span class="bn">খরচ</span></div>
+    <h2 class="auto"><span class="en">Budget Before You Spawn</span><span class="bn">স্পন করার আগে বাজেট করো</span></h2>
+    <div class="row frag" style="align-items:stretch;gap:1rem;margin-top:.4rem">
+      <div class="mini-panel pop" style="width:clamp(185px,30vw,310px);border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">THE MATH</span><span class="bn">হিসাব</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">
+          <span class="en">N subagents × (input tokens + output tokens) each.<br><br>Habib: 4 agents × ~40k tokens each = <strong>~160k tokens total.</strong><br><br>Estimate before spawning — not after.</span>
+          <span class="bn">N সাবএজেন্ট × (ইনপুট + আউটপুট টোকেন) প্রতিটো।<br><br>হাবিব: ৪ এজেন্ট × ~৪০k টোকেন = <strong>~১৬০k টোকেন মোট।</strong><br><br>স্পনের আগে অনুমান করো — পরে নয়।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(185px,30vw,310px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">COST CONTROLS</span><span class="bn">খরচ নিয়ন্ত্রণ</span></div>
+        <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .15rem">
+          <li><span class="en">• Tight scope = fewer tokens</span><span class="bn">• টাইট স্কোপ = কম টোকেন</span></li>
+          <li><span class="en">• Explicit output format = less rambling</span><span class="bn">• স্পষ্ট আউটপুট ফরম্যাট = কম বাড়তি কথা</span></li>
+          <li><span class="en">• Start with 2 agents, then scale</span><span class="bn">• ২ এজেন্ট দিয়ে শুরু, তারপর বাড়াও</span></li>
+          <li><span class="en">• Check /cost after each run</span><span class="bn">• প্রতিটো রানের পর /cost চেক করো</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="caption frag amber"><span class="en">Subagents multiply token usage. That's the trade-off. The time saving usually justifies it — but you should know the number before you commit.</span><span class="bn">সাবএজেন্ট টোকেন ব্যবহার বাড়ায়। এটাই ট্রেড-অফ। সময় সাশ্রয় সাধারণত সার্থক হয় — কিন্তু কমিট করার আগে সংখ্যা জানা উচিত।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 17: RUNAWAY SPIRALS ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WATCH OUT</span><span class="bn">সাবধান</span></div>
+    <h2 class="auto"><span class="en">Runaway Cost Spirals</span><span class="bn">নিয়ন্ত্রণহীন খরচের স্পাইরাল</span></h2>
+    <div class="bigq frag" style="font-size:clamp(1rem,2.8vw,1.8rem);margin-bottom:.5rem"><span class="en">What happens when subagents spawn their own subagents?</span><span class="bn">সাবএজেন্ট নিজে সাবএজেন্ট স্পন করলে কী হয়?</span></div>
+    <div class="loop frag">
+      <div class="node"><span class="en">Your Agent</span><span class="bn">তোমার এজেন্ট</span><br><span style="font-size:.65em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.6">1 agent</span></div>
+      <div class="arr">→</div>
+      <div class="node" style="border-color:var(--amber)"><span class="en">Spawns 4</span><span class="bn">৪ স্পন করে</span><br><span style="font-size:.65em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.6">4 agents</span></div>
+      <div class="arr">→</div>
+      <div class="node" style="border-color:var(--red)"><span class="en">Each spawns 4</span><span class="bn">প্রতিটো ৪ স্পন করে</span><br><span style="font-size:.65em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.6">16 agents</span></div>
+      <div class="arr">→</div>
+      <div class="node" style="border-color:var(--red);background:rgba(224,72,58,.1)"><span class="en">Each spawns 4</span><span class="bn">প্রতিটো ৪ স্পন করে</span><br><span style="font-size:.65em;font-family:'Work Sans',sans-serif;font-weight:600;color:var(--red)">64 agents 💸</span></div>
+    </div>
+    <div class="caption frag"><span class="en">Cost grows 4× per level. 3 levels = 64 agents. Prevention is simple: one line in every subagent prompt.</span><span class="bn">প্রতি স্তরে খরচ ৪× বাড়ে। ৩ স্তর = ৬৪ এজেন্ট। প্রতিরোধ সহজ: প্রতিটো সাবএজেন্ট প্রম্পটে একটি লাইন।</span></div>
+    <div class="panel frag pop" style="max-width:min(88vw,600px)">
+      <div class="bubble" style="width:100%;text-align:center;font-family:'SF Mono','Fira Code',monospace;font-size:clamp(.75rem,1.6vw,1rem);font-weight:700;color:var(--red)">
+        "Do NOT spawn subagents. Do NOT use the Agent tool."
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 18: NO STEERING ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WATCH OUT</span><span class="bn">সাবধান</span></div>
+    <h2 class="auto"><span class="en">You Can't Steer Mid-Flight</span><span class="bn">মাঝপথে স্টিয়ার করা যায় না</span></h2>
+    <div class="row frag" style="align-items:stretch;gap:1rem;margin-top:.4rem">
+      <div class="mini-panel pop" style="width:clamp(185px,30vw,310px);border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">THE PROBLEM</span><span class="bn">সমস্যা</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">
+          <span class="en">A subagent goes off-track. You won't know until it returns — possibly 20 minutes later with a useless result. No interrupt. No course-correct mid-run.</span>
+          <span class="bn">একটি সাবএজেন্ট পথ হারিয়ে ফেলে। তুমি জানতে পারবে না যতক্ষণ না সে ফেরে — হয়তো ২০ মিনিট পরে অপ্রয়োজনীয় ফলাফল নিয়ে। কোনো বাধা নেই। মাঝপথে কোনো সংশোধন নেই।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(185px,30vw,310px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">THE MITIGATIONS</span><span class="bn">প্রতিকার</span></div>
+        <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .15rem">
+          <li><span class="en">• Tight scope — reduce surface area</span><span class="bn">• টাইট স্কোপ — পৃষ্ঠ এলাকা কমাও</span></li>
+          <li><span class="en">• Explicit output contract</span><span class="bn">• স্পষ্ট আউটপুট চুক্তি</span></li>
+          <li><span class="en">• Test with 1 agent before N</span><span class="bn">• N-এর আগে ১ এজেন্টে পরীক্ষা করো</span></li>
+          <li><span class="en">• Validate output structure on return</span><span class="bn">• ফেরার পর আউটপুট কাঠামো যাচাই করো</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">If you need to course-correct mid-task, use sessions (Ep 2). If you trust the prompt to handle it, use subagents (this episode).</span><span class="bn">মাঝপথে সংশোধন দরকার হলে, সেশন ব্যবহার করো (Ep 2)। প্রম্পটকে বিশ্বাস করলে, সাবএজেন্ট ব্যবহার করো (এই এপিসোড)।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 19: HABIB'S FULL EXAMPLE ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">LIVE EXAMPLE</span><span class="bn">লাইভ উদাহরণ</span></div>
+    <h2 class="auto"><span class="en">Habib's 4 Agents — The Full Run</span><span class="bn">হাবিবের ৪ এজেন্ট — পূর্ণ রান</span></h2>
+    <pre class="code-block frag" style="font-size:clamp(.58rem,1.2vw,.8rem)">
+<span class="comment"># Each subagent prompt follows the same pattern:</span>
+
+Agent(<span class="flag">description</span>=<span class="str">"Auth security audit"</span>, <span class="flag">prompt</span>=<span class="str">"""
+  Read all files in src/auth/. Identify:
+  - Injection vulnerabilities (SQL, NoSQL, command)
+  - Plain-text secrets or tokens
+  - Session handling bugs
+
+  Return findings as:
+  ## Auth Findings
+  **[HIGH/MED/LOW]** `file:line` — description
+
+  If no issues: return "No findings in src/auth/"
+  Do NOT modify files. Do NOT spawn subagents.
+"""</span>)
+
+<span class="comment"># Agents B, C, D: identical structure, different path + checks</span>
+Agent(<span class="flag">description</span>=<span class="str">"Payments security audit"</span>, <span class="flag">prompt</span>=<span class="str">"... src/payments/ ... PCI exposure ..."</span>)
+Agent(<span class="flag">description</span>=<span class="str">"API security audit"</span>,      <span class="flag">prompt</span>=<span class="str">"... src/api/ ... auth guards, rate limits ..."</span>)
+Agent(<span class="flag">description</span>=<span class="str">"Admin security audit"</span>,    <span class="flag">prompt</span>=<span class="str">"... src/admin/ ... privilege, creds ..."</span>)</pre>
+    <div class="caption frag"><span class="en">Notice: same prompt template, different directory and check list. Reuse the structure. Just swap the details.</span><span class="bn">লক্ষ্য করো: একই প্রম্পট টেমপ্লেট, আলাদা ডিরেক্টরি এবং চেক লিস্ট। কাঠামো পুনরায় ব্যবহার করো। শুধু বিবরণ বদলাও।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 20: THE RESULT ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">THE RESULT</span><span class="bn">ফলাফল</span></div>
+    <h2 class="auto"><span class="en">28 Minutes. 4 Modules. 11 Findings.</span><span class="bn">২৮ মিনিট। ৪ মডিউল। ১১ ফাইন্ডিং।</span></h2>
+    <div class="findings-grid frag">
+      <div class="finding-card">
+        <span class="fc-label" style="background:var(--blue)">AUTH</span>
+        <h3><span class="en">3 findings</span><span class="bn">৩ ফাইন্ডিং</span></h3>
+        <div class="fc-count"><span class="en">1 HIGH · 1 MED · 1 LOW</span><span class="bn">১ উচ্চ · ১ মধ্যম · ১ নিম্ন</span></div>
+        <div class="fc-time">~22 <span class="en">min</span><span class="bn">মিনিট</span></div>
+      </div>
+      <div class="finding-card">
+        <span class="fc-label" style="background:var(--amber);color:var(--navy)">PAYMENTS</span>
+        <h3><span class="en">2 findings</span><span class="bn">২ ফাইন্ডিং</span></h3>
+        <div class="fc-count"><span class="en">1 CRITICAL · 1 HIGH</span><span class="bn">১ ক্রিটিক্যাল · ১ উচ্চ</span></div>
+        <div class="fc-time">~25 <span class="en">min</span><span class="bn">মিনিট</span></div>
+      </div>
+      <div class="finding-card">
+        <span class="fc-label" style="background:var(--sky)">API</span>
+        <h3><span class="en">4 findings</span><span class="bn">৪ ফাইন্ডিং</span></h3>
+        <div class="fc-count"><span class="en">2 HIGH · 2 MED</span><span class="bn">২ উচ্চ · ২ মধ্যম</span></div>
+        <div class="fc-time">~28 <span class="en">min</span><span class="bn">মিনিট</span></div>
+      </div>
+      <div class="finding-card">
+        <span class="fc-label" style="background:var(--red)">ADMIN</span>
+        <h3><span class="en">2 findings</span><span class="bn">২ ফাইন্ডিং</span></h3>
+        <div class="fc-count"><span class="en">1 CRITICAL · 1 HIGH</span><span class="bn">১ ক্রিটিক্যাল · ১ উচ্চ</span></div>
+        <div class="fc-time">~20 <span class="en">min</span><span class="bn">মিনিট</span></div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.4rem">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">RIFAT</span>
+        <span class="en">"You have a full security report — 11 findings, sorted by severity — and it's not even lunch yet. How?"</span>
+        <span class="bn">"সিভিয়ারিটি অনুযায়ী সাজানো ১১ ফাইন্ডিং সহ পুরো সিকিউরিটি রিপোর্ট — এখনো দুপুরও হয়নি। কীভাবে?"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 21: DECISION TREE ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">DECISION TREE</span><span class="bn">সিদ্ধান্ত গাছ</span></div>
+    <h2 class="auto"><span class="en">Which Tool Do You Reach For?</span><span class="bn">কোন টুল নেবে?</span></h2>
+    <div class="dtree frag" style="margin-top:.4rem">
+      <div class="dtree-row frag pop">
+        <div class="dtree-q"><span class="en">Is the task short (under 5 min)?</span><span class="bn">কাজটা কি ছোট (৫ মিনিটের কম)?</span></div>
+        <div class="dtree-a" style="background:var(--navy)"><span class="en">→ Do it yourself</span><span class="bn">→ নিজেই করো</span></div>
+      </div>
+      <div class="dtree-row frag pop">
+        <div class="dtree-q"><span class="en">Does it need live steering or mid-task decisions?</span><span class="bn">লাইভ স্টিয়ারিং বা মাঝপথে সিদ্ধান্ত দরকার?</span></div>
+        <div class="dtree-a" style="background:var(--amber);color:var(--navy)"><span class="en">→ Multiple sessions (Ep 2)</span><span class="bn">→ একাধিক সেশন (Ep 2)</span></div>
+      </div>
+      <div class="dtree-row frag pop">
+        <div class="dtree-q"><span class="en">Is scope open-ended or exploratory?</span><span class="bn">স্কোপ কি উন্মুক্ত বা অন্বেষণমূলক?</span></div>
+        <div class="dtree-a" style="background:var(--amber);color:var(--navy)"><span class="en">→ Multiple sessions (Ep 2)</span><span class="bn">→ একাধিক সেশন (Ep 2)</span></div>
+      </div>
+      <div class="dtree-row frag pop">
+        <div class="dtree-q"><span class="en">Same task, N targets, well-defined output, no steering?</span><span class="bn">একই কাজ, N লক্ষ্য, সুনির্দিষ্ট আউটপুট, স্টিয়ারিং নেই?</span></div>
+        <div class="dtree-a" style="background:var(--sky)"><span class="en">→ Subagents (this episode)</span><span class="bn">→ সাবএজেন্ট (এই এপিসোড)</span></div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">The tools are additive. Ep 1 → Ep 2 → Ep 3. Learn all three and you'll know exactly which to reach for.</span><span class="bn">টুলগুলো যোগাত্মক। Ep 1 → Ep 2 → Ep 3। তিনটোই শিখলে ঠিকমতো বেছে নিতে পারবে।</span></div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 22: WRAP UP ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto"><span class="en">WRAP UP</span><span class="bn">সারসংক্ষেপ</span></div>
+    <h2 class="auto"><span class="en">Spawning Subagents — The Basics</span><span class="bn">সাবএজেন্ট স্পন করা — মূল বিষয়</span></h2>
+    <div class="row frag" style="margin-top:.4rem">
+      <span class="tag" style="border-color:var(--sky)"><span class="en">AGENT TOOL</span><span class="bn">Agent টুল</span></span>
+      <span class="tag" style="border-color:var(--blue)"><span class="en">FAN-OUT PATTERN</span><span class="bn">ফ্যান-আউট প্যাটার্ন</span></span>
+      <span class="tag" style="border-color:var(--green)"><span class="en">ORCHESTRATOR/WORKER</span><span class="bn">অর্কেস্ট্রেটর/ওয়ার্কার</span></span>
+      <span class="tag" style="border-color:var(--purple)"><span class="en">COST AWARENESS</span><span class="bn">খরচ সচেতনতা</span></span>
+    </div>
+    <div class="panel frag pop" style="margin-top:.4rem">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">HABIB</span>
+        <span class="en">"4 modules audited. 11 findings. 28 minutes. One terminal. I'm not going back to sequential anything."</span>
+        <span class="bn">"৪ মডিউল অডিট। ১১ ফাইন্ডিং। ২৮ মিনিট। একটা টার্মিনাল। আমি আর ক্রমিক কিছুতে ফিরে যাব না।"</span>
+      </div>
+    </div>
+    <div class="char-summary frag">
+      <span class="en">Next → <strong>Episode 4:</strong> Cross-session coordination.<br>When sessions AND subagents need to share state — worktrees, shared memory files, and merge orchestration.</span>
+      <span class="bn b">পরবর্তী → <strong>এপিসোড ৪:</strong> ক্রস-সেশন সমন্বয়।<br>যখন সেশন এবং সাবএজেন্ট উভয়কেই স্টেট শেয়ার করতে হয় — worktree, শেয়ার্ড মেমরি ফাইল, এবং মার্জ অর্কেস্ট্রেশন।</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<div class="hint">← → to navigate · space to advance</div>
+<script src="../../assets/deck.js"></script>
+</body>
+</html>
