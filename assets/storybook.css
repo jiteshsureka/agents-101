@@ -1,21 +1,22 @@
 /* ============================================================================
    storybook.css — shared design system for every agents-101 deck.
-   BrainStation 23 theme: clean, modern, tech-forward enterprise palette.
+   nop-station theme: clean, modern, tech-forward enterprise palette.
    Sections:
-     1. BS23 THEME TOKENS     — colors, typography, spacing
+     1. THEME TOKENS          — colors, typography, spacing
      2. SLIDE STACK           — layout & transitions
      3. TYPE                  — headings, kickers, captions
      4. COMIC COMPONENTS      — panels, bubbles, diagrams
      5. FRAGMENTS             — step reveals
      6. DIAGRAM PIECES        — loop, chip, mini-panel, map-row
      7. CHROME                — deck header / footer
+     8. BILINGUAL             — EN/BN language toggle
    ========================================================================= */
 
-/* ============ BS23 THEME TOKENS ============ */
+/* ============ THEME TOKENS ============ */
 :root {
   /* Brand palette */
-  --amber:   #FBAF32;   /* BS23 primary CTA / accent */
-  --blue:    #4992C1;   /* BS23 secondary blue */
+  --amber:   #FBAF32;   /* primary CTA / accent */
+  --blue:    #4992C1;   /* secondary blue */
   --navy:    #11172C;   /* headings, dark backgrounds */
   --sky:     #1A9ED7;   /* logo blue / links */
   --light:   #F5F8FB;   /* section backgrounds */
@@ -362,3 +363,22 @@ h2 { font-size: var(--h2-size); }
     transition-duration: .15s !important;
   }
 }
+
+/* ============ BILINGUAL (EN / BN toggle) ============ */
+.bn { display: none; }
+body.lang-bn .en { display: none !important; }
+body.lang-bn .bn { display: inline; }
+body.lang-bn .bn.b { display: block; }
+
+.lang-toggle {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.85rem, 1.7vw, 1.05rem);
+  cursor: pointer;
+  border: 2px solid var(--navy); border-radius: 999px;
+  padding: .06em .85em;
+  background: var(--light); color: var(--navy);
+  box-shadow: var(--shadow-sm);
+  transition: transform .12s, box-shadow .12s;
+  white-space: nowrap; flex-shrink: 0; line-height: 1.4;
+}
+.lang-toggle:hover { transform: translate(-1px,-1px); box-shadow: var(--shadow-md); }

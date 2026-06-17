@@ -51,22 +51,11 @@
   const ghRepo = 'https://github.com/jiteshsureka/agents-101';
   const indexPath = document.body.dataset.indexPath || '../../index.html';
 
-  /* ---- Language toggle CSS ---- */
-  document.head.insertAdjacentHTML('beforeend', `<style>
-.bn{display:none}
-body.lang-bn .en{display:none!important}
-body.lang-bn .bn{display:inline}
-body.lang-bn .bn.b{display:block}
-.lang-toggle{font-family:'Caveat',cursive;font-weight:700;font-size:clamp(.85rem,1.7vw,1.05rem);cursor:pointer;border:2px solid var(--navy,#11172C);border-radius:999px;padding:.06em .85em;background:#F5F8FB;color:#11172C;box-shadow:0 4px 12px rgba(17,23,44,.10);transition:transform .12s,box-shadow .12s;white-space:nowrap;flex-shrink:0;line-height:1.4}
-.lang-toggle:hover{transform:translate(-1px,-1px);box-shadow:0 8px 24px rgba(17,23,44,.13)}
-</style>`);
-
   if (label) {
     document.body.insertAdjacentHTML('beforeend',
       `<header class="deck-header">
         <a class="home" href="${indexPath}">← Home</a>
         <span class="byline">
-          <a href="https://www.nop-station.com" target="_blank" rel="noopener">nop-station</a> ·
           <a href="${ghRepo}" target="_blank" rel="noopener">agents-101</a>
         </span>
         <span class="deck-ep"></span>
@@ -77,7 +66,7 @@ body.lang-bn .bn.b{display:block}
         </span>
       </header>
       <footer class="deck-footer">
-        <span class="brand">agents-101 · nop-station</span>
+        <span class="brand">agents-101</span>
       </footer>`);
     document.querySelector('.deck-header .deck-ep').textContent = label;
 
