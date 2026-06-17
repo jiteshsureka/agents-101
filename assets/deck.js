@@ -51,6 +51,16 @@
   const ghRepo = 'https://github.com/jiteshsureka/agents-101';
   const indexPath = document.body.dataset.indexPath || '../../index.html';
 
+  /* ---- Language toggle CSS ---- */
+  document.head.insertAdjacentHTML('beforeend', `<style>
+.bn{display:none}
+body.lang-bn .en{display:none!important}
+body.lang-bn .bn{display:inline}
+body.lang-bn .bn.b{display:block}
+.lang-toggle{font-family:'Caveat',cursive;font-weight:700;font-size:clamp(.85rem,1.7vw,1.05rem);cursor:pointer;border:2px solid var(--navy,#11172C);border-radius:999px;padding:.06em .85em;background:#F5F8FB;color:#11172C;box-shadow:0 4px 12px rgba(17,23,44,.10);transition:transform .12s,box-shadow .12s;white-space:nowrap;flex-shrink:0;line-height:1.4}
+.lang-toggle:hover{transform:translate(-1px,-1px);box-shadow:0 8px 24px rgba(17,23,44,.13)}
+</style>`);
+
   if (label) {
     document.body.insertAdjacentHTML('beforeend',
       `<header class="deck-header">
@@ -61,6 +71,7 @@
         </span>
         <span class="deck-ep"></span>
         <span class="cta-group">
+          <button class="lang-toggle" id="langBtn" aria-label="Toggle language">বাংলা</button>
           <a class="cta cta-star" href="${ghRepo}" target="_blank" rel="noopener">★ Star</a>
           <a class="cta cta-feedback" href="${ghRepo}/issues/new" target="_blank" rel="noopener">✍ Feedback</a>
         </span>
@@ -69,6 +80,19 @@
         <span class="brand">agents-101 · nop-station</span>
       </footer>`);
     document.querySelector('.deck-header .deck-ep').textContent = label;
+
+    /* Language toggle logic */
+    const langBtn = document.getElementById('langBtn');
+    const saved = localStorage.getItem('agents101-lang');
+    if (saved === 'bn') {
+      document.body.classList.add('lang-bn');
+      langBtn.textContent = 'English';
+    }
+    langBtn.addEventListener('click', () => {
+      const isBn = document.body.classList.toggle('lang-bn');
+      langBtn.textContent = isBn ? 'English' : 'বাংলা';
+      localStorage.setItem('agents101-lang', isBn ? 'bn' : 'en');
+    });
   }
 })();
 

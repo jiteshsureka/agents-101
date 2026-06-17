@@ -7,7 +7,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../../assets/storybook.css">
 <style>
-/* ── Episode-specific helpers ── */
 .checklist {
   list-style: none; display: flex; flex-direction: column;
   gap: .5rem; text-align: left; max-width: min(88vw, 660px); width: 100%;
@@ -22,7 +21,6 @@
 .checklist li.no  { border-color: var(--red);   background: rgba(224,72,58,.08); }
 .checklist li .icon { font-size: 1.1em; flex-shrink: 0; }
 
-/* code block */
 pre.code-block {
   background: var(--navy); color: #e2e8f0;
   border: 2px solid var(--navy); border-radius: 16px;
@@ -39,7 +37,6 @@ pre.code-block .flag    { color: #7dd3fc; }
 pre.code-block .path    { color: #86efac; }
 pre.code-block .note    { color: #c4b5fd; }
 
-/* rotation cycle diagram */
 .rotation-cycle {
   display: flex; align-items: center; justify-content: center;
   gap: clamp(.4rem,1.2vw,.9rem); flex-wrap: wrap;
@@ -58,7 +55,6 @@ pre.code-block .note    { color: #c4b5fd; }
 }
 .rc-arr { font-family: 'Caveat', cursive; font-size: clamp(1.1rem,2.2vw,1.6rem); opacity: .5; }
 
-/* ticket card */
 .ticket-grid { display: flex; gap: clamp(.7rem,1.8vw,1.3rem); flex-wrap: wrap; justify-content: center; }
 .ticket {
   background: var(--paper); border: 2px solid var(--navy); border-radius: 18px;
@@ -85,7 +81,6 @@ pre.code-block .note    { color: #c4b5fd; }
   color: rgba(17,23,44,.55); margin-top: .15rem;
 }
 
-/* pr cards */
 .pr-grid { display: flex; gap: clamp(.7rem,1.6vw,1.2rem); flex-wrap: wrap; justify-content: center; }
 .pr-card {
   background: var(--paper); border: 2px solid var(--navy); border-radius: 16px;
@@ -119,37 +114,39 @@ pre.code-block .note    { color: #c4b5fd; }
 <!-- ============ SLIDE 1: TITLE ============ -->
 <section class="slide" style="background:var(--navy)">
   <div class="content">
-    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">SEASON 1 · EPISODE 2</div>
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">SEASON 1 · EPISODE 2</span><span class="bn">সিজন ১ · এপিসোড ২</span></div>
     <h1 class="auto" style="color:#fff;font-size:clamp(2rem,8vw,5.2rem);line-height:.95">
-      MULTIPLE<br><span style="color:var(--amber)">SESSIONS</span><br>
-      <span style="font-size:.55em;color:rgba(255,255,255,.7)">The Basics</span>
+      <span class="en">MULTIPLE<br><span style="color:var(--amber)">SESSIONS</span><br><span style="font-size:.55em;color:rgba(255,255,255,.7)">The Basics</span></span>
+      <span class="bn b" style="color:#fff">একাধিক<br><span style="color:var(--amber)">সেশন</span><br><span style="font-size:.55em;color:rgba(255,255,255,.7)">মূল বিষয়</span></span>
     </h1>
     <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,700px)">
       <svg class="char bob"><use href="#ch-dev"/></svg>
       <div class="bubble tail-l">
         <span class="who c-amber">SHAZZAD · FULL-STACK ENGINEER, NOP-STATION</span>
-        "Rifat sold me on the idea yesterday. I'm trying it today — three sessions, three tickets, before 4pm. Watch me."
+        <span class="en">"Rifat sold me on the idea yesterday. I'm trying it today — three sessions, three tickets, before 4pm. Watch me."</span>
+        <span class="bn">"রিফাত গতকাল আমাকে আইডিয়াটা বুঝিয়ে দিয়েছে। আজ আমি চেষ্টা করব — তিনটো সেশন, তিনটো টিকেট, বিকেল ৪টার আগে। দেখো।"</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ============ SLIDE 2: RECAP FROM EP1 ============ -->
+<!-- ============ SLIDE 2: RECAP ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--blue);color:#fff">RECAP · EP 1</div>
-    <h2 class="auto">Where We Left Off</h2>
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">RECAP · EP 1</span><span class="bn">সারসংক্ষেপ · এপিসোড ১</span></div>
+    <h2 class="auto"><span class="en">Where We Left Off</span><span class="bn">আগের পর্ব</span></h2>
     <div class="row frag" style="margin-top:.4rem">
-      <span class="tag" style="border-color:var(--blue)">THROUGHPUT &gt; LATENCY</span>
-      <span class="tag" style="border-color:var(--green)">MANAGER MODEL</span>
-      <span class="tag" style="border-color:var(--sky)">SESSION ISOLATION</span>
+      <span class="tag" style="border-color:var(--blue)"><span class="en">THROUGHPUT &gt; LATENCY</span><span class="bn">থ্রুপুট > লেটেন্সি</span></span>
+      <span class="tag" style="border-color:var(--green)"><span class="en">MANAGER MODEL</span><span class="bn">ম্যানেজার মডেল</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">SESSION ISOLATION</span><span class="bn">সেশন বিচ্ছিন্নতা</span></span>
     </div>
-    <div class="caption frag">Ep 1 argued <em>why</em> parallel. You are the bottleneck. Three sessions = ~3× AI-hours per day. The mental model: manager directing three agents, not engineer waiting on one.</div>
+    <div class="caption frag"><span class="en">Ep 1 argued <em>why</em> parallel. You are the bottleneck. Three sessions = ~3× AI-hours per day. The mental model: manager directing three agents, not engineer waiting on one.</span><span class="bn">এপিসোড ১ বলেছিল <em>কেন</em> সমান্তরাল। তুমিই বটলনেক। তিনটো সেশন = ~৩× AI-ঘণ্টা প্রতিদিন। মানসিক মডেল: একটার জন্য অপেক্ষারত ইঞ্জিনিয়ার নয়, তিনটো এজেন্ট পরিচালনাকারী ম্যানেজার।</span></div>
     <div class="panel frag pop">
       <svg class="char bob"><use href="#ch-dev"/></svg>
       <div class="bubble tail-l">
         <span class="who c-amber">SHAZZAD</span>
-        "I get the <em>why</em>. Show me the <em>how</em>. What do I actually type?"
+        <span class="en">"I get the <em>why</em>. Show me the <em>how</em>. What do I actually type?"</span>
+        <span class="bn">"<em>কেন</em> বুঝেছি। এখন <em>কীভাবে</em> দেখাও। আমি আসলে কী টাইপ করব?"</span>
       </div>
     </div>
   </div>
@@ -158,81 +155,77 @@ pre.code-block .note    { color: #c4b5fd; }
 <!-- ============ SLIDE 3: WHAT IS A SESSION ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto">FOUNDATIONS</div>
-    <h2 class="auto">What Is a Claude Code Session?</h2>
+    <div class="kicker auto"><span class="en">FOUNDATIONS</span><span class="bn">ভিত্তি</span></div>
+    <h2 class="auto"><span class="en">What Is a Claude Code Session?</span><span class="bn">Claude Code সেশন কী?</span></h2>
     <div class="row frag" style="margin-top:.4rem;align-items:stretch">
       <div class="mini-panel pop" style="width:clamp(170px,25vw,280px)">
-        <div class="strip" style="background:var(--blue)">CONTEXT WINDOW</div>
-        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">Everything Claude knows about your task — your prompt, your files, the conversation so far.</div>
+        <div class="strip" style="background:var(--blue)"><span class="en">CONTEXT WINDOW</span><span class="bn">কনটেক্সট উইন্ডো</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem"><span class="en">Everything Claude knows about your task — your prompt, your files, the conversation so far.</span><span class="bn">তোমার কাজ সম্পর্কে Claude যা জানে — তোমার প্রম্পট, ফাইল, এবং এ পর্যন্ত কথোপকথন।</span></div>
       </div>
       <div class="mini-panel pop" style="width:clamp(170px,25vw,280px)">
-        <div class="strip" style="background:var(--sky)">TOOL ACCESS</div>
-        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">Read, Write, Edit, Bash, Grep — all scoped to the working directory you launched Claude in.</div>
+        <div class="strip" style="background:var(--sky)"><span class="en">TOOL ACCESS</span><span class="bn">টুল অ্যাক্সেস</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem"><span class="en">Read, Write, Edit, Bash, Grep — all scoped to the working directory you launched Claude in.</span><span class="bn">Read, Write, Edit, Bash, Grep — সবকিছু তুমি যে ডিরেক্টরিতে Claude চালু করেছ সেখানে সীমাবদ্ধ।</span></div>
       </div>
       <div class="mini-panel pop" style="width:clamp(170px,25vw,280px)">
-        <div class="strip" style="background:var(--green)">STATE</div>
-        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">The conversation history, any memory files, and the files on disk in that working directory.</div>
+        <div class="strip" style="background:var(--green)"><span class="en">STATE</span><span class="bn">অবস্থা</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem"><span class="en">The conversation history, any memory files, and the files on disk in that working directory.</span><span class="bn">কথোপকথনের ইতিহাস, যেকোনো মেমরি ফাইল, এবং সেই ওয়ার্কিং ডিরেক্টরিতে ডিস্কের ফাইলগুলো।</span></div>
       </div>
     </div>
-    <div class="caption frag">A session is ephemeral and isolated. It knows only what you told it — and nothing about what's happening in any other terminal.</div>
+    <div class="caption frag"><span class="en">A session is ephemeral and isolated. It knows only what you told it — and nothing about what's happening in any other terminal.</span><span class="bn">একটি সেশন ক্ষণস্থায়ী এবং বিচ্ছিন্ন। এটি শুধু তাই জানে যা তুমি বলেছ — অন্য কোনো টার্মিনালে কী হচ্ছে তা সম্পর্কে কিছু জানে না।</span></div>
   </div>
 </section>
 
 <!-- ============ SLIDE 4: SESSION ISOLATION ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto">ISOLATION</div>
-    <h2 class="auto">Three Sessions. Three Separate Rooms.</h2>
+    <div class="kicker auto"><span class="en">ISOLATION</span><span class="bn">বিচ্ছিন্নতা</span></div>
+    <h2 class="auto"><span class="en">Three Sessions. Three Separate Rooms.</span><span class="bn">তিনটো সেশন। তিনটো আলাদা ঘর।</span></h2>
     <div class="row frag" style="margin-top:.4rem;gap:1rem;align-items:stretch">
       <div class="mini-panel pop" style="width:clamp(175px,26vw,290px);border-color:var(--blue)">
         <div class="strip" style="background:var(--blue)">SESSION A</div>
         <div style="font-size:clamp(.62rem,1.25vw,.82rem);font-weight:600;line-height:1.7;margin:.4rem 0;text-align:left;padding:0 .1rem">
-          Working dir: <code>../nopstation-email-val/</code><br>
-          Branch: <code>feature/email-validation</code><br>
-          Knows: checkout A only<br>
-          Memory: context A only
+          <span class="en">Working dir: <code>../nopstation-email-val/</code><br>Branch: <code>feature/email-validation</code><br>Knows: checkout A only<br>Memory: context A only</span>
+          <span class="bn b">কার্যনির্দেশিকা: <code>../nopstation-email-val/</code><br>ব্র্যাঞ্চ: <code>feature/email-validation</code><br>জানে: শুধু checkout A<br>মেমরি: শুধু context A</span>
         </div>
       </div>
       <div class="mini-panel pop" style="width:clamp(175px,26vw,290px);border-color:var(--sky)">
         <div class="strip" style="background:var(--sky)">SESSION B</div>
         <div style="font-size:clamp(.62rem,1.25vw,.82rem);font-weight:600;line-height:1.7;margin:.4rem 0;text-align:left;padding:0 .1rem">
-          Working dir: <code>../nopstation-order-tests/</code><br>
-          Branch: <code>feature/order-tests</code><br>
-          Knows: checkout B only<br>
-          Memory: context B only
+          <span class="en">Working dir: <code>../nopstation-order-tests/</code><br>Branch: <code>feature/order-tests</code><br>Knows: checkout B only<br>Memory: context B only</span>
+          <span class="bn b">কার্যনির্দেশিকা: <code>../nopstation-order-tests/</code><br>ব্র্যাঞ্চ: <code>feature/order-tests</code><br>জানে: শুধু checkout B<br>মেমরি: শুধু context B</span>
         </div>
       </div>
       <div class="mini-panel pop" style="width:clamp(175px,26vw,290px);border-color:var(--green)">
         <div class="strip" style="background:var(--green)">SESSION C</div>
         <div style="font-size:clamp(.62rem,1.25vw,.82rem);font-weight:600;line-height:1.7;margin:.4rem 0;text-align:left;padding:0 .1rem">
-          Working dir: <code>../nopstation-api-changelog/</code><br>
-          Branch: <code>docs/api-v2.3-changelog</code><br>
-          Knows: checkout C only<br>
-          Memory: context C only
+          <span class="en">Working dir: <code>../nopstation-api-changelog/</code><br>Branch: <code>docs/api-v2.3-changelog</code><br>Knows: checkout C only<br>Memory: context C only</span>
+          <span class="bn b">কার্যনির্দেশিকা: <code>../nopstation-api-changelog/</code><br>ব্র্যাঞ্চ: <code>docs/api-v2.3-changelog</code><br>জানে: শুধু checkout C<br>মেমরি: শুধু context C</span>
         </div>
       </div>
     </div>
-    <div class="caption frag">No shared memory. No cross-talk. Session A has no idea Session B exists — and that's exactly what you want.</div>
+    <div class="caption frag"><span class="en">No shared memory. No cross-talk. Session A has no idea Session B exists — and that's exactly what you want.</span><span class="bn">কোনো শেয়ার্ড মেমরি নেই। কোনো পারস্পরিক কথাবার্তা নেই। Session A জানে না Session B আছে — এবং এটাই তুমি চাও।</span></div>
   </div>
 </section>
 
 <!-- ============ SLIDE 5: GIT WORKTREES ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">THE PRIMITIVE</div>
-    <h2 class="auto">Git Worktrees — The Essential Tool</h2>
-    <div class="caption frag">A worktree is a second (or third) checkout of your repo into a separate directory — each on its own branch. No stashing. No checkout switching. Multiple branches active simultaneously on disk.</div>
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">THE PRIMITIVE</span><span class="bn">মূল টুল</span></div>
+    <h2 class="auto"><span class="en">Git Worktrees — The Essential Tool</span><span class="bn">Git Worktree — অপরিহার্য টুল</span></h2>
+    <div class="caption frag"><span class="en">A worktree is a second (or third) checkout of your repo into a separate directory — each on its own branch. No stashing. No checkout switching. Multiple branches active simultaneously on disk.</span><span class="bn">ওয়ার্কট্রি হলো তোমার রেপোকে একটি আলাদা ডিরেক্টরিতে দ্বিতীয় (বা তৃতীয়) চেকআউট — প্রতিটি নিজস্ব ব্র্যাঞ্চে। কোনো স্ট্যাশিং নেই। কোনো চেকআউট সুইচিং নেই। একসাথে ডিস্কে একাধিক ব্র্যাঞ্চ সক্রিয়।</span></div>
     <div class="row frag" style="margin-top:.4rem;align-items:stretch">
       <div class="mini-panel pop" style="width:clamp(175px,28vw,300px);border-color:var(--red)">
-        <div class="strip" style="background:var(--red)">WITHOUT WORKTREES</div>
+        <div class="strip" style="background:var(--red)"><span class="en">WITHOUT WORKTREES</span><span class="bn">ওয়ার্কট্রি ছাড়া</span></div>
         <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">
-          One working dir. Must stash changes to switch branches. Can't run two Claude sessions on two branches simultaneously.
+          <span class="en">One working dir. Must stash changes to switch branches. Can't run two Claude sessions on two branches simultaneously.</span>
+          <span class="bn">একটি ওয়ার্কিং ডিরেক্টরি। ব্র্যাঞ্চ সুইচ করতে পরিবর্তন স্ট্যাশ করতে হবে। একসাথে দুটি ব্র্যাঞ্চে দুটো Claude সেশন চালানো যাবে না।</span>
         </div>
       </div>
       <div class="mini-panel pop" style="width:clamp(175px,28vw,300px);border-color:var(--green)">
-        <div class="strip" style="background:var(--green)">WITH WORKTREES</div>
+        <div class="strip" style="background:var(--green)"><span class="en">WITH WORKTREES</span><span class="bn">ওয়ার্কট্রি সহ</span></div>
         <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">
-          Three directories. Three branches. Three Claude sessions. All live simultaneously. No stash needed.
+          <span class="en">Three directories. Three branches. Three Claude sessions. All live simultaneously. No stash needed.</span>
+          <span class="bn">তিনটি ডিরেক্টরি। তিনটি ব্র্যাঞ্চ। তিনটো Claude সেশন। সবকিছু একসাথে চলছে। কোনো স্ট্যাশ দরকার নেই।</span>
         </div>
       </div>
     </div>
@@ -242,8 +235,8 @@ pre.code-block .note    { color: #c4b5fd; }
 <!-- ============ SLIDE 6: WORKTREE COMMANDS ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">SHOW ME</div>
-    <h2 class="auto">Worktree Commands</h2>
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">SHOW ME</span><span class="bn">দেখাও</span></div>
+    <h2 class="auto"><span class="en">Worktree Commands</span><span class="bn">ওয়ার্কট্রি কমান্ড</span></h2>
     <pre class="code-block frag">
 <span class="comment"># Create three isolated worktrees (run from main repo dir)</span>
 <span class="cmd">git worktree add</span> <span class="path">../nopstation-email-val</span>    <span class="flag">feature/email-validation</span>
@@ -255,60 +248,60 @@ pre.code-block .note    { color: #c4b5fd; }
 
 <span class="comment"># When you're done with a worktree</span>
 <span class="cmd">git worktree remove</span> <span class="path">../nopstation-email-val</span></pre>
-    <div class="caption frag">Each path is now a fully functional repo checkout on its own branch. Open a terminal in each one and launch Claude.</div>
+    <div class="caption frag"><span class="en">Each path is now a fully functional repo checkout on its own branch. Open a terminal in each one and launch Claude.</span><span class="bn">প্রতিটি পাথ এখন নিজের ব্র্যাঞ্চে একটি সম্পূর্ণ কার্যকরী রেপো চেকআউট। প্রতিটিতে একটি টার্মিনাল খোলো এবং Claude চালু করো।</span></div>
   </div>
 </section>
 
 <!-- ============ SLIDE 7: CHOOSING TICKETS ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--blue);color:#fff">SELECTION</div>
-    <h2 class="auto">The Parallelizability Check</h2>
-    <div class="caption frag" style="margin-bottom:.3rem">Run every ticket through these four questions before you assign it to a parallel session:</div>
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">SELECTION</span><span class="bn">নির্বাচন</span></div>
+    <h2 class="auto"><span class="en">The Parallelizability Check</span><span class="bn">সমান্তরালতা যোগ্যতা পরীক্ষা</span></h2>
+    <div class="caption frag" style="margin-bottom:.3rem"><span class="en">Run every ticket through these four questions before you assign it to a parallel session:</span><span class="bn">সমান্তরাল সেশনে নিয়োগের আগে প্রতিটি টিকেটকে এই চারটি প্রশ্নের মধ্য দিয়ে চালাও:</span></div>
     <ul class="checklist">
-      <li class="yes frag pop"><span class="icon">✓</span> Independent files — no overlap with other parallel tickets?</li>
-      <li class="yes frag pop"><span class="icon">✓</span> No shared state — different DB tables, different config, different modules?</li>
-      <li class="yes frag pop"><span class="icon">✓</span> No ticket-to-ticket dependency — neither task needs the other's output?</li>
-      <li class="yes frag pop"><span class="icon">✓</span> Each task will take more than 15 minutes of Claude time?</li>
+      <li class="yes frag pop"><span class="icon">✓</span><span class="en"> Independent files — no overlap with other parallel tickets?</span><span class="bn"> স্বাধীন ফাইল — অন্য সমান্তরাল টিকেটের সাথে ওভারল্যাপ নেই?</span></li>
+      <li class="yes frag pop"><span class="icon">✓</span><span class="en"> No shared state — different DB tables, different config, different modules?</span><span class="bn"> কোনো শেয়ার্ড স্টেট নেই — আলাদা DB টেবিল, আলাদা কনফিগ, আলাদা মডিউল?</span></li>
+      <li class="yes frag pop"><span class="icon">✓</span><span class="en"> No ticket-to-ticket dependency — neither task needs the other's output?</span><span class="bn"> টিকেট-থেকে-টিকেট নির্ভরতা নেই — কোনো কাজ অপরের আউটপুট চায় না?</span></li>
+      <li class="yes frag pop"><span class="icon">✓</span><span class="en"> Each task will take more than 15 minutes of Claude time?</span><span class="bn"> প্রতিটি কাজ Claude-এর ১৫ মিনিটের বেশি সময় নেবে?</span></li>
     </ul>
-    <div class="caption frag amber">Pass all four → safe to run in parallel. Fail any one → resolve the dependency first, then parallelize.</div>
+    <div class="caption frag amber"><span class="en">Pass all four → safe to run in parallel. Fail any one → resolve the dependency first, then parallelize.</span><span class="bn">চারটিতেই পাস → সমান্তরালে নিরাপদ। যেকোনো একটিতে ফেল → প্রথমে নির্ভরতা সমাধান করো, তারপর সমান্তরাল করো।</span></div>
   </div>
 </section>
 
 <!-- ============ SLIDE 8: SHAZZAD'S 3 TICKETS ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--sky);color:#fff">LIVE EXAMPLE</div>
-    <h2 class="auto">Shazzad's Three Tickets</h2>
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">LIVE EXAMPLE</span><span class="bn">লাইভ উদাহরণ</span></div>
+    <h2 class="auto"><span class="en">Shazzad's Three Tickets</span><span class="bn">শাজ্জাদের তিনটো টিকেট</span></h2>
     <div class="ticket-grid frag">
       <div class="ticket">
         <span class="t-label" style="background:var(--blue)">SESSION A</span>
-        <h3>Add email validation to checkout address form</h3>
-        <div class="t-type">Frontend · React</div>
-        <div class="t-safe">✓ Safe: touches only <code>CheckoutForm.tsx</code></div>
+        <h3><span class="en">Add email validation to checkout address form</span><span class="bn">চেকআউট ফর্মে ইমেইল ভ্যালিডেশন যোগ করো</span></h3>
+        <div class="t-type"><span class="en">Frontend · React</span><span class="bn">ফ্রন্টএন্ড · React</span></div>
+        <div class="t-safe"><span class="en">✓ Safe: touches only <code>CheckoutForm.tsx</code></span><span class="bn">✓ নিরাপদ: শুধু <code>CheckoutForm.tsx</code> স্পর্শ করে</span></div>
       </div>
       <div class="ticket">
         <span class="t-label" style="background:var(--sky)">SESSION B</span>
-        <h3>Write unit tests for OrderService</h3>
-        <div class="t-type">Backend · Pure test file</div>
-        <div class="t-safe">✓ Safe: new file only, no prod code changes</div>
+        <h3><span class="en">Write unit tests for OrderService</span><span class="bn">OrderService-এর ইউনিট টেস্ট লিখো</span></h3>
+        <div class="t-type"><span class="en">Backend · Pure test file</span><span class="bn">ব্যাকএন্ড · শুধুই টেস্ট ফাইল</span></div>
+        <div class="t-safe"><span class="en">✓ Safe: new file only, no prod code changes</span><span class="bn">✓ নিরাপদ: শুধু নতুন ফাইল, প্রোড কোডে পরিবর্তন নেই</span></div>
       </div>
       <div class="ticket">
         <span class="t-label" style="background:var(--green)">SESSION C</span>
-        <h3>Generate API changelog for v2.3.0</h3>
-        <div class="t-type">Docs · Reads existing code</div>
-        <div class="t-safe">✓ Safe: read-only analysis, pure output</div>
+        <h3><span class="en">Generate API changelog for v2.3.0</span><span class="bn">v2.3.0-এর API চেঞ্জলগ তৈরি করো</span></h3>
+        <div class="t-type"><span class="en">Docs · Reads existing code</span><span class="bn">ডকস · বিদ্যমান কোড পড়ে</span></div>
+        <div class="t-safe"><span class="en">✓ Safe: read-only analysis, pure output</span><span class="bn">✓ নিরাপদ: শুধু পড়া, খালি আউটপুট</span></div>
       </div>
     </div>
-    <div class="caption frag">Three tickets. Zero shared files. Zero dependencies. All pass the check. Ready to go.</div>
+    <div class="caption frag"><span class="en">Three tickets. Zero shared files. Zero dependencies. All pass the check. Ready to go.</span><span class="bn">তিনটো টিকেট। শূন্য শেয়ার্ড ফাইল। শূন্য নির্ভরতা। সবগুলো পরীক্ষায় পাস। যেতে প্রস্তুত।</span></div>
   </div>
 </section>
 
 <!-- ============ SLIDE 9: LAUNCH SEQUENCE ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">SHOW ME</div>
-    <h2 class="auto">Launching All Three Sessions</h2>
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">SHOW ME</span><span class="bn">দেখাও</span></div>
+    <h2 class="auto"><span class="en">Launching All Three Sessions</span><span class="bn">তিনটো সেশন একসাথে চালু করা</span></h2>
     <pre class="code-block frag">
 <span class="comment"># Terminal 1 — Session A (email validation)</span>
 <span class="cmd">cd</span> <span class="path">../nopstation-email-val</span> <span class="flag">&amp;&amp;</span> <span class="cmd">claude</span>
@@ -322,7 +315,8 @@ pre.code-block .note    { color: #c4b5fd; }
       <svg class="char bob"><use href="#ch-dev"/></svg>
       <div class="bubble tail-l">
         <span class="who c-amber">SHAZZAD</span>
-        "All three are loading simultaneously. This genuinely feels illegal."
+        <span class="en">"All three are loading simultaneously. This genuinely feels illegal."</span>
+        <span class="bn">"তিনটো একসাথে লোড হচ্ছে। এটা সত্যিই অবৈধ মনে হচ্ছে।"</span>
       </div>
     </div>
   </div>
@@ -331,9 +325,9 @@ pre.code-block .note    { color: #c4b5fd; }
 <!-- ============ SLIDE 10: THE LAUNCH PROMPT ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--blue);color:#fff">THE CRAFT</div>
-    <h2 class="auto">Write a Focused Launch Prompt</h2>
-    <div class="caption frag" style="margin-bottom:.3rem">A lazy prompt wastes tokens and goes off-track. A focused prompt is the most important thing you write per session.</div>
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">THE CRAFT</span><span class="bn">দক্ষতা</span></div>
+    <h2 class="auto"><span class="en">Write a Focused Launch Prompt</span><span class="bn">ফোকাসড লঞ্চ প্রম্পট লিখো</span></h2>
+    <div class="caption frag" style="margin-bottom:.3rem"><span class="en">A lazy prompt wastes tokens and goes off-track. A focused prompt is the most important thing you write per session.</span><span class="bn">অস্পষ্ট প্রম্পট টোকেন নষ্ট করে এবং পথ হারায়। ফোকাসড প্রম্পট হলো প্রতি সেশনে তোমার লেখা সবচেয়ে গুরুত্বপূর্ণ জিনিস।</span></div>
     <pre class="code-block frag">
 <span class="note">Context:</span>  nop-station checkout flow. React + TypeScript. Zod for validation.
 
@@ -346,71 +340,71 @@ pre.code-block .note    { color: #c4b5fd; }
           <span class="path">src/lib/validators.ts</span> (read-only — do not modify)
 
 <span class="note">Do NOT:</span>  Modify auth logic, backend routes, or any file outside src/components/checkout/</pre>
-    <div class="caption frag">Pattern: <strong>Context → Task → Files → Do NOT.</strong> Every session should start with this structure.</div>
+    <div class="caption frag"><span class="en">Pattern: <strong>Context → Task → Files → Do NOT.</strong> Every session should start with this structure.</span><span class="bn">প্যাটার্ন: <strong>Context → Task → Files → Do NOT।</strong> প্রতিটি সেশন এই কাঠামো দিয়ে শুরু করা উচিত।</span></div>
   </div>
 </section>
 
 <!-- ============ SLIDE 11: THE ROTATION CADENCE ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--sky);color:#fff">THE RHYTHM</div>
-    <h2 class="auto">The 20-Minute Rotation Cycle</h2>
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">THE RHYTHM</span><span class="bn">ছন্দ</span></div>
+    <h2 class="auto"><span class="en">The 20-Minute Rotation Cycle</span><span class="bn">২০ মিনিটের রোটেশন চক্র</span></h2>
     <div class="rotation-cycle frag">
       <div class="rc-node" style="border-color:var(--blue)">
         Session A
-        <span class="rc-sub">give prompt →</span>
+        <span class="rc-sub"><span class="en">give prompt →</span><span class="bn">প্রম্পট দাও →</span></span>
       </div>
       <div class="rc-arr">→</div>
       <div class="rc-node" style="border-color:var(--sky)">
         Session B
-        <span class="rc-sub">check + steer →</span>
+        <span class="rc-sub"><span class="en">check + steer →</span><span class="bn">চেক + পরিচালনা →</span></span>
       </div>
       <div class="rc-arr">→</div>
       <div class="rc-node" style="border-color:var(--green)">
         Session C
-        <span class="rc-sub">check + steer →</span>
+        <span class="rc-sub"><span class="en">check + steer →</span><span class="bn">চেক + পরিচালনা →</span></span>
       </div>
       <div class="rc-arr">→</div>
       <div class="rc-node" style="border-color:var(--blue)">
         Session A
-        <span class="rc-sub">review diff →</span>
+        <span class="rc-sub"><span class="en">review diff →</span><span class="bn">ডিফ রিভিউ →</span></span>
       </div>
       <div class="rc-arr">→</div>
       <div class="rc-node" style="border-color:var(--amber)">
-        ⏱ 20 min
-        <span class="rc-sub">repeat</span>
+        ⏱ <span class="en">20 min</span><span class="bn">২০ মিনিট</span>
+        <span class="rc-sub"><span class="en">repeat</span><span class="bn">পুনরাবৃত্তি</span></span>
       </div>
     </div>
-    <div class="caption frag">Each rotation: one session gets your full attention for 20 minutes. When the timer fires — switch. Don't wait for the session to "finish".</div>
+    <div class="caption frag"><span class="en">Each rotation: one session gets your full attention for 20 minutes. When the timer fires — switch. Don't wait for the session to "finish".</span><span class="bn">প্রতিটি রোটেশন: একটি সেশন ২০ মিনিটের জন্য তোমার পূর্ণ মনোযোগ পায়। টাইমার বাজলে — সুইচ করো। সেশনের "শেষ হওয়ার" জন্য অপেক্ষা করো না।</span></div>
     <div class="row frag" style="margin-top:.3rem">
-      <span class="tag" style="border-color:var(--sky)">TIMER-DRIVEN</span>
-      <span class="tag" style="border-color:var(--amber)">NOT COMPLETION-DRIVEN</span>
-      <span class="tag">20–25 MIN SWEET SPOT</span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">TIMER-DRIVEN</span><span class="bn">টাইমার-চালিত</span></span>
+      <span class="tag" style="border-color:var(--amber)"><span class="en">NOT COMPLETION-DRIVEN</span><span class="bn">সম্পূর্ণতা-চালিত নয়</span></span>
+      <span class="tag"><span class="en">20–25 MIN SWEET SPOT</span><span class="bn">২০-২৫ মিনিট সেরা</span></span>
     </div>
   </div>
 </section>
 
-<!-- ============ SLIDE 12: WHAT TO CHECK ON ROTATION ============ -->
+<!-- ============ SLIDE 12: WHAT TO CHECK ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--sky);color:#fff">THE CHECK</div>
-    <h2 class="auto">60 Seconds to Assess a Session</h2>
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">THE CHECK</span><span class="bn">পরীক্ষা</span></div>
+    <h2 class="auto"><span class="en">60 Seconds to Assess a Session</span><span class="bn">৬০ সেকেন্ডে একটি সেশন মূল্যায়ন</span></h2>
     <ul class="checklist">
-      <li class="yes frag pop"><span class="icon">1.</span> Scan the last 10 lines of output — is it moving in the right direction?</li>
-      <li class="yes frag pop"><span class="icon">2.</span> Run a quick <code>git diff --stat</code> — does the file set match the task?</li>
-      <li class="yes frag pop"><span class="icon">3.</span> Check for a blocking question — if Claude is waiting on you, answer it.</li>
-      <li class="yes frag pop"><span class="icon">4.</span> If it's on track — leave it running and move to the next session.</li>
+      <li class="yes frag pop"><span class="icon">1.</span><span class="en"> Scan the last 10 lines of output — is it moving in the right direction?</span><span class="bn"> আউটপুটের শেষ ১০ লাইন স্ক্যান করো — এটা কি সঠিক দিকে যাচ্ছে?</span></li>
+      <li class="yes frag pop"><span class="icon">2.</span><span class="en"> Run a quick <code>git diff --stat</code> — does the file set match the task?</span><span class="bn"> দ্রুত <code>git diff --stat</code> চালাও — ফাইল সেট কি কাজের সাথে মেলে?</span></li>
+      <li class="yes frag pop"><span class="icon">3.</span><span class="en"> Check for a blocking question — if Claude is waiting on you, answer it.</span><span class="bn"> ব্লকিং প্রশ্ন চেক করো — Claude যদি তোমার জন্য অপেক্ষা করছে, উত্তর দাও।</span></li>
+      <li class="yes frag pop"><span class="icon">4.</span><span class="en"> If it's on track — leave it running and move to the next session.</span><span class="bn"> যদি সঠিক পথে থাকে — চলতে দাও এবং পরের সেশনে যাও।</span></li>
     </ul>
-    <div class="caption frag">Most rotations are 60 seconds. You're not reviewing the code — you're checking the heading. Deep review happens at PR time.</div>
+    <div class="caption frag"><span class="en">Most rotations are 60 seconds. You're not reviewing the code — you're checking the heading. Deep review happens at PR time.</span><span class="bn">বেশিরভাগ রোটেশন ৬০ সেকেন্ড। তুমি কোড রিভিউ করছ না — দিক পরীক্ষা করছ। গভীর রিভিউ PR সময়ে হবে।</span></div>
   </div>
 </section>
 
 <!-- ============ SLIDE 13: CONTEXT REFRESH PROMPT ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--amber);color:var(--navy)">SHOW ME</div>
-    <h2 class="auto">The Context Refresh Prompt</h2>
-    <div class="caption frag" style="margin-bottom:.3rem">When you return to a session after 20 minutes, don't assume it remembers where it was. Ground it fast.</div>
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">SHOW ME</span><span class="bn">দেখাও</span></div>
+    <h2 class="auto"><span class="en">The Context Refresh Prompt</span><span class="bn">কনটেক্সট রিফ্রেশ প্রম্পট</span></h2>
+    <div class="caption frag" style="margin-bottom:.3rem"><span class="en">When you return to a session after 20 minutes, don't assume it remembers where it was. Ground it fast.</span><span class="bn">২০ মিনিট পরে কোনো সেশনে ফিরে এলে, ধরে নিও না সে মনে আছে কোথায় ছিল। দ্রুত ভিত্তি দাও।</span></div>
     <pre class="code-block frag">
 <span class="comment"># The context refresh pattern — paste this when you return to a session</span>
 
@@ -419,127 +413,129 @@ pre.code-block .note    { color: #c4b5fd; }
 <span class="note">Status:</span>       You implemented blur validation. Submit validation is still missing.
 <span class="note">Next step:</span>    Add validation on form submit — same error message as blur.
 <span class="note">Don't touch:</span>  src/lib/validators.ts (read-only)</pre>
-    <div class="caption frag">This works because it re-anchors the session without repeating the full context. Fast. Precise. Prevents drift.</div>
+    <div class="caption frag"><span class="en">This works because it re-anchors the session without repeating the full context. Fast. Precise. Prevents drift.</span><span class="bn">এটা কাজ করে কারণ পূর্ণ কনটেক্সট পুনরাবৃত্তি না করে সেশনকে পুনরায় স্থির করে। দ্রুত। নির্ভুল। ড্রিফট প্রতিরোধ করে।</span></div>
   </div>
 </section>
 
 <!-- ============ SLIDE 14: WHEN A SESSION STALLS ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--red);color:#fff">WATCH OUT</div>
-    <h2 class="auto">When a Session Gets Stuck</h2>
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WATCH OUT</span><span class="bn">সাবধান</span></div>
+    <h2 class="auto"><span class="en">When a Session Gets Stuck</span><span class="bn">যখন সেশন আটকে যায়</span></h2>
     <div class="row" style="margin-top:.4rem;align-items:flex-start;gap:1.1rem">
       <div class="mini-panel frag pop" style="width:clamp(185px,30vw,310px);border-color:var(--red)">
-        <div class="strip" style="background:var(--red)">SIGNS</div>
+        <div class="strip" style="background:var(--red)"><span class="en">SIGNS</span><span class="bn">লক্ষণ</span></div>
         <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .15rem">
-          <li>• Asking a clarifying question</li>
-          <li>• Going in the wrong direction</li>
-          <li>• Modifying files it shouldn't</li>
-          <li>• Loops on the same step</li>
-          <li>• Long output, wrong result</li>
+          <li><span class="en">• Asking a clarifying question</span><span class="bn">• স্পষ্টীকরণের প্রশ্ন করছে</span></li>
+          <li><span class="en">• Going in the wrong direction</span><span class="bn">• ভুল দিকে যাচ্ছে</span></li>
+          <li><span class="en">• Modifying files it shouldn't</span><span class="bn">• যে ফাইল স্পর্শ করা উচিত নয় তা পরিবর্তন করছে</span></li>
+          <li><span class="en">• Loops on the same step</span><span class="bn">• একই ধাপে লুপ করছে</span></li>
+          <li><span class="en">• Long output, wrong result</span><span class="bn">• দীর্ঘ আউটপুট, ভুল ফলাফল</span></li>
         </ul>
       </div>
       <div class="mini-panel frag pop" style="width:clamp(185px,30vw,310px);border-color:var(--green)">
-        <div class="strip" style="background:var(--green)">FIXES</div>
+        <div class="strip" style="background:var(--green)"><span class="en">FIXES</span><span class="bn">সমাধান</span></div>
         <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .15rem">
-          <li>• Answer the question → continue</li>
-          <li>• Paste the error + "fix this only"</li>
-          <li>• "Stop. Revert [file]. Focus on [X]."</li>
-          <li>• Hard reset: new prompt with tight scope</li>
-          <li>• Park the session, handle later</li>
+          <li><span class="en">• Answer the question → continue</span><span class="bn">• প্রশ্নের উত্তর দাও → চালিয়ে যাও</span></li>
+          <li><span class="en">• Paste the error + "fix this only"</span><span class="bn">• এরর পেস্ট করো + "শুধু এটা ঠিক করো"</span></li>
+          <li><span class="en">• "Stop. Revert [file]. Focus on [X]."</span><span class="bn">• "থামো। [ফাইল] রিভার্ট করো। [X]-এ ফোকাস করো।"</span></li>
+          <li><span class="en">• Hard reset: new prompt with tight scope</span><span class="bn">• হার্ড রিসেট: শক্ত স্কোপ সহ নতুন প্রম্পট</span></li>
+          <li><span class="en">• Park the session, handle later</span><span class="bn">• সেশন পার্ক করো, পরে সামলাও</span></li>
         </ul>
       </div>
     </div>
-    <div class="caption frag">Most stalls take 30 seconds to fix. The mistake is micromanaging healthy sessions instead of fixing the stuck ones.</div>
+    <div class="caption frag"><span class="en">Most stalls take 30 seconds to fix. The mistake is micromanaging healthy sessions instead of fixing the stuck ones.</span><span class="bn">বেশিরভাগ আটকে যাওয়া ৩০ সেকেন্ডে সমাধান হয়। ভুলটা হলো সুস্থ সেশনগুলোকে মাইক্রোম্যানেজ করা, আটকে যাওয়াগুলো ঠিক করার বদলে।</span></div>
   </div>
 </section>
 
 <!-- ============ SLIDE 15: UNEXPECTED DEPENDENCY ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--red);color:#fff">EDGE CASE</div>
-    <h2 class="auto">Mid-Flight: Unexpected Dependency</h2>
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">EDGE CASE</span><span class="bn">বিশেষ ক্ষেত্র</span></div>
+    <h2 class="auto"><span class="en">Mid-Flight: Unexpected Dependency</span><span class="bn">মাঝপথে: অপ্রত্যাশিত নির্ভরতা</span></h2>
     <div class="panel frag pop">
       <svg class="char bob"><use href="#ch-dev"/></svg>
       <div class="bubble tail-l">
         <span class="who c-sky">SHAZZAD · HOUR 1</span>
-        "Session B discovered it needs a <code>validateOrder()</code> helper that Session A is also building. They'll conflict."
+        <span class="en">"Session B discovered it needs a <code>validateOrder()</code> helper that Session A is also building. They'll conflict."</span>
+        <span class="bn">"Session B আবিষ্কার করেছে তার একটি <code>validateOrder()</code> হেল্পার দরকার যা Session A-ও তৈরি করছে। তারা কনফ্লিক্ট করবে।"</span>
       </div>
     </div>
     <div class="row frag pop" style="margin-top:.5rem;gap:1rem;align-items:stretch">
       <div class="mini-panel" style="width:clamp(180px,28vw,290px);border-color:var(--amber)">
-        <div class="strip" style="background:var(--amber);color:var(--navy)">OPTION 1 · PARK</div>
-        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">Park Session B. Let A finish + merge. Then resume B on top of A's output. Safest.</div>
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">OPTION 1 · PARK</span><span class="bn">বিকল্প ১ · পার্ক</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem"><span class="en">Park Session B. Let A finish + merge. Then resume B on top of A's output. Safest.</span><span class="bn">Session B পার্ক করো। A শেষ হতে ও মার্জ হতে দাও। তারপর A-এর আউটপুটের উপর B পুনরায় শুরু করো। সবচেয়ে নিরাপদ।</span></div>
       </div>
       <div class="mini-panel" style="width:clamp(180px,28vw,290px);border-color:var(--sky)">
-        <div class="strip" style="background:var(--sky)">OPTION 2 · SPLIT</div>
-        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">Build the helper in a shared utility PR. Both sessions depend on it. Merge first, then both continue.</div>
+        <div class="strip" style="background:var(--sky)"><span class="en">OPTION 2 · SPLIT</span><span class="bn">বিকল্প ২ · ভাগ করো</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem"><span class="en">Build the helper in a shared utility PR. Both sessions depend on it. Merge first, then both continue.</span><span class="bn">শেয়ার্ড ইউটিলিটি PR-এ হেল্পার তৈরি করো। উভয় সেশন তার উপর নির্ভর করে। আগে মার্জ করো, তারপর উভয় চালিয়ে যাও।</span></div>
       </div>
     </div>
-    <div class="caption frag">Unexpected dependencies happen. The fix is never to let both sessions race on the same code. Park one. Sequence properly.</div>
+    <div class="caption frag"><span class="en">Unexpected dependencies happen. The fix is never to let both sessions race on the same code. Park one. Sequence properly.</span><span class="bn">অপ্রত্যাশিত নির্ভরতা হয়। সমাধান কখনো একই কোডে উভয় সেশনকে দৌড়াতে দেওয়া নয়। একটি পার্ক করো। সঠিকভাবে সিকোয়েন্স করো।</span></div>
   </div>
 </section>
 
 <!-- ============ SLIDE 16: MERGE STRATEGY ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--green);color:#fff">MERGE</div>
-    <h2 class="auto">PR Per Session. Merge Independently.</h2>
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">MERGE</span><span class="bn">মার্জ</span></div>
+    <h2 class="auto"><span class="en">PR Per Session. Merge Independently.</span><span class="bn">প্রতি সেশনে PR। স্বাধীনভাবে মার্জ করো।</span></h2>
     <div class="loop frag" style="margin-top:.4rem">
-      <div class="node">Session A<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">commits done</span></div>
+      <div class="node">Session A<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7"><span class="en">commits done</span><span class="bn">কমিট সম্পন্ন</span></span></div>
       <div class="arr">→</div>
-      <div class="node">Open PR A<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">feature/email-validation</span></div>
+      <div class="node"><span class="en">Open PR A</span><span class="bn">PR A খোলো</span><br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">feature/email-validation</span></div>
       <div class="arr">→</div>
-      <div class="node">Review &amp; Merge</div>
+      <div class="node"><span class="en">Review &amp; Merge</span><span class="bn">রিভিউ ও মার্জ</span></div>
     </div>
     <div class="loop frag">
-      <div class="node">Session B<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">commits done</span></div>
+      <div class="node">Session B<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7"><span class="en">commits done</span><span class="bn">কমিট সম্পন্ন</span></span></div>
       <div class="arr">→</div>
-      <div class="node">Open PR B<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">feature/order-tests</span></div>
+      <div class="node"><span class="en">Open PR B</span><span class="bn">PR B খোলো</span><br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">feature/order-tests</span></div>
       <div class="arr">→</div>
-      <div class="node">Review &amp; Merge</div>
+      <div class="node"><span class="en">Review &amp; Merge</span><span class="bn">রিভিউ ও মার্জ</span></div>
     </div>
     <div class="loop frag">
-      <div class="node">Session C<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">commits done</span></div>
+      <div class="node">Session C<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7"><span class="en">commits done</span><span class="bn">কমিট সম্পন্ন</span></span></div>
       <div class="arr">→</div>
-      <div class="node">Open PR C<br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">docs/changelog-v2.3</span></div>
+      <div class="node"><span class="en">Open PR C</span><span class="bn">PR C খোলো</span><br><span style="font-size:.75em;font-family:'Work Sans',sans-serif;font-weight:600;opacity:.7">docs/changelog-v2.3</span></div>
       <div class="arr">→</div>
-      <div class="node">Review &amp; Merge</div>
+      <div class="node"><span class="en">Review &amp; Merge</span><span class="bn">রিভিউ ও মার্জ</span></div>
     </div>
-    <div class="caption frag">Three independent PRs. No cross-dependencies. Merge in any order. Reviewers see small, focused diffs.</div>
+    <div class="caption frag"><span class="en">Three independent PRs. No cross-dependencies. Merge in any order. Reviewers see small, focused diffs.</span><span class="bn">তিনটো স্বাধীন PR। কোনো পারস্পরিক নির্ভরতা নেই। যেকোনো ক্রমে মার্জ করো। রিভিউয়াররা ছোট, ফোকাসড ডিফ দেখেন।</span></div>
   </div>
 </section>
 
-<!-- ============ SLIDE 17: 3 PRs IN GITHUB ============ -->
+<!-- ============ SLIDE 17: 3 PRs ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--green);color:#fff">THE OUTPUT</div>
-    <h2 class="auto">Three PRs Before Lunch</h2>
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">THE OUTPUT</span><span class="bn">আউটপুট</span></div>
+    <h2 class="auto"><span class="en">Three PRs Before Lunch</span><span class="bn">দুপুরের আগে তিনটো PR</span></h2>
     <div class="pr-grid frag">
       <div class="pr-card">
         <div class="pr-num">PR #214 · feature/email-validation</div>
-        <h3>Add email validation to checkout address form</h3>
+        <h3><span class="en">Add email validation to checkout address form</span><span class="bn">চেকআউট ফর্মে ইমেইল ভ্যালিডেশন যোগ</span></h3>
         <div class="pr-stats">+38 lines · −2 lines<br>1 file changed</div>
-        <span class="pr-badge">✓ Ready to review</span>
+        <span class="pr-badge"><span class="en">✓ Ready to review</span><span class="bn">✓ রিভিউর জন্য প্রস্তুত</span></span>
       </div>
       <div class="pr-card">
         <div class="pr-num">PR #215 · feature/order-tests</div>
-        <h3>Unit tests: OrderService (27 test cases)</h3>
+        <h3><span class="en">Unit tests: OrderService (27 test cases)</span><span class="bn">ইউনিট টেস্ট: OrderService (২৭টি কেস)</span></h3>
         <div class="pr-stats">+214 lines · −0 lines<br>1 new file</div>
-        <span class="pr-badge">✓ Ready to review</span>
+        <span class="pr-badge"><span class="en">✓ Ready to review</span><span class="bn">✓ রিভিউর জন্য প্রস্তুত</span></span>
       </div>
       <div class="pr-card">
         <div class="pr-num">PR #216 · docs/changelog-v2.3</div>
-        <h3>API changelog for v2.3.0 release</h3>
+        <h3><span class="en">API changelog for v2.3.0 release</span><span class="bn">v2.3.0 রিলিজের API চেঞ্জলগ</span></h3>
         <div class="pr-stats">+89 lines · −0 lines<br>CHANGELOG.md</div>
-        <span class="pr-badge">✓ Ready to review</span>
+        <span class="pr-badge"><span class="en">✓ Ready to review</span><span class="bn">✓ রিভিউর জন্য প্রস্তুত</span></span>
       </div>
     </div>
     <div class="panel frag pop" style="margin-top:.4rem">
       <svg class="char"><use href="#ch-dev"/></svg>
       <div class="bubble tail-l">
         <span class="who c-blue">HABIB</span>
-        "These are so clean. Each one is focused. I can review all three in 20 minutes. What happened?"
+        <span class="en">"These are so clean. Each one is focused. I can review all three in 20 minutes. What happened?"</span>
+        <span class="bn">"এগুলো এত পরিষ্কার। প্রতিটি ফোকাসড। ২০ মিনিটে তিনটোই রিভিউ করতে পারব। কী হয়েছে?"</span>
       </div>
     </div>
   </div>
@@ -548,110 +544,110 @@ pre.code-block .note    { color: #c4b5fd; }
 <!-- ============ SLIDE 18: SHAZZAD'S DAY ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--sky);color:#fff">LIVE EXAMPLE</div>
-    <h2 class="auto">Shazzad's Day, Start to Finish</h2>
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">LIVE EXAMPLE</span><span class="bn">লাইভ উদাহরণ</span></div>
+    <h2 class="auto"><span class="en">Shazzad's Day, Start to Finish</span><span class="bn">শাজ্জাদের পুরো দিন</span></h2>
     <div class="row" style="margin-top:.4rem;align-items:flex-start">
       <div class="mini-panel frag pop" style="width:clamp(210px,38vw,420px)">
-        <div class="strip" style="background:var(--navy)">THE TIMELINE</div>
+        <div class="strip" style="background:var(--navy)"><span class="en">THE TIMELINE</span><span class="bn">টাইমলাইন</span></div>
         <div style="text-align:left;width:100%;font-size:clamp(.62rem,1.3vw,.84rem);font-weight:600;line-height:2.1;padding:.3rem .1rem">
-          <div>9:00 — Worktrees created, sessions launched</div>
-          <div style="opacity:.65">9:20 — First rotation: check B &amp; C heading</div>
-          <div style="opacity:.65">10:00 — Dependency found (B↔A) — park B</div>
-          <div style="opacity:.65">10:30 — Session A done ✓ → PR #214 opened</div>
-          <div style="opacity:.65">11:00 — Resume Session B on top of A's merge</div>
-          <div style="opacity:.65">12:00 — Session C done ✓ → PR #216 opened</div>
-          <div style="opacity:.65">1:30  — Session B done ✓ → PR #215 opened</div>
-          <div style="opacity:.65">2:30  — All 3 PRs reviewed &amp; merged</div>
-          <div style="color:var(--green);font-weight:700">3:45  — Shazzad leaves early. 🏖️</div>
+          <div><span class="en">9:00 — Worktrees created, sessions launched</span><span class="bn">৯:০০ — ওয়ার্কট্রি তৈরি, সেশন চালু</span></div>
+          <div style="opacity:.65"><span class="en">9:20 — First rotation: check B &amp; C heading</span><span class="bn">৯:২০ — প্রথম রোটেশন: B ও C-এর দিক চেক</span></div>
+          <div style="opacity:.65"><span class="en">10:00 — Dependency found (B↔A) — park B</span><span class="bn">১০:০০ — নির্ভরতা পাওয়া গেল (B↔A) — B পার্ক</span></div>
+          <div style="opacity:.65"><span class="en">10:30 — Session A done ✓ → PR #214 opened</span><span class="bn">১০:৩০ — Session A সম্পন্ন ✓ → PR #214 খোলা</span></div>
+          <div style="opacity:.65"><span class="en">11:00 — Resume Session B on top of A's merge</span><span class="bn">১১:০০ — A-এর মার্জের উপর Session B পুনরায় শুরু</span></div>
+          <div style="opacity:.65"><span class="en">12:00 — Session C done ✓ → PR #216 opened</span><span class="bn">১২:০০ — Session C সম্পন্ন ✓ → PR #216 খোলা</span></div>
+          <div style="opacity:.65"><span class="en">1:30 — Session B done ✓ → PR #215 opened</span><span class="bn">১:৩০ — Session B সম্পন্ন ✓ → PR #215 খোলা</span></div>
+          <div style="opacity:.65"><span class="en">2:30 — All 3 PRs reviewed &amp; merged</span><span class="bn">২:৩০ — ৩টো PR রিভিউ ও মার্জ সম্পন্ন</span></div>
+          <div style="color:var(--green);font-weight:700"><span class="en">3:45 — Shazzad leaves early. 🏖️</span><span class="bn">৩:৪৫ — শাজ্জাদ আগেভাগে চলে গেল। 🏖️</span></div>
         </div>
       </div>
     </div>
-    <div class="caption frag amber">Three tickets. One morning. One hiccup handled mid-flight. Still done by 2:30pm.</div>
+    <div class="caption frag amber"><span class="en">Three tickets. One morning. One hiccup handled mid-flight. Still done by 2:30pm.</span><span class="bn">তিনটো টিকেট। একটি সকাল। একটি বাধা মাঝপথে সামলানো। তবুও ২:৩০-এ শেষ।</span></div>
   </div>
 </section>
 
-<!-- ============ SLIDE 19: GOTCHAS — CONTEXT ISOLATION ============ -->
+<!-- ============ SLIDE 19: CONTEXT PITFALLS ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--red);color:#fff">WATCH OUT</div>
-    <h2 class="auto">Context Isolation Pitfalls</h2>
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WATCH OUT</span><span class="bn">সাবধান</span></div>
+    <h2 class="auto"><span class="en">Context Isolation Pitfalls</span><span class="bn">কনটেক্সট বিচ্ছিন্নতার ফাঁদ</span></h2>
     <ul class="checklist">
       <li class="no frag pop">
         <span class="icon">✗</span>
-        <div><strong>Vague scope:</strong> "Work on the checkout form" — Claude doesn't know which files to avoid. Be explicit.</div>
+        <div><span class="en"><strong>Vague scope:</strong> "Work on the checkout form" — Claude doesn't know which files to avoid. Be explicit.</span><span class="bn"><strong>অস্পষ্ট স্কোপ:</strong> "চেকআউট ফর্মে কাজ করো" — Claude জানে না কোন ফাইল এড়াতে হবে। স্পষ্ট হও।</span></div>
       </li>
       <li class="no frag pop">
         <span class="icon">✗</span>
-        <div><strong>Missing constraints:</strong> Forgetting "Do NOT modify validators.ts" — session edits what it shouldn't.</div>
+        <div><span class="en"><strong>Missing constraints:</strong> Forgetting "Do NOT modify validators.ts" — session edits what it shouldn't.</span><span class="bn"><strong>অনুপস্থিত বাধা:</strong> "validators.ts পরিবর্তন করো না" ভুলে যাওয়া — সেশন যা উচিত নয় তা সম্পাদনা করে।</span></div>
       </li>
       <li class="no frag pop">
         <span class="icon">✗</span>
-        <div><strong>Two sessions, same file:</strong> Both write to <code>src/config/app.ts</code> → guaranteed merge conflict.</div>
+        <div><span class="en"><strong>Two sessions, same file:</strong> Both write to <code>src/config/app.ts</code> → guaranteed merge conflict.</span><span class="bn"><strong>দুটো সেশন, একই ফাইল:</strong> উভয় <code>src/config/app.ts</code>-এ লেখে → নিশ্চিত মার্জ কনফ্লিক্ট।</span></div>
       </li>
       <li class="yes frag pop">
         <span class="icon">✓</span>
-        <div><strong>Fix:</strong> Always include "Files: X only" and "Do NOT touch: Y" in every launch prompt.</div>
+        <div><span class="en"><strong>Fix:</strong> Always include "Files: X only" and "Do NOT touch: Y" in every launch prompt.</span><span class="bn"><strong>সমাধান:</strong> সবসময় প্রতিটি লঞ্চ প্রম্পটে "Files: শুধু X" এবং "স্পর্শ করো না: Y" অন্তর্ভুক্ত করো।</span></div>
       </li>
     </ul>
   </div>
 </section>
 
-<!-- ============ SLIDE 20: GOTCHAS — GIT CONFLICTS ============ -->
+<!-- ============ SLIDE 20: GIT CONFLICTS ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--red);color:#fff">WATCH OUT</div>
-    <h2 class="auto">Git Conflicts — Rare but Real</h2>
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WATCH OUT</span><span class="bn">সাবধান</span></div>
+    <h2 class="auto"><span class="en">Git Conflicts — Rare but Real</span><span class="bn">Git কনফ্লিক্ট — বিরল কিন্তু বাস্তব</span></h2>
     <div class="row" style="margin-top:.4rem;align-items:stretch;gap:1rem">
       <div class="mini-panel frag pop" style="width:clamp(175px,28vw,290px);border-color:var(--green)">
-        <div class="strip" style="background:var(--green)">PREVENTION</div>
+        <div class="strip" style="background:var(--green)"><span class="en">PREVENTION</span><span class="bn">প্রতিরোধ</span></div>
         <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .15rem">
-          <li>• Run the parallelizability check</li>
-          <li>• Explicit "Files: X only" per session</li>
-          <li>• Different modules per session</li>
-          <li>• No shared config/schema files</li>
+          <li><span class="en">• Run the parallelizability check</span><span class="bn">• সমান্তরালতা পরীক্ষা চালাও</span></li>
+          <li><span class="en">• Explicit "Files: X only" per session</span><span class="bn">• প্রতি সেশনে "Files: শুধু X"</span></li>
+          <li><span class="en">• Different modules per session</span><span class="bn">• প্রতি সেশনে আলাদা মডিউল</span></li>
+          <li><span class="en">• No shared config/schema files</span><span class="bn">• কোনো শেয়ার্ড কনফিগ/স্কিমা নেই</span></li>
         </ul>
       </div>
       <div class="mini-panel frag pop" style="width:clamp(175px,28vw,290px);border-color:var(--amber)">
-        <div class="strip" style="background:var(--amber);color:var(--navy)">DETECTION</div>
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">DETECTION</span><span class="bn">সনাক্তকরণ</span></div>
         <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .15rem">
-          <li>• <code>git diff main --stat</code> before opening PR</li>
-          <li>• GitHub conflict indicator on PR</li>
-          <li>• Check overlapping changed files</li>
+          <li><span class="en">• <code>git diff main --stat</code> before PR</span><span class="bn">• PR-এর আগে <code>git diff main --stat</code></span></li>
+          <li><span class="en">• GitHub conflict indicator on PR</span><span class="bn">• PR-এ GitHub কনফ্লিক্ট ইন্ডিকেটর</span></li>
+          <li><span class="en">• Check overlapping changed files</span><span class="bn">• ওভারল্যাপিং ফাইল চেক করো</span></li>
         </ul>
       </div>
       <div class="mini-panel frag pop" style="width:clamp(175px,28vw,290px);border-color:var(--sky)">
-        <div class="strip" style="background:var(--sky)">RECOVERY</div>
+        <div class="strip" style="background:var(--sky)"><span class="en">RECOVERY</span><span class="bn">পুনরুদ্ধার</span></div>
         <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.9;padding:0 .15rem">
-          <li>• Rebase one branch onto the other</li>
-          <li>• Manual merge the conflict sections</li>
-          <li>• Or: ask Claude to resolve it in one session</li>
+          <li><span class="en">• Rebase one branch onto the other</span><span class="bn">• একটি ব্র্যাঞ্চকে অপরটিতে রিবেস করো</span></li>
+          <li><span class="en">• Manual merge the conflict sections</span><span class="bn">• কনফ্লিক্ট অংশ ম্যানুয়ালি মার্জ করো</span></li>
+          <li><span class="en">• Ask Claude to resolve in one session</span><span class="bn">• একটি সেশনে Claude-কে সমাধান করতে বলো</span></li>
         </ul>
       </div>
     </div>
-    <div class="caption frag">If you ran the parallelizability check upfront, conflicts are rare. When they happen — they're small and resolvable in minutes.</div>
+    <div class="caption frag"><span class="en">If you ran the parallelizability check upfront, conflicts are rare. When they happen — they're small and resolvable in minutes.</span><span class="bn">সমান্তরালতা পরীক্ষা আগেই করলে কনফ্লিক্ট বিরল। হলে — ছোট এবং মিনিটের মধ্যে সমাধানযোগ্য।</span></div>
   </div>
 </section>
 
 <!-- ============ SLIDE 21: COST AWARENESS ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto" style="background:var(--purple);color:#fff">COST</div>
-    <h2 class="auto">3 Sessions ≠ 3× Your Bill</h2>
+    <div class="kicker auto" style="background:var(--purple);color:#fff"><span class="en">COST</span><span class="bn">খরচ</span></div>
+    <h2 class="auto"><span class="en">3 Sessions ≠ 3× Your Bill</span><span class="bn">৩ সেশন ≠ তোমার বিল × ৩</span></h2>
     <div class="row" style="margin-top:.4rem;align-items:stretch">
       <div class="mini-panel frag pop" style="width:clamp(180px,28vw,300px);border-color:var(--red)">
-        <div class="strip" style="background:var(--red)">THE MYTH</div>
-        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">"3 sessions = 3× token cost. It'll triple our Claude bill."</div>
+        <div class="strip" style="background:var(--red)"><span class="en">THE MYTH</span><span class="bn">মিথ</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem"><span class="en">"3 sessions = 3× token cost. It'll triple our Claude bill."</span><span class="bn">"৩ সেশন = ৩× টোকেন খরচ। এটা আমাদের Claude বিল তিনগুণ করবে।"</span></div>
       </div>
       <div class="mini-panel frag pop" style="width:clamp(180px,28vw,300px);border-color:var(--green)">
-        <div class="strip" style="background:var(--green)">THE REALITY</div>
-        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem">You pay for tokens used — not time open. Idle sessions cost nothing. Focused prompts = less wasted output tokens.</div>
+        <div class="strip" style="background:var(--green)"><span class="en">THE REALITY</span><span class="bn">বাস্তবতা</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem);margin-top:.4rem"><span class="en">You pay for tokens used — not time open. Idle sessions cost nothing. Focused prompts = less wasted output tokens.</span><span class="bn">তুমি ব্যবহৃত টোকেনের জন্য দাও — খোলা সময়ের জন্য নয়। অলস সেশনের কোনো খরচ নেই। ফোকাসড প্রম্পট = কম আউটপুট টোকেন নষ্ট।</span></div>
       </div>
     </div>
-    <div class="caption frag">Track cost per session with <code>/cost</code> before closing. Tight prompts are cheaper than vague ones. Parallel efficiency offsets the extra sessions.</div>
+    <div class="caption frag"><span class="en">Track cost per session with <code>/cost</code> before closing. Tight prompts are cheaper than vague ones. Parallel efficiency offsets the extra sessions.</span><span class="bn">বন্ধ করার আগে <code>/cost</code> দিয়ে প্রতি সেশনের খরচ ট্র্যাক করো। টাইট প্রম্পট অস্পষ্টের চেয়ে সস্তা। সমান্তরাল দক্ষতা অতিরিক্ত সেশনের খরচ কমায়।</span></div>
     <div class="row frag" style="margin-top:.3rem">
-      <span class="tag" style="border-color:var(--purple)">PAY FOR TOKENS, NOT TIME</span>
-      <span class="tag">FOCUSED PROMPTS = LESS WASTE</span>
-      <span class="tag">TRACK WITH /cost</span>
+      <span class="tag" style="border-color:var(--purple)"><span class="en">PAY FOR TOKENS, NOT TIME</span><span class="bn">টোকেনের জন্য দাও, সময়ের নয়</span></span>
+      <span class="tag"><span class="en">FOCUSED PROMPTS = LESS WASTE</span><span class="bn">ফোকাসড প্রম্পট = কম অপচয়</span></span>
+      <span class="tag"><span class="en">TRACK WITH /cost</span><span class="bn">/cost দিয়ে ট্র্যাক করো</span></span>
     </div>
   </div>
 </section>
@@ -659,24 +655,25 @@ pre.code-block .note    { color: #c4b5fd; }
 <!-- ============ SLIDE 22: WRAP UP ============ -->
 <section class="slide">
   <div class="content">
-    <div class="kicker auto">WRAP UP</div>
-    <h2 class="auto">Multiple Sessions — The Basics</h2>
+    <div class="kicker auto"><span class="en">WRAP UP</span><span class="bn">সারসংক্ষেপ</span></div>
+    <h2 class="auto"><span class="en">Multiple Sessions — The Basics</span><span class="bn">একাধিক সেশন — মূল বিষয়</span></h2>
     <div class="row frag" style="margin-top:.4rem">
-      <span class="tag" style="border-color:var(--amber)">WORKTREES</span>
-      <span class="tag" style="border-color:var(--blue)">FOCUSED PROMPTS</span>
-      <span class="tag" style="border-color:var(--sky)">20-MIN ROTATIONS</span>
-      <span class="tag" style="border-color:var(--green)">PR PER SESSION</span>
+      <span class="tag" style="border-color:var(--amber)"><span class="en">WORKTREES</span><span class="bn">ওয়ার্কট্রি</span></span>
+      <span class="tag" style="border-color:var(--blue)"><span class="en">FOCUSED PROMPTS</span><span class="bn">ফোকাসড প্রম্পট</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">20-MIN ROTATIONS</span><span class="bn">২০ মিনিট রোটেশন</span></span>
+      <span class="tag" style="border-color:var(--green)"><span class="en">PR PER SESSION</span><span class="bn">প্রতি সেশনে PR</span></span>
     </div>
     <div class="panel frag pop" style="margin-top:.4rem">
       <svg class="char bob"><use href="#ch-dev"/></svg>
       <div class="bubble tail-l">
         <span class="who c-amber">SHAZZAD</span>
-        "Left at 3:45pm. Three PRs merged. Rifat owes me coffee. This is now my default workflow."
+        <span class="en">"Left at 3:45pm. Three PRs merged. Rifat owes me coffee. This is now my default workflow."</span>
+        <span class="bn">"৩:৪৫-এ চলে গেলাম। তিনটো PR মার্জ। রিফাত আমাকে কফি দেবে। এটাই এখন আমার ডিফল্ট ওয়ার্কফ্লো।"</span>
       </div>
     </div>
     <div class="char-summary frag">
-      Next → <strong>Episode 3:</strong> Subagents inside a single session.<br>
-      The Agent tool, fan-out patterns, and collecting results without runaway costs.
+      <span class="en">Next → <strong>Episode 3:</strong> Subagents inside a single session.<br>The Agent tool, fan-out patterns, and collecting results without runaway costs.</span>
+      <span class="bn b">পরবর্তী → <strong>এপিসোড ৩:</strong> একটি সেশনের মধ্যে সাবএজেন্ট।<br>Agent টুল, ফ্যান-আউট প্যাটার্ন, এবং নিয়ন্ত্রণহীন খরচ ছাড়া ফলাফল সংগ্রহ।</span>
     </div>
   </div>
 </section>
