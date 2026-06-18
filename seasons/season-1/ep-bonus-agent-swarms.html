@@ -177,6 +177,7 @@ pre.code-block .val     { color: #86efac; }
 
 <!-- ============================================================ SLIDE 1 — TITLE -->
 <section class="slide" style="background: var(--navy);">
+  <div class="content">
   <span class="kicker" style="color: var(--amber);">S1 · BONUS EPISODE</span>
   <h1 class="auto" style="color:#fff; max-width: min(90vw,800px);">
     <span class="en">Agent Swarms.</span>
@@ -192,10 +193,12 @@ pre.code-block .val     { color: #86efac; }
     <span class="bn">"রিফাত, আমি মাত্র ৪৭টা এজেন্ট একসাথে চালু করলাম। একটা কাজের জন্য। এক মিনিটেরও কম সময়ে। মনে হচ্ছে এটা আর আগের মতো না।"</span>
   </div>
   <svg class="char bob" style="position:absolute;right:clamp(1rem,6vw,5rem);bottom:0;opacity:.18;"><use href="#ch-dev"/></svg>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 2 — RECAP -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">RECAP · SEASON 1</span>
   <h2 class="auto">
     <span class="en">The arc so far.</span>
@@ -212,10 +215,12 @@ pre.code-block .val     { color: #86efac; }
     <span class="en">Today: a new primitive. Not just parallel sessions — agents that coordinate <em>with each other</em>.</span>
     <span class="bn">আজ: নতুন একটা ধারণা। শুধু সমান্তরাল সেশন না — এজেন্ট যারা <em>একে অপরের সাথে</em> সমন্বয় করে।</span>
   </p>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 3 — THE LEAP -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">THE SHIFT</span>
   <h2 class="auto">
     <span class="en">From assistant to team.</span>
@@ -239,10 +244,12 @@ pre.code-block .val     { color: #86efac; }
     <span class="en">The key insight: LLMs reason worse as context grows. Keep each agent small, focused, and fast.</span>
     <span class="bn">মূল উপলব্ধি: context বাড়লে LLM দুর্বল হয়। প্রতিটা এজেন্টকে ছোট, কেন্দ্রীভূত রাখো।</span>
   </p>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 4 — TWO FLAVORS -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">TWO FLAVORS</span>
   <h2 class="auto">
     <span class="en">Swarms come in two forms.</span>
@@ -272,10 +279,12 @@ pre.code-block .val     { color: #86efac; }
       </div>
     </div>
   </div>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 5 — AGENT TEAMS ANATOMY -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">AGENT TEAMS · ANATOMY</span>
   <h2 class="auto">
     <span class="en">Lead, teammates, mailbox.</span>
@@ -303,10 +312,12 @@ pre.code-block .val     { color: #86efac; }
     <span class="en">Teammates don't just report to lead — they message each other. Backend tells frontend: "the endpoint is <code>/api/v2/auth</code>."</span>
     <span class="bn">টিমমেটরা শুধু লিডকে রিপোর্ট করে না — নিজেরা কথা বলে। ব্যাকএন্ড ফ্রন্টএন্ডকে বলে: endpoint কোনটা।</span>
   </p>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 6 — ENABLE IT -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">AGENT TEAMS · SETUP</span>
   <h2 class="auto">
     <span class="en">One env flag. That's it.</span>
@@ -327,10 +338,12 @@ pre.code-block .val     { color: #86efac; }
     <span class="en">"Create a team with 3 teammates to refactor the payment module in parallel — one for the service layer, one for tests, one for the API contract."</span>
     <span class="bn">"৩ জন টিমমেট দিয়ে পেমেন্ট মডিউল রিফ্যাক্টর করো — একজন সার্ভিস লেয়ারে, একজন টেস্টে, একজন API কন্ট্র্যাক্টে।"</span>
   </div>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 7 — TASK BOARD -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">AGENT TEAMS · TASK BOARD</span>
   <h2 class="auto">
     <span class="en">Shared task board — no collisions.</span>
@@ -360,10 +373,12 @@ pre.code-block .val     { color: #86efac; }
     <span class="en">Result: no race conditions, no overwritten work, clear dependency chains.</span>
     <span class="bn">ফলাফল: race condition নেই, ওভাররাইট নেই, পরিষ্কার dependency চেইন।</span>
   </p>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 8 — TEAMMATES vs SUBAGENTS -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">COMPARISON</span>
   <h2 class="auto">
     <span class="en">Teammates vs subagents.</span>
@@ -401,10 +416,12 @@ pre.code-block .val     { color: #86efac; }
       <div class="ct-cell"><span class="en">Parallel read/analysis</span><span class="bn">সমান্তরাল বিশ্লেষণ</span></div>
     </div>
   </div>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 9 — DYNAMIC WORKFLOWS -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">DYNAMIC WORKFLOWS</span>
   <h2 class="auto">
     <span class="en">The orchestrator pattern.</span>
@@ -443,10 +460,12 @@ pre.code-block .val     { color: #86efac; }
     <span class="en">Orchestrator dynamically writes its own plan — you don't script the decomposition yourself.</span>
     <span class="bn">অর্কেস্ট্রেটর নিজেই পরিকল্পনা লেখে — তুমি decomposition নিজে করো না।</span>
   </p>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 10 — HEADLESS MODE -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">DYNAMIC WORKFLOWS · SETUP</span>
   <h2 class="auto">
     <span class="en">Headless mode — the engine.</span>
@@ -466,10 +485,12 @@ pre.code-block .val     { color: #86efac; }
     <span class="en"><code>-p</code> = non-interactive (print mode). <code>-P 10</code> = 10 concurrent shells. <code>--max-turns 20</code> = hard stop.</span>
     <span class="bn"><code>-p</code> = নন-ইন্টারেক্টিভ। <code>-P 10</code> = ১০টা একসাথে। <code>--max-turns 20</code> = কঠোর সীমা।</span>
   </p>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 11 — PROMPT DISCIPLINE -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">DYNAMIC WORKFLOWS · PROMPTS</span>
   <h2 class="auto">
     <span class="en">Scoped prompts. No shared memory.</span>
@@ -494,10 +515,12 @@ pre.code-block .val     { color: #86efac; }
     <span class="en">Each agent needs ALL context in its prompt — agents don't share memory. If agent A discovers something, agent B won't know.</span>
     <span class="bn">প্রতিটা এজেন্টের prompt-এ সব context দাও — এজেন্টরা মেমরি শেয়ার করে না।</span>
   </p>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 12 — GAN PATTERN -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">ADVANCED PATTERN</span>
   <h2 class="auto">
     <span class="en">Generator + Validator. A GAN for code.</span>
@@ -529,10 +552,12 @@ pre.code-block .val     { color: #86efac; }
     <span class="en">This is the closest thing to a GAN for software engineering — adversarial agents converging on correct output.</span>
     <span class="bn">সফটওয়্যার ইঞ্জিনিয়ারিংয়ের জন্য GAN-এর সবচেয়ে কাছের জিনিস।</span>
   </p>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 13 — REAL WORLD -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">REAL WORLD</span>
   <h2 class="auto">
     <span class="en">Bun: Zig → Rust. In eleven days.</span>
@@ -562,10 +587,12 @@ pre.code-block .val     { color: #86efac; }
     <span class="en">A task that would have taken a team of engineers months — completed by agent swarms in under two weeks.</span>
     <span class="bn">একটা কাজ যা ইঞ্জিনিয়ারদের মাস লাগত — এজেন্ট ঝাঁক দুই সপ্তাহেরও কমে শেষ করল।</span>
   </p>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 14 — COST MATH -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">COST MODEL</span>
   <h2 class="auto">
     <span class="en">Tokens scale linearly. Plan accordingly.</span>
@@ -599,10 +626,12 @@ pre.code-block .val     { color: #86efac; }
     <li class="yes"><span class="icon">✅</span><span class="en">Filter scope before spawning — no wasted agents on irrelevant files</span><span class="bn">spawn করার আগে scope ফিল্টার করো</span></li>
     <li class="no"><span class="icon">⛔</span><span class="en">Don't spawn hundreds for sequential tasks — activity ≠ value</span><span class="bn">sequential কাজে শত শত spawn করো না</span></li>
   </ul>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 15 — WATCH OUT: STATELESSNESS -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">WATCH OUT</span>
   <h2 class="auto" style="color: var(--red);">
     <span class="en">Subagents have no shared memory.</span>
@@ -623,10 +652,12 @@ pre.code-block .val     { color: #86efac; }
     <span class="en">Fix: pass critical discoveries explicitly in every subagent's prompt. Or use Agent Teams where agents can message each other.</span>
     <span class="bn">সমাধান: গুরুত্বপূর্ণ তথ্য প্রতিটা subagent-এর prompt-এ দাও। বা Agent Teams ব্যবহার করো।</span>
   </p>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 16 — WATCH OUT: RATE LIMITS -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">WATCH OUT</span>
   <h2 class="auto" style="color: var(--red);">
     <span class="en">Rate limits are real. Control concurrency.</span>
@@ -646,10 +677,12 @@ pre.code-block .val     { color: #86efac; }
     <li class="yes"><span class="icon">✅</span><span class="en">Prefer Task tool (managed) over raw shell xargs for large swarms</span><span class="bn">বড় ঝাঁকের জন্য Task tool পছন্দ করো</span></li>
     <li class="no"><span class="icon">⛔</span><span class="en">Never spawn unlimited parallel agents — rate limits will throttle you</span><span class="bn">অসীম সমান্তরাল এজেন্ট spawn করো না</span></li>
   </ul>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 17 — WHEN TO USE -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">DECISION GUIDE</span>
   <h2 class="auto">
     <span class="en">Which tool for which job?</span>
@@ -686,10 +719,12 @@ pre.code-block .val     { color: #86efac; }
     <span class="en">Let the problem shape the tool. Activity isn't value.</span>
     <span class="bn">সমস্যা দিয়ে tool বেছে নাও। activity মানে value না।</span>
   </p>
+  </div>
 </section>
 
 <!-- ============================================================ SLIDE 18 — WRAP UP -->
 <section class="slide">
+  <div class="content">
   <span class="kicker">WRAP UP</span>
   <h2 class="auto">
     <span class="en">One engineer. A hundred agents.</span>
@@ -721,6 +756,7 @@ pre.code-block .val     { color: #86efac; }
     <span class="en">Season 1 complete. You've gone from one agent to a swarm. What you build next is up to you.</span>
     <span class="bn">সিজন ১ সম্পন্ন। একটা এজেন্ট থেকে ঝাঁকে এলে। এখন তুমি কী বানাবে সেটা তোমার।</span>
   </p>
+  </div>
 </section>
 
 <div id="counter" class="counter"></div>
