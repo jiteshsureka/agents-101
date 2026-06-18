@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S1·E4 — Cross-Session Coordination · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+/* ---- checklist ---- */
+.checklist {
+  list-style: none; display: flex; flex-direction: column;
+  gap: .5rem; text-align: left; max-width: min(88vw, 660px); width: 100%;
+}
+.checklist li {
+  font-weight: 600; font-size: clamp(.82rem, 1.7vw, 1.05rem);
+  padding: .38em .9em; border-radius: 12px;
+  border: 2px solid var(--navy); background: var(--paper);
+  box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: .55rem;
+}
+.checklist li.yes { border-color: var(--green); background: rgba(46,175,125,.08); }
+.checklist li.no  { border-color: var(--red);   background: rgba(224,72,58,.08); }
+.checklist li .icon { font-size: 1.1em; flex-shrink: 0; }
+
+/* ---- code block ---- */
+pre.code-block {
+  background: var(--navy); color: #e2e8f0;
+  border: 2px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  padding: clamp(.7rem,1.8vw,1.2rem) clamp(.9rem,2vw,1.4rem);
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.62rem,1.35vw,.88rem); line-height: 1.65;
+  text-align: left; max-width: min(92vw, 800px); width: 100%;
+  overflow-x: auto; white-space: pre;
+}
+pre.code-block .comment { color: #64748b; }
+pre.code-block .cmd     { color: var(--amber); }
+pre.code-block .flag    { color: #7dd3fc; }
+pre.code-block .path    { color: #86efac; }
+pre.code-block .note    { color: #c4b5fd; }
+pre.code-block .str     { color: #fca5a5; }
+
+/* ---- shared-file card ---- */
+.shared-file {
+  background: var(--paper); border: 2.5px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-md); overflow: hidden;
+  max-width: min(88vw, 680px); width: 100%;
+}
+.shared-file .sf-header {
+  background: var(--navy); padding: .35em 1em;
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.7rem,1.4vw,.9rem); color: var(--amber);
+  display: flex; align-items: center; gap: .5em;
+}
+.shared-file .sf-body {
+  padding: clamp(.7rem,1.8vw,1.2rem) clamp(.9rem,2vw,1.4rem);
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.62rem,1.35vw,.85rem); line-height: 1.7;
+  color: var(--navy); text-align: left;
+}
+.shared-file .sf-body .sf-section { color: var(--purple, #6C5CE7); font-weight: 700; }
+.shared-file .sf-body .sf-val { color: var(--sky); }
+
+/* ---- handoff diagram ---- */
+.handoff-diagram {
+  display: flex; align-items: center; justify-content: center;
+  gap: clamp(.5rem,1.5vw,1rem); flex-wrap: wrap;
+  max-width: min(92vw, 860px); width: 100%;
+}
+.handoff-session {
+  background: var(--paper); border: 2.5px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-md); padding: clamp(.6rem,1.5vw,1rem) clamp(.9rem,2vw,1.4rem);
+  text-align: center; min-width: clamp(140px,20vw,210px);
+}
+.handoff-session .hs-label {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.85rem,1.8vw,1.15rem); margin-bottom: .3rem;
+}
+.handoff-session .hs-task {
+  font-size: clamp(.65rem,1.3vw,.82rem); font-weight: 600;
+  color: rgba(17,23,44,.6); line-height: 1.4;
+}
+.handoff-arrow {
+  font-size: clamp(1.2rem,2.5vw,1.8rem); opacity: .5;
+  font-family: 'Caveat', cursive;
+}
+.handoff-output {
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.6rem,1.2vw,.78rem); color: var(--sky);
+  font-weight: 600; margin-top: .3rem;
+}
+
+/* ---- conflict diff ---- */
+.conflict-diff {
+  display: flex; gap: clamp(.5rem,1.2vw,.8rem);
+  max-width: min(92vw, 820px); width: 100%; flex-wrap: wrap;
+}
+.diff-col {
+  flex: 1; min-width: clamp(200px,30vw,340px);
+  border: 2px solid var(--navy); border-radius: 14px; overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.diff-col .dc-head {
+  padding: .3em .8em;
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.8rem,1.6vw,1rem); color: #fff;
+}
+.diff-col .dc-body {
+  background: var(--navy); color: #e2e8f0;
+  padding: clamp(.5rem,1.2vw,.8rem) clamp(.7rem,1.5vw,1rem);
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.58rem,1.2vw,.78rem); line-height: 1.7; text-align: left;
+}
+.diff-col .dc-body .del { color: #fca5a5; text-decoration: line-through; }
+.diff-col .dc-body .add { color: #86efac; }
+.diff-col .dc-body .ctx { color: #64748b; }
+
+/* ---- pattern overview cards ---- */
+.pattern-row {
+  display: flex; gap: clamp(.6rem,1.5vw,1.1rem); flex-wrap: wrap;
+  justify-content: center; max-width: min(92vw,860px); width: 100%;
+}
+.pattern-card {
+  background: var(--paper); border: 2px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-sm); padding: clamp(.7rem,1.8vw,1.2rem);
+  flex: 1; min-width: clamp(170px,24vw,240px); text-align: center;
+}
+.pattern-card .pc-num {
+  font-family: 'Fraunces', serif; font-weight: 700;
+  font-size: clamp(1.5rem,3vw,2.2rem); color: #6C5CE7; line-height: 1;
+}
+.pattern-card h3 {
+  font-family: 'Work Sans', sans-serif; font-weight: 700;
+  font-size: clamp(.78rem,1.55vw,.98rem); margin: .3rem 0 .2rem; line-height: 1.3;
+}
+.pattern-card p {
+  font-size: clamp(.62rem,1.25vw,.8rem); color: rgba(17,23,44,.65); line-height: 1.45;
+}
+
+/* ---- cost curve ---- */
+.cost-curve {
+  display: flex; flex-direction: column; gap: .5rem;
+  max-width: min(86vw,640px); width: 100%;
+}
+.cc-row {
+  display: flex; align-items: center; gap: .7rem;
+}
+.cc-label {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.78rem,1.55vw,1rem); min-width: clamp(90px,14vw,130px); text-align: right;
+}
+.cc-bar-wrap {
+  flex: 1; height: clamp(20px,3vw,28px);
+  background: rgba(17,23,44,.08); border-radius: 999px; overflow: hidden;
+}
+.cc-bar {
+  height: 100%; border-radius: 999px;
+  background: #6C5CE7; transition: width .3s;
+}
+.cc-val {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.75rem,1.5vw,.95rem); min-width: 2.5rem;
+}
+</style>
+</head>
+<body data-ep-label="S1·E4 · Cross-Session Coordination" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ===== SLIDE 1: TITLE ===== -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">SEASON 1 · EPISODE 4</span><span class="bn">সিজন ১ · এপিসোড ৪</span></div>
+    <h1 class="auto" style="color:#fff;font-size:clamp(1.8rem,7vw,4.8rem);line-height:.95">
+      <span class="en">CROSS-SESSION<br><span style="color:#6C5CE7">COORDINATION</span></span>
+      <span class="bn b" style="color:#fff">ক্রস-সেশন<br><span style="color:#6C5CE7">কোঅর্ডিনেশন</span></span>
+    </h1>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,700px)">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-amber">RIFAT · SENIOR ENGINEER, NOP-STATION</span>
+        <span class="en">"Three sessions running. All three hit the same database table. Nobody told anyone. Merge day was not fun."</span>
+        <span class="bn">"তিনটা সেশন চলছিল। তিনটাই একই ডেটাবেজ টেবিলে হাত দিল। কেউ কাউকে জানায়নি। মার্জের দিন ভালো ছিল না।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 2: RECAP ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">RECAP · EP 1–3</span><span class="bn">সারসংক্ষেপ · এপিসোড ১–৩</span></div>
+    <h2 class="auto"><span class="en">The Story So Far</span><span class="bn">এ পর্যন্ত গল্প</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:stretch;gap:1rem">
+      <div class="mini-panel pop" style="width:clamp(145px,22vw,220px);border-color:var(--blue)">
+        <div class="strip" style="background:var(--blue)">EP 1</div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.82rem);margin-top:.4rem">
+          <span class="en"><strong>You are the bottleneck.</strong> Claude waits on you. Run 3 sessions = 3× AI-hours.</span>
+          <span class="bn b"><strong>তুমিই বাধা।</strong> ক্লদ তোমার জন্য অপেক্ষা করে। ৩ সেশন = ৩× কাজ।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(145px,22vw,220px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber)">EP 2</div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.82rem);margin-top:.4rem">
+          <span class="en"><strong>Multiple sessions.</strong> Worktrees, focused prompts, 20-min rotation, one PR per session.</span>
+          <span class="bn b"><strong>একাধিক সেশন।</strong> ওয়ার্কট্রি, ফোকাসড প্রম্পট, ২০ মিনিট রোটেশন।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(145px,22vw,220px);border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)">EP 3</div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.82rem);margin-top:.4rem">
+          <span class="en"><strong>Subagents.</strong> Fan-out inside one session. Claude orchestrates. You collect results.</span>
+          <span class="bn b"><strong>সাবএজেন্ট।</strong> একটি সেশনেই ফ্যান-আউট। ক্লদ অর্কেস্ট্রেট করে।</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,640px);margin-top:1rem;border-color:#6C5CE7">
+      <span class="en">Today: what happens when parallel sessions need to <strong>share decisions</strong> — same schema, same API contract, same files.</span>
+      <span class="bn b">আজ: যখন প্যারালেল সেশনগুলো <strong>একই সিদ্ধান্ত শেয়ার</strong> করতে হয় — একই স্কিমা, একই API কন্ট্রাক্ট, একই ফাইল।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 3: THE PROBLEM ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">THE PROBLEM</span><span class="bn">সমস্যা</span></div>
+    <h2 class="auto"><span class="en">Sessions Are Islands</span><span class="bn">সেশন হলো দ্বীপ</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,680px)">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-amber">RIFAT</span>
+        <span class="en">Each session has its own context window. It doesn't know what the other sessions decided five minutes ago. That's fine — until they all need to agree on something.</span>
+        <span class="bn">প্রতিটা সেশনের নিজস্ব কনটেক্সট উইন্ডো আছে। অন্য সেশন পাঁচ মিনিট আগে কী সিদ্ধান্ত নিয়েছে সেটা সে জানে না। ঠিক আছে — যতক্ষণ না তাদের একমত হতে হয়।</span>
+      </div>
+    </div>
+    <div class="row frag" style="gap:1rem;margin-top:.8rem;flex-wrap:wrap;justify-content:center">
+      <div class="tag" style="border-color:#6C5CE7;font-size:clamp(.75rem,1.5vw,.95rem)"><span class="en">🏝 Session A — auth module</span><span class="bn">🏝 সেশন A — অথ মডিউল</span></div>
+      <div class="tag" style="border-color:#6C5CE7;font-size:clamp(.75rem,1.5vw,.95rem)"><span class="en">🏝 Session B — payments</span><span class="bn">🏝 সেশন B — পেমেন্ট</span></div>
+      <div class="tag" style="border-color:#6C5CE7;font-size:clamp(.75rem,1.5vw,.95rem)"><span class="en">🏝 Session C — API layer</span><span class="bn">🏝 সেশন C — API লেয়ার</span></div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,640px);margin-top:.8rem;border-color:var(--red);background:rgba(224,72,58,.06)">
+      <span class="en">All three need: the same <strong>user_id field type</strong>, the same <strong>error response format</strong>, the same <strong>DB migration file</strong>. None of them know what the others chose.</span>
+      <span class="bn b">তিনটারই দরকার: একই <strong>user_id ফিল্ড টাইপ</strong>, একই <strong>এরর রেসপন্স ফরম্যাট</strong>, একই <strong>DB মাইগ্রেশন ফাইল</strong>। কিন্তু কেউ জানে না অন্যরা কী বেছেছে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 4: WHEN IT MATTERS ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">WHEN IT MATTERS</span><span class="bn">কখন সমস্যা হয়</span></div>
+    <h2 class="auto"><span class="en">The Coordination Trigger List</span><span class="bn">কোঅর্ডিনেশন ট্রিগার লিস্ট</span></h2>
+    <ul class="checklist frag">
+      <li class="yes"><span class="icon">📋</span><span class="en">Two+ sessions touch the same DB table or migration file</span><span class="bn">দুই বা বেশি সেশন একই DB টেবিল বা মাইগ্রেশন ফাইলে কাজ করে</span></li>
+      <li class="yes"><span class="icon">🔗</span><span class="en">Sessions share an API interface — one builds, others consume</span><span class="bn">সেশনগুলো একই API ইন্টারফেস ব্যবহার করে — একটা তৈরি করে, বাকিরা ব্যবহার করে</span></li>
+      <li class="yes"><span class="icon">⚙️</span><span class="en">Shared config or environment variables one session might change</span><span class="bn">শেয়ার করা কনফিগ বা এনভায়রনমেন্ট ভেরিয়েবল যা একটি সেশন পরিবর্তন করতে পারে</span></li>
+      <li class="yes"><span class="icon">🔀</span><span class="en">PRs that will need to merge in a specific order</span><span class="bn">PR যেগুলো নির্দিষ্ট ক্রমে মার্জ করতে হবে</span></li>
+      <li class="no"><span class="icon">✅</span><span class="en">Fully independent modules with no shared data model → no coordination needed</span><span class="bn">সম্পূর্ণ স্বাধীন মডিউল, কোনো শেয়ার্ড ডেটা নেই → কোনো কোঅর্ডিনেশন দরকার নেই</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== SLIDE 5: THREE PATTERNS OVERVIEW ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">THREE PATTERNS</span><span class="bn">তিনটি প্যাটার্ন</span></div>
+    <h2 class="auto"><span class="en">The Coordination Toolkit</span><span class="bn">কোঅর্ডিনেশন টুলকিট</span></h2>
+    <div class="pattern-row frag">
+      <div class="pattern-card pop">
+        <div class="pc-num">1</div>
+        <h3><span class="en">Shared Files</span><span class="bn">শেয়ার্ড ফাইল</span></h3>
+        <p><span class="en">Write decisions into files all sessions can read before they start</span><span class="bn">সিদ্ধান্তগুলো ফাইলে লিখুন যা সব সেশন শুরু করার আগে পড়তে পারে</span></p>
+      </div>
+      <div class="pattern-card pop">
+        <div class="pc-num">2</div>
+        <h3><span class="en">Structured Handoffs</span><span class="bn">স্ট্রাকচার্ড হ্যান্ডঅফ</span></h3>
+        <p><span class="en">Session A's output becomes Session B's input — agree on format first</span><span class="bn">সেশন A-এর আউটপুট সেশন B-এর ইনপুট হয় — আগে ফরম্যাট ঠিক করুন</span></p>
+      </div>
+      <div class="pattern-card pop">
+        <div class="pc-num">3</div>
+        <h3><span class="en">Merge Orchestration</span><span class="bn">মার্জ অর্কেস্ট্রেশন</span></h3>
+        <p><span class="en">Plan the merge order before sessions start — foundation branch merges first</span><span class="bn">সেশন শুরু করার আগেই মার্জ অর্ডার পরিকল্পনা করুন — ফাউন্ডেশন ব্র্যাঞ্চ আগে মার্জ হবে</span></p>
+      </div>
+    </div>
+    <div class="caption frag" style="margin-top:1rem">
+      <span class="en">All three cost 15 minutes of setup. All three save hours of merge conflict debugging.</span>
+      <span class="bn">তিনটাই ১৫ মিনিট সেটআপ নেয়। তিনটাই ঘণ্টার মার্জ কনফ্লিক্ট ডিবাগিং বাঁচায়।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 6: PATTERN 1 — CLAUDE.MD ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">PATTERN 1</span><span class="bn">প্যাটার্ন ১</span></div>
+    <h2 class="auto"><span class="en">CLAUDE.md as Coordination Layer</span><span class="bn">CLAUDE.md কোঅর্ডিনেশন লেয়ার হিসেবে</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">Every session reads <code>CLAUDE.md</code> at startup. Write your shared decisions there <strong>before</strong> launching any session. It's the one file they all agree on.</span>
+      <span class="bn b">প্রতিটি সেশন স্টার্টআপে <code>CLAUDE.md</code> পড়ে। যেকোনো সেশন লঞ্চ করার <strong>আগে</strong> শেয়ার্ড সিদ্ধান্তগুলো সেখানে লিখুন। এটাই একমাত্র ফাইল যেটায় সবাই একমত।</span>
+    </div>
+    <div class="frag" style="margin-top:.8rem">
+      <div class="shared-file">
+        <div class="sf-header">📄 CLAUDE.md — Shared Decisions Section</div>
+        <div class="sf-body">
+<span class="sf-section">## Shared Data Contracts</span>
+
+<span class="sf-val">user_id</span>: UUID (not integer) — decided 2026-06-19
+<span class="sf-val">error format</span>: { code: string, message: string, field?: string }
+<span class="sf-val">timestamps</span>: ISO 8601, UTC, column name = created_at / updated_at
+
+<span class="sf-section">## DB Migration Rules</span>
+Only Session A (auth branch) owns <span class="sf-val">migrations/</span>.
+Sessions B and C must NOT create migration files.
+Ask Rifat if you need a schema change.
+
+<span class="sf-section">## API Base Path</span>
+All endpoints under <span class="sf-val">/api/v2/</span> — no v1 endpoints in new work.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 7: PATTERN 1 — SHARED MEMORY FILE ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">PATTERN 1</span><span class="bn">প্যাটার্ন ১</span></div>
+    <h2 class="auto"><span class="en">Live Shared Memory File</span><span class="bn">লাইভ শেয়ার্ড মেমরি ফাইল</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">CLAUDE.md is for pre-launch decisions. For <strong>decisions made during a sprint</strong>, use a live shared file. Tell each session to read it at the start of each turn.</span>
+      <span class="bn b">CLAUDE.md লঞ্চ-পূর্ব সিদ্ধান্তের জন্য। <strong>স্প্রিন্ট চলাকালীন সিদ্ধান্তের</strong> জন্য লাইভ শেয়ার্ড ফাইল ব্যবহার করুন। প্রতিটি সেশনকে প্রতিটি টার্নের শুরুতে এটা পড়তে বলুন।</span>
+    </div>
+    <div class="frag" style="margin-top:.8rem">
+      <div class="shared-file">
+        <div class="sf-header">📄 .claude/shared-state.md — Live Sprint Decisions</div>
+        <div class="sf-body">
+<span class="sf-section">## Live Decisions (update as sprint progresses)</span>
+
+<span class="sf-val">[2026-06-19 10:32]</span> Auth: JWT expiry = 7 days (not 24h). — Rifat
+<span class="sf-val">[2026-06-19 11:15]</span> Payments: use Stripe webhooks, not polling. — Habib
+<span class="sf-val">[2026-06-19 14:02]</span> API: rate limit = 100 req/min per user_id. — Shazzad
+
+<span class="sf-section">## Blocked / Waiting</span>
+Session C (API) waiting on Session A (auth) for token validation endpoint.
+ETA: today 16:00.
+        </div>
+      </div>
+    </div>
+    <div class="caption frag" style="margin-top:.6rem">
+      <span class="en">Prompt each session: "Read <code>.claude/shared-state.md</code> before starting. Append any decisions you make."</span>
+      <span class="bn">প্রতিটি সেশনকে প্রম্পট করুন: "শুরু করার আগে <code>.claude/shared-state.md</code> পড়ুন। আপনি যে সিদ্ধান্ত নেন সেগুলো যোগ করুন।"</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 8: PATTERN 2 — HANDOFF PROTOCOL ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">PATTERN 2</span><span class="bn">প্যাটার্ন ২</span></div>
+    <h2 class="auto"><span class="en">The Handoff Protocol</span><span class="bn">হ্যান্ডঅফ প্রোটোকল</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">Some sessions run in sequence — Session A produces something Session B needs. The rule: <strong>agree on the output format before either session starts.</strong></span>
+      <span class="bn b">কিছু সেশন ক্রমানুসারে চলে — সেশন A কিছু তৈরি করে যেটা সেশন B-এর দরকার। নিয়ম: <strong>কোনো সেশন শুরু করার আগেই আউটপুট ফরম্যাটে একমত হন।</strong></span>
+    </div>
+    <div class="handoff-diagram frag" style="margin-top:.8rem">
+      <div class="handoff-session" style="border-color:#6C5CE7">
+        <div class="hs-label" style="color:#6C5CE7"><span class="en">Session A</span><span class="bn">সেশন A</span></div>
+        <div class="hs-task"><span class="en">Auth module<br>Builds token endpoint</span><span class="bn">অথ মডিউল<br>টোকেন এন্ডপয়েন্ট তৈরি</span></div>
+        <div class="handoff-output">→ writes: .claude/auth-contract.md</div>
+      </div>
+      <div class="handoff-arrow">→</div>
+      <div class="handoff-session" style="border-color:var(--sky)">
+        <div class="hs-label" style="color:var(--sky)"><span class="en">Session C</span><span class="bn">সেশন C</span></div>
+        <div class="hs-task"><span class="en">API layer<br>Consumes token endpoint</span><span class="bn">API লেয়ার<br>টোকেন এন্ডপয়েন্ট ব্যবহার করে</span></div>
+        <div class="handoff-output">← reads: .claude/auth-contract.md</div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,640px);margin-top:.8rem;border-color:var(--green);background:rgba(46,175,125,.06)">
+      <span class="en">Session A finishes → writes its API contract → Session C launches, reads the contract, and integrates correctly. No guessing.</span>
+      <span class="bn b">সেশন A শেষ করে → API কন্ট্রাক্ট লেখে → সেশন C চালু হয়, কন্ট্রাক্ট পড়ে, সঠিকভাবে ইন্টিগ্রেট করে। কোনো অনুমান নেই।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 9: PATTERN 2 — OUTPUT CONTRACTS ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">PATTERN 2</span><span class="bn">প্যাটার্ন ২</span></div>
+    <h2 class="auto"><span class="en">Output Contracts</span><span class="bn">আউটপুট কন্ট্রাক্ট</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">An output contract is a structured format the producing session must write and the consuming session reads. Keep it simple — markdown or JSON.</span>
+      <span class="bn b">আউটপুট কন্ট্রাক্ট হলো একটি স্ট্রাকচার্ড ফরম্যাট যেটা প্রডিউসিং সেশন লিখবে এবং কনজিউমিং সেশন পড়বে। সহজ রাখুন — মার্কডাউন বা JSON।</span>
+    </div>
+    <pre class="code-block frag">
+<span class="comment"># .claude/auth-contract.md — written by Session A, read by Session C</span>
+
+<span class="path">## Token Endpoint</span>
+<span class="str">POST /api/v2/auth/token</span>
+Body:   { email: string, password: string }
+200:    { token: string, expires_at: ISO8601 }
+401:    { code: "INVALID_CREDENTIALS", message: string }
+429:    { code: "RATE_LIMITED", retry_after: number }
+
+<span class="path">## Token Validation Middleware</span>
+<span class="str">import { validateToken } from '@/lib/auth'</span>
+<span class="comment"># Returns: { user_id: UUID, email: string } or throws AuthError</span>
+
+<span class="path">## Status</span>
+<span class="cmd">COMPLETE</span> — endpoint live on feat/auth-agent branch
+    </pre>
+    <div class="caption frag">
+      <span class="en">Session C prompt: "Read <code>.claude/auth-contract.md</code> before integrating the token endpoint. Do not assume the shape — use exactly what's documented."</span>
+      <span class="bn">সেশন C প্রম্পট: "টোকেন এন্ডপয়েন্ট ইন্টিগ্রেট করার আগে <code>.claude/auth-contract.md</code> পড়ুন।"</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 10: BRANCH STRATEGY ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">BRANCH STRATEGY</span><span class="bn">ব্র্যাঞ্চ কৌশল</span></div>
+    <h2 class="auto"><span class="en">One Worktree, One Session, One Branch</span><span class="bn">এক ওয়ার্কট্রি, এক সেশন, এক ব্র্যাঞ্চ</span></h2>
+    <pre class="code-block frag">
+<span class="comment"># Set up three worktrees before launching any session</span>
+git worktree add <span class="path">../worktrees/auth</span>     <span class="flag">-b</span> feat/auth-agent
+git worktree add <span class="path">../worktrees/payments</span> <span class="flag">-b</span> feat/payments-agent
+git worktree add <span class="path">../worktrees/api</span>      <span class="flag">-b</span> feat/api-agent
+
+<span class="comment"># Then launch each session in its own worktree</span>
+cd <span class="path">../worktrees/auth</span>     && claude <span class="comment"># Session A</span>
+cd <span class="path">../worktrees/payments</span> && claude <span class="comment"># Session B</span>
+cd <span class="path">../worktrees/api</span>      && claude <span class="comment"># Session C</span>
+    </pre>
+    <div class="row frag" style="gap:.8rem;margin-top:.8rem;flex-wrap:wrap;justify-content:center">
+      <div class="tag" style="border-color:var(--green)"><span class="en">✓ Isolated file systems — no accidental overwrites</span><span class="bn">✓ আলাদা ফাইল সিস্টেম — কোনো ভুল ওভাররাইট নেই</span></div>
+      <div class="tag" style="border-color:var(--green)"><span class="en">✓ Clear branch-to-session mapping for review</span><span class="bn">✓ রিভিউর জন্য স্পষ্ট ব্র্যাঞ্চ-সেশন ম্যাপিং</span></div>
+      <div class="tag" style="border-color:var(--green)"><span class="en">✓ Shared files (CLAUDE.md, .claude/) visible across all</span><span class="bn">✓ শেয়ার্ড ফাইল সবার কাছে দৃশ্যমান</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 11: PATTERN 3 — MERGE ORCHESTRATION ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">PATTERN 3</span><span class="bn">প্যাটার্ন ৩</span></div>
+    <h2 class="auto"><span class="en">Merge Orchestration</span><span class="bn">মার্জ অর্কেস্ট্রেশন</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">Merge order isn't optional when sessions have dependencies. The foundation branch must land first. Dependent branches rebase onto it before their PR goes up.</span>
+      <span class="bn b">যখন সেশনগুলোর মধ্যে নির্ভরতা থাকে তখন মার্জ অর্ডার ঐচ্ছিক নয়। ফাউন্ডেশন ব্র্যাঞ্চ আগে মার্জ হতে হবে। নির্ভরশীল ব্র্যাঞ্চগুলো PR দেওয়ার আগে তার উপর রিবেজ করে।</span>
+    </div>
+    <div class="handoff-diagram frag" style="margin-top:.8rem">
+      <div class="handoff-session" style="border-color:#6C5CE7">
+        <div class="hs-label" style="color:#6C5CE7"><span class="en">① Auth branch</span><span class="bn">① অথ ব্র্যাঞ্চ</span></div>
+        <div class="hs-task"><span class="en">Merges first.<br>DB schema owner.</span><span class="bn">প্রথমে মার্জ হয়।<br>DB স্কিমার মালিক।</span></div>
+      </div>
+      <div class="handoff-arrow">→</div>
+      <div class="handoff-session" style="border-color:var(--amber)">
+        <div class="hs-label" style="color:var(--amber)"><span class="en">② Payments branch</span><span class="bn">② পেমেন্ট ব্র্যাঞ্চ</span></div>
+        <div class="hs-task"><span class="en">Rebases onto auth.<br>Merges second.</span><span class="bn">অথের উপর রিবেজ করে।<br>দ্বিতীয়তে মার্জ হয়।</span></div>
+      </div>
+      <div class="handoff-arrow">→</div>
+      <div class="handoff-session" style="border-color:var(--sky)">
+        <div class="hs-label" style="color:var(--sky)"><span class="en">③ API branch</span><span class="bn">③ API ব্র্যাঞ্চ</span></div>
+        <div class="hs-task"><span class="en">Rebases onto both.<br>Merges last.</span><span class="bn">দুটোর উপর রিবেজ করে।<br>শেষে মার্জ হয়।</span></div>
+      </div>
+    </div>
+    <div class="caption frag" style="margin-top:.6rem">
+      <span class="en">Write the merge order in CLAUDE.md before the sprint. No surprises on merge day.</span>
+      <span class="bn">স্প্রিন্টের আগে CLAUDE.md-এ মার্জ অর্ডার লিখুন। মার্জের দিন কোনো চমক নেই।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 12: LIVE EXAMPLE ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">LIVE EXAMPLE</span><span class="bn">লাইভ উদাহরণ</span></div>
+    <h2 class="auto"><span class="en">Rifat's Feature Sprint</span><span class="bn">রিফাতের ফিচার স্প্রিন্ট</span></h2>
+    <div class="row frag" style="gap:.9rem;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel" style="width:clamp(155px,23vw,240px);border-color:#6C5CE7">
+        <div class="strip" style="background:#6C5CE7"><span class="en">Session A · Shazzad</span><span class="bn">সেশন A · শাজ্জাদ</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en"><strong>feat/auth-agent</strong><br>User login, JWT, token refresh, logout. Owns <code>migrations/</code>.</span>
+          <span class="bn b"><strong>feat/auth-agent</strong><br>লগইন, JWT, টোকেন রিফ্রেশ, লগআউট। <code>migrations/</code> মালিক।</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="width:clamp(155px,23vw,240px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber)"><span class="en">Session B · Habib</span><span class="bn">সেশন B · হাবিব</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en"><strong>feat/payments-agent</strong><br>Stripe integration, webhook handlers, payment records.</span>
+          <span class="bn b"><strong>feat/payments-agent</strong><br>স্ট্রাইপ ইন্টিগ্রেশন, ওয়েবহুক হ্যান্ডলার, পেমেন্ট রেকর্ড।</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="width:clamp(155px,23vw,240px);border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)"><span class="en">Session C · Rifat</span><span class="bn">সেশন C · রিফাত</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en"><strong>feat/api-agent</strong><br>REST endpoints, auth middleware wiring, rate limiting.</span>
+          <span class="bn b"><strong>feat/api-agent</strong><br>REST এন্ডপয়েন্ট, অথ মিডলওয়্যার, রেট লিমিটিং।</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,640px);margin-top:.8rem;border-color:var(--green);background:rgba(46,175,125,.06)">
+      <span class="en">All three launched after Rifat spent 20 minutes writing shared decisions into CLAUDE.md and setting up worktrees. Session C launched <em>after</em> Session A wrote its auth contract.</span>
+      <span class="bn b">রিফাত ২০ মিনিট ব্যয় করে CLAUDE.md-এ শেয়ার্ড সিদ্ধান্ত লিখেছেন এবং ওয়ার্কট্রি সেটআপ করেছেন। সেশন A অথ কন্ট্রাক্ট লেখার <em>পরে</em> সেশন C চালু হয়েছে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 13: SHOW ME — SHARED CLAUDE.MD ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">SHOW ME</span><span class="bn">দেখাও</span></div>
+    <h2 class="auto"><span class="en">The Pre-Sprint CLAUDE.md</span><span class="bn">স্প্রিন্ট-পূর্ব CLAUDE.md</span></h2>
+    <div class="shared-file frag" style="max-width:min(88vw,720px)">
+      <div class="sf-header">📄 CLAUDE.md — Sprint Coordination Section (added before launch)</div>
+      <div class="sf-body">
+<span class="sf-section">## Sprint: Checkout Feature · 2026-06-19</span>
+
+<span class="sf-section">### Shared Contracts</span>
+- <span class="sf-val">user_id</span>: UUID v4 (string, not integer)
+- <span class="sf-val">Error shape</span>: { code: SCREAMING_SNAKE, message: string, field?: string }
+- <span class="sf-val">Timestamps</span>: created_at / updated_at, UTC, ISO 8601
+
+<span class="sf-section">### File Ownership</span>
+- <span class="sf-val">migrations/</span> → Session A ONLY. B and C must not touch it.
+- <span class="sf-val">src/lib/auth.ts</span> → Session A writes, others import only.
+- <span class="sf-val">src/payments/</span> → Session B only.
+
+<span class="sf-section">### Merge Order</span>
+1. feat/auth-agent  (merges first — schema owner)
+2. feat/payments-agent  (rebase onto auth, then PR)
+3. feat/api-agent  (rebase onto both, then PR)
+
+<span class="sf-section">### Shared Memory</span>
+Read <span class="sf-val">.claude/shared-state.md</span> at start of each turn.
+Append any new decisions you make.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 14: CONFLICT SCENARIO ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">CONFLICT SCENARIO</span><span class="bn">কনফ্লিক্ট পরিস্থিতি</span></div>
+    <h2 class="auto"><span class="en">What Breaks Without Coordination</span><span class="bn">কোঅর্ডিনেশন ছাড়া কী ভাঙে</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px);border-color:var(--red);background:rgba(224,72,58,.06)">
+      <span class="en">Session B (payments) needed a <code>users</code> table field, so it created its own migration. Session A (auth) also created a migration that modifies the same table. Neither knew.</span>
+      <span class="bn b">সেশন B (পেমেন্ট) একটি <code>users</code> টেবিল ফিল্ড দরকার ছিল, তাই নিজেই মাইগ্রেশন তৈরি করে। সেশন A (অথ) একই টেবিল পরিবর্তন করে মাইগ্রেশন তৈরি করে। কেউ জানত না।</span>
+    </div>
+    <div class="conflict-diff frag" style="margin-top:.8rem">
+      <div class="diff-col">
+        <div class="dc-head" style="background:var(--red)"><span class="en">Session A — 0003_auth_users.sql</span><span class="bn">সেশন A — 0003_auth_users.sql</span></div>
+        <div class="dc-body">
+<span class="ctx">ALTER TABLE users</span>
+<span class="add">  ADD COLUMN password_hash TEXT,</span>
+<span class="add">  ADD COLUMN jwt_secret UUID;</span>
+        </div>
+      </div>
+      <div class="diff-col">
+        <div class="dc-head" style="background:#E0483A"><span class="en">Session B — 0003_payment_users.sql</span><span class="bn">সেশন B — 0003_payment_users.sql</span></div>
+        <div class="dc-body">
+<span class="ctx">ALTER TABLE users</span>
+<span class="add">  ADD COLUMN stripe_customer_id TEXT,</span>
+<span class="add">  ADD COLUMN payment_method_id TEXT;</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,640px);margin-top:.8rem;border-color:var(--red);background:rgba(224,72,58,.06)">
+      <span class="en">Both files named <code>0003_*.sql</code>. Same sequence number. DB refuses to run both. Now you're debugging migration state on merge day.</span>
+      <span class="bn b">দুটো ফাইলই <code>0003_*.sql</code>। একই সিকোয়েন্স নম্বর। DB দুটো একসাথে চালাতে অস্বীকার করে। এখন মার্জের দিন মাইগ্রেশন স্টেট ডিবাগ করছেন।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 15: CONFLICT RESOLUTION ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">CONFLICT RESOLUTION</span><span class="bn">কনফ্লিক্ট সমাধান</span></div>
+    <h2 class="auto"><span class="en">Detect Early vs Fix Late</span><span class="bn">আগে ধরুন বনাম পরে ঠিক করুন</span></h2>
+    <div class="row frag" style="gap:1rem;align-items:stretch">
+      <div class="mini-panel" style="flex:1;min-width:clamp(200px,28vw,300px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">✓ Detect Early</span><span class="bn">✓ আগে ধরুন</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">CLAUDE.md: "Only Session A owns <code>migrations/</code>." Sessions B and C skip migration creation entirely. Conflict never happens.</span>
+          <span class="bn b">CLAUDE.md: "শুধু সেশন A-এর <code>migrations/</code> মালিকানা।" সেশন B এবং C মাইগ্রেশন তৈরিই করে না। কনফ্লিক্ট কখনো হয় না।</span>
+        </div>
+        <div class="tag" style="margin-top:.5rem;border-color:var(--green)"><span class="en">Cost: 2 lines in CLAUDE.md</span><span class="bn">খরচ: CLAUDE.md-এ ২ লাইন</span></div>
+      </div>
+      <div class="mini-panel" style="flex:1;min-width:clamp(200px,28vw,300px);border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">✗ Fix Late</span><span class="bn">✗ পরে ঠিক করুন</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">Two migration files with same sequence number. Now: manually renumber, test locally, verify idempotency, re-test both branches. Half a day lost.</span>
+          <span class="bn b">একই সিকোয়েন্স নম্বরের দুটো মাইগ্রেশন ফাইল। এখন: ম্যানুয়ালি রিনম্বার করুন, লোকালে টেস্ট করুন, আইডেম্পোটেন্সি যাচাই করুন। আধা দিন নষ্ট।</span>
+        </div>
+        <div class="tag" style="margin-top:.5rem;border-color:var(--red)"><span class="en">Cost: ~4 hours on merge day</span><span class="bn">খরচ: মার্জের দিন ~৪ ঘণ্টা</span></div>
+      </div>
+    </div>
+    <div class="caption frag" style="margin-top:.8rem">
+      <span class="en">Early detection always wins. Most coordination cost comes from <em>not</em> coordinating early enough.</span>
+      <span class="bn">আগে ধরা সবসময় জেতে। বেশিরভাগ কোঅর্ডিনেশন খরচ আসে <em>যথেষ্ট আগে</em> কোঅর্ডিনেট না করা থেকে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 16: OVERHEAD MATH ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">THE MATH</span><span class="bn">গণিত</span></div>
+    <h2 class="auto"><span class="en">When Does Coordination Cost More Than It Saves?</span><span class="bn">কখন কোঅর্ডিনেশন বাঁচানোর চেয়ে বেশি খরচ করে?</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">Coordination overhead scales with <strong>shared surface area</strong> — the number of files, schemas, and contracts sessions have in common.</span>
+      <span class="bn b">কোঅর্ডিনেশন ওভারহেড <strong>শেয়ার্ড সারফেস এরিয়া</strong>র সাথে বাড়ে — ফাইল, স্কিমা এবং কন্ট্রাক্টের সংখ্যা যা সেশনগুলো ভাগ করে।</span>
+    </div>
+    <div class="cost-curve frag" style="margin-top:.8rem">
+      <div class="cc-row">
+        <div class="cc-label"><span class="en">0 shared files</span><span class="bn">০ শেয়ার্ড</span></div>
+        <div class="cc-bar-wrap"><div class="cc-bar" style="width:8%;background:var(--green)"></div></div>
+        <div class="cc-val"><span class="en">~5 min setup</span><span class="bn">~৫ মি</span></div>
+      </div>
+      <div class="cc-row">
+        <div class="cc-label"><span class="en">1–3 shared</span><span class="bn">১–৩ শেয়ার্ড</span></div>
+        <div class="cc-bar-wrap"><div class="cc-bar" style="width:25%;background:var(--amber)"></div></div>
+        <div class="cc-val"><span class="en">~20 min setup</span><span class="bn">~২০ মি</span></div>
+      </div>
+      <div class="cc-row">
+        <div class="cc-label"><span class="en">4–6 shared</span><span class="bn">৪–৬ শেয়ার্ড</span></div>
+        <div class="cc-bar-wrap"><div class="cc-bar" style="width:55%;background:#E0903A"></div></div>
+        <div class="cc-val"><span class="en">~45 min setup</span><span class="bn">~৪৫ মি</span></div>
+      </div>
+      <div class="cc-row">
+        <div class="cc-label"><span class="en">7+ shared</span><span class="bn">৭+ শেয়ার্ড</span></div>
+        <div class="cc-bar-wrap"><div class="cc-bar" style="width:90%;background:var(--red)"></div></div>
+        <div class="cc-val"><span class="en">reconsider</span><span class="bn">পুনর্বিবেচনা</span></div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,620px);margin-top:.8rem;border-color:#6C5CE7">
+      <span class="en">High shared surface area? Consider keeping it one session. Parallelism payoff only comes when tasks are genuinely separable.</span>
+      <span class="bn b">বেশি শেয়ার্ড সারফেস? একটি সেশনেই রাখার কথা বিবেচনা করুন। কাজ সত্যিকারের আলাদা করা যায় তখনই প্যারালেলিজমের সুবিধা আসে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 17: WATCH OUT — STALE CONTEXT ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WATCH OUT</span><span class="bn">সতর্ক থাকুন</span></div>
+    <h2 class="auto"><span class="en">Stale Context</span><span class="bn">পুরনো কনটেক্সট</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,680px);border-color:var(--red);background:rgba(224,72,58,.06)">
+      <span class="en">Session A reads <code>shared-state.md</code> at 10am. Session B updates it at 11am. Session A is still running on the 10am version. It doesn't know the decision changed.</span>
+      <span class="bn b">সেশন A সকাল ১০টায় <code>shared-state.md</code> পড়ে। সেশন B সকাল ১১টায় এটা আপডেট করে। সেশন A এখনো ১০টার ভার্সনে চলছে। সে জানে না সিদ্ধান্ত পরিবর্তন হয়েছে।</span>
+    </div>
+    <div class="row frag" style="gap:1rem;margin-top:.8rem;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel" style="flex:1;min-width:clamp(190px,27vw,280px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber)"><span class="en">Mitigation 1</span><span class="bn">সমাধান ১</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">Add to every session's context refresh prompt: "Re-read <code>.claude/shared-state.md</code> before your next task."</span>
+          <span class="bn b">প্রতিটি সেশনের রিফ্রেশ প্রম্পটে যোগ করুন: "পরবর্তী কাজের আগে <code>.claude/shared-state.md</code> আবার পড়ুন।"</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="flex:1;min-width:clamp(190px,27vw,280px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">Mitigation 2</span><span class="bn">সমাধান ২</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">Lock high-impact decisions in CLAUDE.md (not shared-state.md) so they're baked in from start and don't change mid-sprint.</span>
+          <span class="bn b">উচ্চ-প্রভাবের সিদ্ধান্তগুলো CLAUDE.md-এ লক করুন যাতে শুরু থেকেই বেক হয়ে যায় এবং স্প্রিন্টের মাঝে পরিবর্তন না হয়।</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 18: WATCH OUT — MERGE ORDER DEBT ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WATCH OUT</span><span class="bn">সতর্ক থাকুন</span></div>
+    <h2 class="auto"><span class="en">Merge Order Debt</span><span class="bn">মার্জ অর্ডার ঋণ</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,680px);border-color:var(--red);background:rgba(224,72,58,.06)">
+      <span class="en">Session C builds the API layer. It assumes Session A's auth middleware is already in <code>main</code>. But Session A's PR hasn't merged yet. Session C's PR has diverged 3 days of commits from Session A.</span>
+      <span class="bn b">সেশন C API লেয়ার তৈরি করে। সে ধরে নেয় সেশন A-এর অথ মিডলওয়্যার ইতিমধ্যে <code>main</code>-এ আছে। কিন্তু সেশন A-এর PR এখনো মার্জ হয়নি। সেশন C-এর PR সেশন A থেকে ৩ দিনের কমিট দূরে।</span>
+    </div>
+    <div class="panel frag" style="max-width:min(88vw,660px);margin-top:.8rem;border-color:var(--amber)">
+      <span class="en"><strong>The fix:</strong> Session C's launch prompt must say: "Do not assume any other session's work is in main. Import from the <code>feat/auth-agent</code> branch path directly, and note it for rebase."</span>
+      <span class="bn b"><strong>সমাধান:</strong> সেশন C-এর লঞ্চ প্রম্পটে লিখুন: "ধরে নেবেন না যে অন্য সেশনের কাজ main-এ আছে। সরাসরি <code>feat/auth-agent</code> ব্র্যাঞ্চ পাথ থেকে ইম্পোর্ট করুন।"</span>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,640px);margin-top:.8rem;border-color:var(--green);background:rgba(46,175,125,.06)">
+      <span class="en">Rebase each dependent branch onto its foundation <strong>before raising a PR</strong>. The merge order you planned in CLAUDE.md becomes your rebase order.</span>
+      <span class="bn b">PR তোলার <strong>আগে</strong> প্রতিটি নির্ভরশীল ব্র্যাঞ্চ তার ফাউন্ডেশনের উপর রিবেজ করুন। CLAUDE.md-এ পরিকল্পিত মার্জ অর্ডারই রিবেজ অর্ডার।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 19: THE RESULT ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">THE RESULT</span><span class="bn">ফলাফল</span></div>
+    <h2 class="auto"><span class="en">Rifat's Feature — How It Landed</span><span class="bn">রিফাতের ফিচার — কীভাবে শেষ হলো</span></h2>
+    <div class="row frag" style="gap:.8rem;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel pop" style="width:clamp(150px,22vw,230px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">Setup</span><span class="bn">সেটআপ</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">20 min to write CLAUDE.md decisions, create worktrees, define contracts</span>
+          <span class="bn b">CLAUDE.md সিদ্ধান্ত লিখতে, ওয়ার্কট্রি তৈরি করতে, কন্ট্রাক্ট সংজ্ঞায়িত করতে ২০ মিনিট</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(150px,22vw,230px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">Sprint</span><span class="bn">স্প্রিন্ট</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">3 sessions, 2 days. 0 migration conflicts. 0 API contract mismatches.</span>
+          <span class="bn b">৩ সেশন, ২ দিন। ০ মাইগ্রেশন কনফ্লিক্ট। ০ API কন্ট্রাক্ট মিসম্যাচ।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(150px,22vw,230px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">Merge day</span><span class="bn">মার্জের দিন</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">3 PRs, 3 clean rebases, 1 hour total. Merged in planned order.</span>
+          <span class="bn b">৩ PR, ৩ পরিষ্কার রিবেজ, মোট ১ ঘণ্টা। পরিকল্পিত ক্রমে মার্জ।</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,640px);margin-top:.8rem">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">HABIB</span>
+        <span class="en">"Last sprint this kind of feature took a week and two merge conflict days. This was two days and one boring merge morning."</span>
+        <span class="bn">"গত স্প্রিন্টে এই ধরনের ফিচারে এক সপ্তাহ এবং দুইটা মার্জ কনফ্লিক্টের দিন লেগেছিল। এবার দুই দিন এবং একটি বিরক্তিকর মার্জ সকাল।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 20: WRAP UP ===== -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">WRAP UP · EP 4</span><span class="bn">সারসংক্ষেপ · এপিসোড ৪</span></div>
+    <h2 class="auto" style="color:#fff"><span class="en">Cross-Session Coordination</span><span class="bn">ক্রস-সেশন কোঅর্ডিনেশন</span></h2>
+    <div class="row frag" style="gap:.6rem;flex-wrap:wrap;justify-content:center;margin-top:.4rem">
+      <div class="tag" style="border-color:#6C5CE7;color:#fff;background:rgba(108,92,231,.25)"><span class="en">SHARED FILES</span><span class="bn">শেয়ার্ড ফাইল</span></div>
+      <div class="tag" style="border-color:#6C5CE7;color:#fff;background:rgba(108,92,231,.25)"><span class="en">OUTPUT CONTRACTS</span><span class="bn">আউটপুট কন্ট্রাক্ট</span></div>
+      <div class="tag" style="border-color:#6C5CE7;color:#fff;background:rgba(108,92,231,.25)"><span class="en">MERGE ORDER</span><span class="bn">মার্জ অর্ডার</span></div>
+      <div class="tag" style="border-color:#6C5CE7;color:#fff;background:rgba(108,92,231,.25)"><span class="en">EARLY DETECTION</span><span class="bn">আগে শনাক্তকরণ</span></div>
+    </div>
+    <div class="char-summary frag" style="margin-top:.8rem;border-color:rgba(255,255,255,.2)">
+      <div class="cs-row" style="border-color:rgba(255,255,255,.12)">
+        <span class="cs-k" style="color:rgba(255,255,255,.6)"><span class="en">Pattern 1</span><span class="bn">প্যাটার্ন ১</span></span>
+        <span class="cs-v" style="color:#fff"><span class="en">Write shared decisions into CLAUDE.md and <code>.claude/shared-state.md</code> before launch</span><span class="bn">লঞ্চের আগে CLAUDE.md এবং shared-state.md-এ শেয়ার্ড সিদ্ধান্ত লিখুন</span></span>
+      </div>
+      <div class="cs-row" style="border-color:rgba(255,255,255,.12)">
+        <span class="cs-k" style="color:rgba(255,255,255,.6)"><span class="en">Pattern 2</span><span class="bn">প্যাটার্ন ২</span></span>
+        <span class="cs-v" style="color:#fff"><span class="en">Agree on handoff format before sessions start — output contract files</span><span class="bn">সেশন শুরুর আগে হ্যান্ডঅফ ফরম্যাটে একমত হন — আউটপুট কন্ট্রাক্ট ফাইল</span></span>
+      </div>
+      <div class="cs-row" style="border-color:rgba(255,255,255,.12)">
+        <span class="cs-k" style="color:rgba(255,255,255,.6)"><span class="en">Pattern 3</span><span class="bn">প্যাটার্ন ৩</span></span>
+        <span class="cs-v" style="color:#fff"><span class="en">Plan merge order first. Foundation branch merges first. Dependents rebase before PR.</span><span class="bn">আগে মার্জ অর্ডার পরিকল্পনা করুন। ফাউন্ডেশন ব্র্যাঞ্চ আগে। নির্ভরশীলরা PR-এর আগে রিবেজ করে।</span></span>
+      </div>
+    </div>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);max-width:min(88vw,600px);margin-top:.8rem">
+      <span style="color:rgba(255,255,255,.7);font-size:clamp(.75rem,1.5vw,.95rem)">
+        <span class="en">Next → <strong style="color:var(--amber)">Episode 5:</strong> Shazzad never sets an alarm again. Hooks, scheduled agents, and always-on automation.</span>
+        <span class="bn b">পরবর্তী → <strong style="color:var(--amber)">এপিসোড ৫:</strong> শাজ্জাদ আর কখনো অ্যালার্ম দেয় না। হুক, শিডিউলড এজেন্ট, এবং সবসময়-চালু অটোমেশন।</span>
+      </span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<script src="../../assets/deck.js"></script>
+<script data-goatcounter="https://jiteshsureka.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
