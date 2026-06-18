@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S1·Bonus — Agent Swarms · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+/* ---- code block ---- */
+pre.code-block {
+  background: var(--navy); color: #e2e8f0;
+  border: 2px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  padding: clamp(.7rem,1.8vw,1.2rem) clamp(.9rem,2vw,1.4rem);
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.62rem,1.35vw,.88rem); line-height: 1.65;
+  text-align: left; max-width: min(92vw, 800px); width: 100%;
+  overflow-x: auto; white-space: pre;
+}
+pre.code-block .comment { color: #64748b; }
+pre.code-block .cmd     { color: var(--amber); }
+pre.code-block .flag    { color: #7dd3fc; }
+pre.code-block .path    { color: #86efac; }
+pre.code-block .note    { color: #c4b5fd; }
+pre.code-block .str     { color: #fca5a5; }
+pre.code-block .key     { color: var(--amber); }
+pre.code-block .val     { color: #86efac; }
+
+/* ---- two-flavor cards ---- */
+.flavor-row {
+  display: flex; gap: clamp(.8rem,2vw,1.4rem);
+  flex-wrap: wrap; justify-content: center;
+  max-width: min(92vw, 860px); width: 100%;
+}
+.flavor-card {
+  flex: 1; min-width: clamp(220px,30vw,370px);
+  border: 2px solid var(--navy); border-radius: 20px;
+  background: var(--paper); box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.fc-head {
+  padding: .45em 1em; font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(1rem,2vw,1.3rem); color: #fff;
+  background: var(--accent-ep, #FF6B35);
+}
+.fc-head.alt { background: var(--navy); }
+.fc-body { padding: clamp(.8rem,2vw,1.2rem); display: flex; flex-direction: column; gap: .5rem; }
+.fc-row { display: flex; align-items: flex-start; gap: .5rem; font-size: clamp(.82rem,1.7vw,1rem); line-height: 1.45; }
+.fc-icon { flex-shrink: 0; font-size: 1.1em; }
+
+/* ---- team diagram ---- */
+.team-diagram {
+  display: flex; flex-direction: column; align-items: center;
+  gap: .6rem; max-width: min(88vw,680px); width: 100%;
+}
+.td-lead {
+  background: var(--accent-ep, #FF6B35); color: #fff;
+  border: 2px solid var(--navy); border-radius: 14px;
+  padding: .45em 1.6em; font-family: 'Fraunces',serif; font-weight: 700;
+  font-size: clamp(1rem,2.2vw,1.3rem); box-shadow: var(--shadow-sm);
+}
+.td-arrow { font-size: 1.3rem; color: rgba(17,23,44,.4); }
+.td-mates {
+  display: flex; gap: clamp(.5rem,1.5vw,1rem); flex-wrap: wrap; justify-content: center;
+}
+.td-mate {
+  border: 2px solid var(--navy); border-radius: 12px;
+  background: var(--paper); box-shadow: var(--shadow-sm);
+  padding: .35em 1em; font-family: 'Caveat',cursive; font-weight: 700;
+  font-size: clamp(.9rem,1.9vw,1.15rem);
+}
+.td-connector {
+  width: 2px; height: 24px; background: rgba(17,23,44,.25);
+}
+.td-mailbox {
+  border: 2px dashed #FF6B35; border-radius: 12px;
+  padding: .35em 1.2em; font-family: 'Caveat',cursive; font-weight: 700;
+  font-size: clamp(.88rem,1.8vw,1.1rem); color: #FF6B35;
+  background: rgba(255,107,53,.06);
+}
+
+/* ---- compare table ---- */
+.compare-table {
+  border: 2px solid var(--navy); border-radius: 16px;
+  overflow: hidden; box-shadow: var(--shadow-sm);
+  max-width: min(92vw,740px); width: 100%;
+}
+.ct-row { display: grid; grid-template-columns: 1.4fr 1fr 1fr; }
+.ct-row + .ct-row { border-top: 2px solid rgba(17,23,44,.1); }
+.ct-head { background: var(--navy); }
+.ct-cell {
+  padding: .45em .85em; font-size: clamp(.78rem,1.6vw,.96rem); line-height: 1.4;
+}
+.ct-head .ct-cell { color: #fff; font-weight: 700; font-family: 'Caveat',cursive; font-size: clamp(.9rem,1.8vw,1.15rem); }
+.ct-row:not(.ct-head) .ct-cell:first-child { font-weight: 600; background: rgba(17,23,44,.03); }
+.ct-row:nth-child(even):not(.ct-head) { background: rgba(73,146,193,.04); }
+
+/* ---- orchestrator flow ---- */
+.orch-flow {
+  display: flex; flex-direction: column; align-items: center;
+  gap: .45rem; max-width: min(88vw,640px); width: 100%;
+}
+.of-step {
+  border: 2px solid var(--navy); border-radius: 12px;
+  background: var(--paper); box-shadow: var(--shadow-sm);
+  padding: .4em 1.2em; width: 100%; text-align: center;
+  font-size: clamp(.84rem,1.75vw,1.02rem); font-weight: 600;
+}
+.of-step.highlight { background: rgba(255,107,53,.1); border-color: #FF6B35; }
+.of-arrow { font-size: 1.1rem; color: rgba(17,23,44,.35); }
+.of-fan {
+  display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; width: 100%;
+}
+.of-mini {
+  border: 2px solid var(--navy); border-radius: 10px;
+  background: rgba(255,107,53,.08); border-color: #FF6B35;
+  padding: .28em .8em; font-family: 'Caveat',cursive; font-weight: 700;
+  font-size: clamp(.82rem,1.7vw,1.05rem); color: #c0390a;
+}
+
+/* ---- cost bar ---- */
+.cost-scale {
+  display: flex; flex-direction: column; gap: .55rem;
+  max-width: min(88vw,640px); width: 100%;
+}
+.cs-row { display: flex; align-items: center; gap: .7rem; }
+.cs-label { font-size: clamp(.78rem,1.6vw,.95rem); font-weight: 600; min-width: 90px; text-align: right; }
+.cs-track { flex: 1; height: 18px; background: rgba(17,23,44,.08); border-radius: 999px; border: 1.5px solid rgba(17,23,44,.12); overflow: hidden; }
+.cs-fill { height: 100%; border-radius: 999px; background: #FF6B35; transition: width .5s; }
+.cs-val { font-family: 'Caveat',cursive; font-weight: 700; font-size: clamp(.88rem,1.8vw,1.1rem); min-width: 70px; }
+
+/* ---- checklist ---- */
+.checklist {
+  list-style: none; display: flex; flex-direction: column;
+  gap: .5rem; text-align: left; max-width: min(88vw,660px); width: 100%;
+}
+.checklist li {
+  font-weight: 600; font-size: clamp(.82rem,1.7vw,1.05rem);
+  padding: .38em .9em; border-radius: 12px;
+  border: 2px solid var(--navy); background: var(--paper);
+  box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: .55rem;
+}
+.checklist li.yes { border-color: var(--green); background: rgba(46,175,125,.08); }
+.checklist li.no  { border-color: var(--red);   background: rgba(224,72,58,.08); }
+.checklist li .icon { font-size: 1.1em; flex-shrink: 0; }
+
+/* ---- real world card ---- */
+.rw-card {
+  border: 2px solid var(--navy); border-radius: 20px;
+  background: var(--paper); box-shadow: var(--shadow-md);
+  max-width: min(90vw,680px); width: 100%; overflow: hidden;
+}
+.rw-head {
+  background: var(--navy); color: #fff;
+  padding: .5em 1.2em; font-family: 'Fraunces',serif; font-weight: 700;
+  font-size: clamp(1rem,2.1vw,1.3rem);
+}
+.rw-body { padding: clamp(.8rem,2vw,1.3rem); display: flex; flex-direction: column; gap: .55rem; }
+.rw-stat {
+  display: flex; align-items: baseline; gap: .6rem;
+}
+.rw-num {
+  font-family: 'Fraunces',serif; font-weight: 700;
+  font-size: clamp(1.4rem,3.5vw,2rem); color: #FF6B35;
+  line-height: 1;
+}
+.rw-desc { font-size: clamp(.82rem,1.7vw,1rem); color: rgba(17,23,44,.75); line-height: 1.4; }
+
+/* ---- ep accent ---- */
+:root { --accent-ep: #FF6B35; }
+</style>
+</head>
+<body data-ep-label="S1·Bonus · Agent Swarms" data-index-path="../../index.html">
+
+<div id="bar" class="progress"></div>
+
+<!-- ============================================================ SLIDE 1 — TITLE -->
+<section class="slide" style="background: var(--navy);">
+  <span class="kicker" style="color: var(--amber);">S1 · BONUS EPISODE</span>
+  <h1 class="auto" style="color:#fff; max-width: min(90vw,800px);">
+    <span class="en">Agent Swarms.</span>
+    <span class="bn">এজেন্ট ঝাঁক।</span>
+  </h1>
+  <p class="caption" style="color:rgba(255,255,255,.75); max-width: min(80vw,560px);">
+    <span class="en">One task. Hundreds of agents. All at once.</span>
+    <span class="bn">একটা কাজ। শত শত এজেন্ট। একসাথে।</span>
+  </p>
+  <div class="bubble frag" style="max-width: min(86vw,560px); margin-top: 1.2rem;">
+    <div class="who">Shazzad</div>
+    <span class="en">"Rifat, I just spun up 47 agents in parallel. On one task. In under a minute. I don't think we're in Kansas anymore."</span>
+    <span class="bn">"রিফাত, আমি মাত্র ৪৭টা এজেন্ট একসাথে চালু করলাম। একটা কাজের জন্য। এক মিনিটেরও কম সময়ে। মনে হচ্ছে এটা আর আগের মতো না।"</span>
+  </div>
+  <svg class="char bob" style="position:absolute;right:clamp(1rem,6vw,5rem);bottom:0;opacity:.18;"><use href="#ch-dev"/></svg>
+</section>
+
+<!-- ============================================================ SLIDE 2 — RECAP -->
+<section class="slide">
+  <span class="kicker">RECAP · SEASON 1</span>
+  <h2 class="auto">
+    <span class="en">The arc so far.</span>
+    <span class="bn">এতক্ষণ পর্যন্ত যা শিখলাম।</span>
+  </h2>
+  <ul class="checklist frag">
+    <li class="yes"><span class="icon">⚡</span><span class="en">Ep 1–2 — Why parallel? Multiple sessions, worktrees, rotation</span><span class="bn">Ep ১–২ — কেন সমান্তরাল? একাধিক সেশন</span></li>
+    <li class="yes"><span class="icon">🤖</span><span class="en">Ep 3 — Subagents inside one session (the Agent tool)</span><span class="bn">Ep ৩ — এক সেশনের ভেতরে সাবএজেন্ট</span></li>
+    <li class="yes"><span class="icon">🔗</span><span class="en">Ep 4 — Cross-session coordination, shared state</span><span class="bn">Ep ৪ — ক্রস-সেশন সমন্বয়</span></li>
+    <li class="yes"><span class="icon">⏰</span><span class="en">Ep 5 — Hooks &amp; scheduled agents (always-on automation)</span><span class="bn">Ep ৫ — হুক এবং শিডিউলড এজেন্ট</span></li>
+    <li class="yes"><span class="icon">🔒</span><span class="en">Ep 6 — Enterprise safety, permissions, cost controls</span><span class="bn">Ep ৬ — এন্টারপ্রাইজ সেফটি, কস্ট কন্ট্রোল</span></li>
+  </ul>
+  <p class="caption frag">
+    <span class="en">Today: a new primitive. Not just parallel sessions — agents that coordinate <em>with each other</em>.</span>
+    <span class="bn">আজ: নতুন একটা ধারণা। শুধু সমান্তরাল সেশন না — এজেন্ট যারা <em>একে অপরের সাথে</em> সমন্বয় করে।</span>
+  </p>
+</section>
+
+<!-- ============================================================ SLIDE 3 — THE LEAP -->
+<section class="slide">
+  <span class="kicker">THE SHIFT</span>
+  <h2 class="auto">
+    <span class="en">From assistant to team.</span>
+    <span class="bn">সহকারী থেকে দলে।</span>
+  </h2>
+  <div class="strip frag" style="max-width: min(90vw,720px); width:100%;">
+    <div class="mini-panel" style="border-color: var(--blue);">
+      <div class="tag" style="background: var(--blue);">
+        <span class="en">Before</span><span class="bn">আগে</span>
+      </div>
+      <p><span class="en">One Claude. One context. One stream of work. Hit a huge task → run out of context → restart.</span><span class="bn">একটা Claude। একটা context। একটা কাজের ধারা।</span></p>
+    </div>
+    <div class="mini-panel" style="border-color: #FF6B35;">
+      <div class="tag" style="background: #FF6B35;">
+        <span class="en">Swarms</span><span class="bn">ঝাঁক</span>
+      </div>
+      <p><span class="en">Lead agent decomposes the task → spawns specialist agents → they run in parallel, message each other → converge on one result.</span><span class="bn">লিড এজেন্ট কাজ ভাগ করে → বিশেষজ্ঞ এজেন্ট স্পন করে → সমান্তরালে চলে → একটা ফলাফলে মেলে।</span></p>
+    </div>
+  </div>
+  <p class="caption frag">
+    <span class="en">The key insight: LLMs reason worse as context grows. Keep each agent small, focused, and fast.</span>
+    <span class="bn">মূল উপলব্ধি: context বাড়লে LLM দুর্বল হয়। প্রতিটা এজেন্টকে ছোট, কেন্দ্রীভূত রাখো।</span>
+  </p>
+</section>
+
+<!-- ============================================================ SLIDE 4 — TWO FLAVORS -->
+<section class="slide">
+  <span class="kicker">TWO FLAVORS</span>
+  <h2 class="auto">
+    <span class="en">Swarms come in two forms.</span>
+    <span class="bn">ঝাঁক দুই ধরনের।</span>
+  </h2>
+  <div class="flavor-row frag">
+    <div class="flavor-card">
+      <div class="fc-head">
+        <span class="en">Agent Teams</span><span class="bn">এজেন্ট টিম</span>
+      </div>
+      <div class="fc-body">
+        <div class="fc-row"><span class="fc-icon">👥</span><span class="en">Lead + teammates. Each is a full Claude instance.</span><span class="bn">লিড + টিমমেট। প্রতিটাই পূর্ণ Claude ইন্সট্যান্স।</span></div>
+        <div class="fc-row"><span class="fc-icon">📬</span><span class="en">Teammates message each other directly — not just reporting to lead.</span><span class="bn">টিমমেটরা সরাসরি মেসেজ করে।</span></div>
+        <div class="fc-row"><span class="fc-icon">📋</span><span class="en">Shared task board with dependencies &amp; file locking.</span><span class="bn">শেয়ার্ড টাস্ক বোর্ড ও ফাইল লকিং।</span></div>
+        <div class="fc-row"><span class="fc-icon">🧪</span><span class="en">Best for: cross-layer features, parallel code review.</span><span class="bn">ভালো: ক্রস-লেয়ার ফিচার, সমান্তরাল রিভিউ।</span></div>
+      </div>
+    </div>
+    <div class="flavor-card">
+      <div class="fc-head alt">
+        <span class="en">Dynamic Workflows</span><span class="bn">ডায়নামিক ওয়ার্কফ্লো</span>
+      </div>
+      <div class="fc-body">
+        <div class="fc-row"><span class="fc-icon">🎯</span><span class="en">Orchestrator spawns 10s–100s of subagents via the Task tool.</span><span class="bn">অর্কেস্ট্রেটর ১০–১০০+ সাবএজেন্ট spawn করে।</span></div>
+        <div class="fc-row"><span class="fc-icon">🔇</span><span class="en">Subagents are isolated — no shared memory, no direct messaging.</span><span class="bn">সাবএজেন্ট বিচ্ছিন্ন — শেয়ার্ড মেমরি নেই।</span></div>
+        <div class="fc-row"><span class="fc-icon">⚙️</span><span class="en">Orchestrator writes its own scripts dynamically.</span><span class="bn">অর্কেস্ট্রেটর নিজেই স্ক্রিপ্ট লেখে।</span></div>
+        <div class="fc-row"><span class="fc-icon">🔄</span><span class="en">Best for: large-scale migrations, audits, batch codegen.</span><span class="bn">ভালো: বড় মাইগ্রেশন, অডিট, ব্যাচ কোডজেন।</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 5 — AGENT TEAMS ANATOMY -->
+<section class="slide">
+  <span class="kicker">AGENT TEAMS · ANATOMY</span>
+  <h2 class="auto">
+    <span class="en">Lead, teammates, mailbox.</span>
+    <span class="bn">লিড, টিমমেট, মেইলবক্স।</span>
+  </h2>
+  <div class="team-diagram frag">
+    <div class="td-lead">
+      <span class="en">Lead Agent — orchestrates, delegates, tracks</span>
+      <span class="bn">লিড এজেন্ট — সমন্বয়, বিতরণ, ট্র্যাকিং</span>
+    </div>
+    <div class="td-connector"></div>
+    <div class="td-mates">
+      <div class="td-mate"><span class="en">Frontend Agent</span><span class="bn">ফ্রন্টএন্ড</span></div>
+      <div class="td-mate"><span class="en">Backend Agent</span><span class="bn">ব্যাকএন্ড</span></div>
+      <div class="td-mate"><span class="en">Tests Agent</span><span class="bn">টেস্ট</span></div>
+      <div class="td-mate"><span class="en">Review Agent</span><span class="bn">রিভিউ</span></div>
+    </div>
+    <div class="td-connector"></div>
+    <div class="td-mailbox">
+      <span class="en">📬 Mailbox — direct agent-to-agent messaging</span>
+      <span class="bn">📬 মেইলবক্স — সরাসরি এজেন্ট থেকে এজেন্ট মেসেজ</span>
+    </div>
+  </div>
+  <p class="caption frag">
+    <span class="en">Teammates don't just report to lead — they message each other. Backend tells frontend: "the endpoint is <code>/api/v2/auth</code>."</span>
+    <span class="bn">টিমমেটরা শুধু লিডকে রিপোর্ট করে না — নিজেরা কথা বলে। ব্যাকএন্ড ফ্রন্টএন্ডকে বলে: endpoint কোনটা।</span>
+  </p>
+</section>
+
+<!-- ============================================================ SLIDE 6 — ENABLE IT -->
+<section class="slide">
+  <span class="kicker">AGENT TEAMS · SETUP</span>
+  <h2 class="auto">
+    <span class="en">One env flag. That's it.</span>
+    <span class="bn">একটা env ফ্ল্যাগ। এটুকুই।</span>
+  </h2>
+  <pre class="code-block frag"><span class="comment">// .claude/settings.json</span>
+{
+  <span class="key">"env"</span>: {
+    <span class="key">"CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"</span>: <span class="val">"1"</span>
+  }
+}</pre>
+  <p class="caption frag">
+    <span class="en">Then just ask naturally:</span>
+    <span class="bn">তারপর স্বাভাবিকভাবে বলো:</span>
+  </p>
+  <div class="bubble frag" style="max-width: min(86vw,560px);">
+    <div class="who">Shazzad → Claude</div>
+    <span class="en">"Create a team with 3 teammates to refactor the payment module in parallel — one for the service layer, one for tests, one for the API contract."</span>
+    <span class="bn">"৩ জন টিমমেট দিয়ে পেমেন্ট মডিউল রিফ্যাক্টর করো — একজন সার্ভিস লেয়ারে, একজন টেস্টে, একজন API কন্ট্র্যাক্টে।"</span>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 7 — TASK BOARD -->
+<section class="slide">
+  <span class="kicker">AGENT TEAMS · TASK BOARD</span>
+  <h2 class="auto">
+    <span class="en">Shared task board — no collisions.</span>
+    <span class="bn">শেয়ার্ড টাস্ক বোর্ড — সংঘর্ষ নেই।</span>
+  </h2>
+  <div class="panel frag" style="max-width: min(88vw,660px); width:100%;">
+    <ul class="checklist" style="max-width:100%;">
+      <li class="yes"><span class="icon">🔒</span>
+        <span class="en"><strong>File locking</strong> — two agents can't edit the same file simultaneously.</span>
+        <span class="bn"><strong>ফাইল লকিং</strong> — দুই এজেন্ট একই ফাইলে একসাথে কাজ করতে পারে না।</span>
+      </li>
+      <li class="yes"><span class="icon">🔗</span>
+        <span class="en"><strong>Dependencies</strong> — task B auto-unblocks when task A completes.</span>
+        <span class="bn"><strong>ডিপেন্ডেন্সি</strong> — টাস্ক A শেষ হলে টাস্ক B স্বয়ংক্রিয়ভাবে শুরু হয়।</span>
+      </li>
+      <li class="yes"><span class="icon">📊</span>
+        <span class="en"><strong>Plan approval gates</strong> — lead presents plan before risky work begins.</span>
+        <span class="bn"><strong>প্ল্যান অ্যাপ্রোভাল</span></span> — ঝুঁকিপূর্ণ কাজের আগে অনুমোদন নেওয়া হয়।</span>
+      </li>
+      <li class="yes"><span class="icon">🎯</span>
+        <span class="en"><strong>Delegate mode</strong> — restrict lead to coordination only. Teammates do all writing.</span>
+        <span class="bn"><strong>ডেলিগেট মোড</strong> — লিড শুধু সমন্বয় করে। টিমমেটরা সব লেখে।</span>
+      </li>
+    </ul>
+  </div>
+  <p class="caption frag">
+    <span class="en">Result: no race conditions, no overwritten work, clear dependency chains.</span>
+    <span class="bn">ফলাফল: race condition নেই, ওভাররাইট নেই, পরিষ্কার dependency চেইন।</span>
+  </p>
+</section>
+
+<!-- ============================================================ SLIDE 8 — TEAMMATES vs SUBAGENTS -->
+<section class="slide">
+  <span class="kicker">COMPARISON</span>
+  <h2 class="auto">
+    <span class="en">Teammates vs subagents.</span>
+    <span class="bn">টিমমেট বনাম সাবএজেন্ট।</span>
+  </h2>
+  <div class="compare-table frag">
+    <div class="ct-row ct-head">
+      <div class="ct-cell"></div>
+      <div class="ct-cell">Agent Teams</div>
+      <div class="ct-cell">Subagents (Ep 3)</div>
+    </div>
+    <div class="ct-row">
+      <div class="ct-cell"><span class="en">Communication</span><span class="bn">যোগাযোগ</span></div>
+      <div class="ct-cell"><span class="en">Agent-to-agent + to lead</span><span class="bn">পারস্পরিক + লিডে</span></div>
+      <div class="ct-cell"><span class="en">Report to parent only</span><span class="bn">শুধু parent-এ</span></div>
+    </div>
+    <div class="ct-row">
+      <div class="ct-cell"><span class="en">Context</span><span class="bn">কনটেক্সট</span></div>
+      <div class="ct-cell"><span class="en">Independent windows</span><span class="bn">স্বাধীন উইন্ডো</span></div>
+      <div class="ct-cell"><span class="en">Inherit parent slice</span><span class="bn">parent-এর অংশ</span></div>
+    </div>
+    <div class="ct-row">
+      <div class="ct-cell"><span class="en">Shared state</span><span class="bn">শেয়ার্ড স্টেট</span></div>
+      <div class="ct-cell"><span class="en">Mailbox + task board</span><span class="bn">মেইলবক্স + বোর্ড</span></div>
+      <div class="ct-cell"><span class="en">None (parent mediates)</span><span class="bn">নেই (parent মধ্যস্থ)</span></div>
+    </div>
+    <div class="ct-row">
+      <div class="ct-cell"><span class="en">Cost</span><span class="bn">খরচ</span></div>
+      <div class="ct-cell"><span class="en">Higher (full instances)</span><span class="bn">বেশি</span></div>
+      <div class="ct-cell"><span class="en">Lower (scoped)</span><span class="bn">কম</span></div>
+    </div>
+    <div class="ct-row">
+      <div class="ct-cell"><span class="en">Best for</span><span class="bn">উপযুক্ত</span></div>
+      <div class="ct-cell"><span class="en">Cross-layer features</span><span class="bn">ক্রস-লেয়ার ফিচার</span></div>
+      <div class="ct-cell"><span class="en">Parallel read/analysis</span><span class="bn">সমান্তরাল বিশ্লেষণ</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 9 — DYNAMIC WORKFLOWS -->
+<section class="slide">
+  <span class="kicker">DYNAMIC WORKFLOWS</span>
+  <h2 class="auto">
+    <span class="en">The orchestrator pattern.</span>
+    <span class="bn">অর্কেস্ট্রেটর প্যাটার্ন।</span>
+  </h2>
+  <div class="orch-flow frag">
+    <div class="of-step highlight">
+      <span class="en">Orchestrator receives high-level task</span>
+      <span class="bn">অর্কেস্ট্রেটর উচ্চ-স্তরের কাজ পায়</span>
+    </div>
+    <div class="of-arrow">↓</div>
+    <div class="of-step">
+      <span class="en">Decomposes + scopes + writes its own orchestration script</span>
+      <span class="bn">কাজ ভাগ করে এবং নিজেই orchestration স্ক্রিপ্ট লেখে</span>
+    </div>
+    <div class="of-arrow">↓</div>
+    <div class="of-fan">
+      <div class="of-mini">Agent 1</div>
+      <div class="of-mini">Agent 2</div>
+      <div class="of-mini">Agent 3</div>
+      <div class="of-mini">…</div>
+      <div class="of-mini">Agent N</div>
+    </div>
+    <div class="of-arrow">↓</div>
+    <div class="of-step">
+      <span class="en">Collect results → validate → synthesize</span>
+      <span class="bn">ফলাফল সংগ্রহ → যাচাই → সংশ্লেষণ</span>
+    </div>
+    <div class="of-arrow">↓</div>
+    <div class="of-step highlight">
+      <span class="en">One clean result handed back</span>
+      <span class="bn">একটাই পরিষ্কার ফলাফল ফেরত</span>
+    </div>
+  </div>
+  <p class="caption frag">
+    <span class="en">Orchestrator dynamically writes its own plan — you don't script the decomposition yourself.</span>
+    <span class="bn">অর্কেস্ট্রেটর নিজেই পরিকল্পনা লেখে — তুমি decomposition নিজে করো না।</span>
+  </p>
+</section>
+
+<!-- ============================================================ SLIDE 10 — HEADLESS MODE -->
+<section class="slide">
+  <span class="kicker">DYNAMIC WORKFLOWS · SETUP</span>
+  <h2 class="auto">
+    <span class="en">Headless mode — the engine.</span>
+    <span class="bn">হেডলেস মোড — ইঞ্জিন।</span>
+  </h2>
+  <pre class="code-block frag"><span class="comment"># Run Claude non-interactively — orchestrator or single agent</span>
+<span class="cmd">claude</span> <span class="flag">-p</span> <span class="str">"Migrate all fetch() calls in src/ from v1 to v2 API"</span>
+
+<span class="comment"># Cap turns to prevent runaway cost</span>
+<span class="cmd">claude</span> <span class="flag">-p</span> <span class="str">"Refactor auth logic in auth/service.ts"</span> <span class="flag">--max-turns</span> <span class="val">20</span>
+
+<span class="comment"># Shell-level parallelism — spawn 10 at once, rate-limited</span>
+<span class="cmd">ls</span> src/services/*.ts \
+  | <span class="cmd">xargs</span> <span class="flag">-P 10</span> <span class="flag">-I {}</span> \
+    <span class="cmd">claude</span> <span class="flag">-p</span> <span class="str">"Migrate fetch() calls in {}"</span></pre>
+  <p class="caption frag">
+    <span class="en"><code>-p</code> = non-interactive (print mode). <code>-P 10</code> = 10 concurrent shells. <code>--max-turns 20</code> = hard stop.</span>
+    <span class="bn"><code>-p</code> = নন-ইন্টারেক্টিভ। <code>-P 10</code> = ১০টা একসাথে। <code>--max-turns 20</code> = কঠোর সীমা।</span>
+  </p>
+</section>
+
+<!-- ============================================================ SLIDE 11 — PROMPT DISCIPLINE -->
+<section class="slide">
+  <span class="kicker">DYNAMIC WORKFLOWS · PROMPTS</span>
+  <h2 class="auto">
+    <span class="en">Scoped prompts. No shared memory.</span>
+    <span class="bn">সীমাবদ্ধ প্রম্পট। শেয়ার্ড মেমরি নেই।</span>
+  </h2>
+  <div class="strip frag" style="max-width: min(90vw,740px); width:100%;">
+    <div class="mini-panel" style="border-color: var(--red);">
+      <div class="tag" style="background: var(--red);">
+        <span class="en">Vague — burns tokens</span><span class="bn">অস্পষ্ট — টোকেন নষ্ট</span>
+      </div>
+      <p><code>"Migrate all API calls."</code></p>
+      <p><span class="en">Agent doesn't know which file, which version, which output format. Wasted run.</span><span class="bn">এজেন্ট জানে না কোন ফাইল, কোন ভার্সন। ব্যর্থ চেষ্টা।</span></p>
+    </div>
+    <div class="mini-panel" style="border-color: var(--green);">
+      <div class="tag" style="background: var(--green);">
+        <span class="en">Scoped — works</span><span class="bn">সীমাবদ্ধ — কাজ করে</span>
+      </div>
+      <p><code>"Migrate all fetch() calls in <strong>/src/services/userService.ts</strong> from APIv1 to APIv2. Replace <strong>api.get()</strong> with <strong>apiClient.get()</strong>. Preserve error handling. Return only changed lines."</code></p>
+    </div>
+  </div>
+  <p class="caption frag">
+    <span class="en">Each agent needs ALL context in its prompt — agents don't share memory. If agent A discovers something, agent B won't know.</span>
+    <span class="bn">প্রতিটা এজেন্টের prompt-এ সব context দাও — এজেন্টরা মেমরি শেয়ার করে না।</span>
+  </p>
+</section>
+
+<!-- ============================================================ SLIDE 12 — GAN PATTERN -->
+<section class="slide">
+  <span class="kicker">ADVANCED PATTERN</span>
+  <h2 class="auto">
+    <span class="en">Generator + Validator. A GAN for code.</span>
+    <span class="bn">জেনারেটর + ভ্যালিডেটর। কোডের জন্য GAN।</span>
+  </h2>
+  <div class="flavor-row frag">
+    <div class="flavor-card">
+      <div class="fc-head">
+        <span class="en">Generator Agents</span><span class="bn">জেনারেটর এজেন্ট</span>
+      </div>
+      <div class="fc-body">
+        <div class="fc-row"><span class="fc-icon">✍️</span><span class="en">Write code, make changes, implement features</span><span class="bn">কোড লেখে, পরিবর্তন করে</span></div>
+        <div class="fc-row"><span class="fc-icon">📁</span><span class="en">Each agent owns a distinct file scope — no overlap</span><span class="bn">প্রতিটা এজেন্টের আলাদা ফাইল স্কোপ</span></div>
+        <div class="fc-row"><span class="fc-icon">⚡</span><span class="en">Run in parallel — no waiting on each other</span><span class="bn">সমান্তরালে চলে</span></div>
+      </div>
+    </div>
+    <div class="flavor-card">
+      <div class="fc-head alt">
+        <span class="en">Validator Agents</span><span class="bn">ভ্যালিডেটর এজেন্ট</span>
+      </div>
+      <div class="fc-body">
+        <div class="fc-row"><span class="fc-icon">🔍</span><span class="en">Review diffs, hunt edge cases, try to break output</span><span class="bn">diff রিভিউ করে, edge case খোঁজে</span></div>
+        <div class="fc-row"><span class="fc-icon">🔁</span><span class="en">Feed failures back to generators — iterate</span><span class="bn">ব্যর্থতা ফেরত পাঠায় — পুনরাবৃত্তি</span></div>
+        <div class="fc-row"><span class="fc-icon">✅</span><span class="en">Two reviewers per file before merge</span><span class="bn">merge-এর আগে প্রতিটা ফাইলে দুই রিভিউয়ার</span></div>
+      </div>
+    </div>
+  </div>
+  <p class="caption frag">
+    <span class="en">This is the closest thing to a GAN for software engineering — adversarial agents converging on correct output.</span>
+    <span class="bn">সফটওয়্যার ইঞ্জিনিয়ারিংয়ের জন্য GAN-এর সবচেয়ে কাছের জিনিস।</span>
+  </p>
+</section>
+
+<!-- ============================================================ SLIDE 13 — REAL WORLD -->
+<section class="slide">
+  <span class="kicker">REAL WORLD</span>
+  <h2 class="auto">
+    <span class="en">Bun: Zig → Rust. In eleven days.</span>
+    <span class="bn">Bun: Zig থেকে Rust। এগারো দিনে।</span>
+  </h2>
+  <div class="rw-card frag">
+    <div class="rw-head">
+      <span class="en">Proof of concept: porting Bun's runtime</span>
+      <span class="bn">প্রমাণ: Bun-এর runtime পোর্ট করা</span>
+    </div>
+    <div class="rw-body">
+      <div class="rw-stat">
+        <span class="rw-num">750k</span>
+        <span class="rw-desc"><span class="en">lines of Rust generated</span><span class="bn">লাইন Rust কোড তৈরি</span></span>
+      </div>
+      <div class="rw-stat">
+        <span class="rw-num">99.8%</span>
+        <span class="rw-desc"><span class="en">of test suite passing</span><span class="bn">টেস্ট স্যুট পাস</span></span>
+      </div>
+      <div class="rw-stat">
+        <span class="rw-num">11</span>
+        <span class="rw-desc"><span class="en">days — with hundreds of parallel agents, 2 reviewers per file</span><span class="bn">দিন — শত শত সমান্তরাল এজেন্ট, প্রতিটা ফাইলে ২ রিভিউয়ার</span></span>
+      </div>
+    </div>
+  </div>
+  <p class="caption frag">
+    <span class="en">A task that would have taken a team of engineers months — completed by agent swarms in under two weeks.</span>
+    <span class="bn">একটা কাজ যা ইঞ্জিনিয়ারদের মাস লাগত — এজেন্ট ঝাঁক দুই সপ্তাহেরও কমে শেষ করল।</span>
+  </p>
+</section>
+
+<!-- ============================================================ SLIDE 14 — COST MATH -->
+<section class="slide">
+  <span class="kicker">COST MODEL</span>
+  <h2 class="auto">
+    <span class="en">Tokens scale linearly. Plan accordingly.</span>
+    <span class="bn">টোকেন সরলরৈখিকভাবে বাড়ে।</span>
+  </h2>
+  <div class="cost-scale frag">
+    <div class="cs-row">
+      <div class="cs-label"><span class="en">1 agent</span><span class="bn">১ এজেন্ট</span></div>
+      <div class="cs-track"><div class="cs-fill" style="width:4%"></div></div>
+      <div class="cs-val">~10k tok</div>
+    </div>
+    <div class="cs-row">
+      <div class="cs-label"><span class="en">10 agents</span><span class="bn">১০ এজেন্ট</span></div>
+      <div class="cs-track"><div class="cs-fill" style="width:25%"></div></div>
+      <div class="cs-val">~100k tok</div>
+    </div>
+    <div class="cs-row">
+      <div class="cs-label"><span class="en">100 agents</span><span class="bn">১০০ এজেন্ট</span></div>
+      <div class="cs-track"><div class="cs-fill" style="width:70%"></div></div>
+      <div class="cs-val">~1M tok</div>
+    </div>
+    <div class="cs-row">
+      <div class="cs-label"><span class="en">Haiku swap</span><span class="bn">Haiku-তে</span></div>
+      <div class="cs-track"><div class="cs-fill" style="width:18%; background: var(--green);"></div></div>
+      <div class="cs-val" style="color: var(--green);">~250k tok</div>
+    </div>
+  </div>
+  <ul class="checklist frag" style="max-width: min(88vw, 660px);">
+    <li class="yes"><span class="icon">✅</span><span class="en">Use claude-haiku-4-5 for well-defined subtasks — 4× cheaper</span><span class="bn">নির্দিষ্ট subtask-এ Haiku — ৪ গুণ সস্তা</span></li>
+    <li class="yes"><span class="icon">✅</span><span class="en">Batch related files — don't spawn one agent per file blindly</span><span class="bn">সম্পর্কিত ফাইল একসাথে — অন্ধভাবে এক-এজেন্ট-প্রতি-ফাইল না</span></li>
+    <li class="yes"><span class="icon">✅</span><span class="en">Filter scope before spawning — no wasted agents on irrelevant files</span><span class="bn">spawn করার আগে scope ফিল্টার করো</span></li>
+    <li class="no"><span class="icon">⛔</span><span class="en">Don't spawn hundreds for sequential tasks — activity ≠ value</span><span class="bn">sequential কাজে শত শত spawn করো না</span></li>
+  </ul>
+</section>
+
+<!-- ============================================================ SLIDE 15 — WATCH OUT: STATELESSNESS -->
+<section class="slide">
+  <span class="kicker">WATCH OUT</span>
+  <h2 class="auto" style="color: var(--red);">
+    <span class="en">Subagents have no shared memory.</span>
+    <span class="bn">সাবএজেন্টের শেয়ার্ড মেমরি নেই।</span>
+  </h2>
+  <div class="panel frag" style="max-width: min(88vw,660px); border-color: var(--red); width:100%;">
+    <div class="bubble" style="margin-bottom: .8rem;">
+      <div class="who">Agent 47 discovers</div>
+      <span class="en">"The legacy auth module uses SHA-1 hashing — everything that touches it needs to handle this."</span>
+      <span class="bn">"লেগ্যাসি auth মডিউল SHA-1 হ্যাশিং ব্যবহার করে।"</span>
+    </div>
+    <p style="font-size: clamp(.84rem,1.75vw,1.02rem); font-weight:600; color: var(--red);">
+      <span class="en">Agent 23 does not know this. It assumes SHA-256. It ships broken code.</span>
+      <span class="bn">Agent 23 এটা জানে না। সে SHA-256 ধরে নেয়। ভাঙা কোড ship করে।</span>
+    </p>
+  </div>
+  <p class="caption frag">
+    <span class="en">Fix: pass critical discoveries explicitly in every subagent's prompt. Or use Agent Teams where agents can message each other.</span>
+    <span class="bn">সমাধান: গুরুত্বপূর্ণ তথ্য প্রতিটা subagent-এর prompt-এ দাও। বা Agent Teams ব্যবহার করো।</span>
+  </p>
+</section>
+
+<!-- ============================================================ SLIDE 16 — WATCH OUT: RATE LIMITS -->
+<section class="slide">
+  <span class="kicker">WATCH OUT</span>
+  <h2 class="auto" style="color: var(--red);">
+    <span class="en">Rate limits are real. Control concurrency.</span>
+    <span class="bn">Rate limit বাস্তব। concurrency নিয়ন্ত্রণ করো।</span>
+  </h2>
+  <pre class="code-block frag"><span class="comment"># BAD — spawning 200 agents instantly → API throttling</span>
+<span class="cmd">ls</span> src/**/*.ts | <span class="cmd">xargs</span> <span class="flag">-P 200</span> <span class="flag">-I {}</span> <span class="cmd">claude</span> <span class="flag">-p</span> <span class="str">"Migrate {}"</span>
+
+<span class="comment"># GOOD — 10 concurrent max, plus max-turns guard</span>
+<span class="cmd">ls</span> src/**/*.ts | <span class="cmd">xargs</span> <span class="flag">-P 10</span> <span class="flag">-I {}</span> \
+  <span class="cmd">claude</span> <span class="flag">-p</span> <span class="str">"Migrate {}"</span> <span class="flag">--max-turns</span> <span class="val">15</span>
+
+<span class="comment"># GOOD — orchestrator uses Task tool internally (managed concurrency)</span>
+<span class="cmd">claude</span> <span class="flag">-p</span> <span class="str">"Migrate all fetch() calls across src/ — spawn agents as needed"</span></pre>
+  <ul class="checklist frag">
+    <li class="yes"><span class="icon">✅</span><span class="en">Use <code>--max-turns</code> on every subagent — prevents runaway sessions</span><span class="bn"><code>--max-turns</code> সবসময় দাও — বেলাগাম সেশন ঠেকাও</span></li>
+    <li class="yes"><span class="icon">✅</span><span class="en">Prefer Task tool (managed) over raw shell xargs for large swarms</span><span class="bn">বড় ঝাঁকের জন্য Task tool পছন্দ করো</span></li>
+    <li class="no"><span class="icon">⛔</span><span class="en">Never spawn unlimited parallel agents — rate limits will throttle you</span><span class="bn">অসীম সমান্তরাল এজেন্ট spawn করো না</span></li>
+  </ul>
+</section>
+
+<!-- ============================================================ SLIDE 17 — WHEN TO USE -->
+<section class="slide">
+  <span class="kicker">DECISION GUIDE</span>
+  <h2 class="auto">
+    <span class="en">Which tool for which job?</span>
+    <span class="bn">কোন কাজে কোনটা?</span>
+  </h2>
+  <div class="compare-table frag">
+    <div class="ct-row ct-head">
+      <div class="ct-cell"><span class="en">Scenario</span><span class="bn">পরিস্থিতি</span></div>
+      <div class="ct-cell"><span class="en">Use</span><span class="bn">ব্যবহার করো</span></div>
+      <div class="ct-cell"><span class="en">Why</span><span class="bn">কেন</span></div>
+    </div>
+    <div class="ct-row">
+      <div class="ct-cell"><span class="en">Cross-layer feature (FE + BE + tests)</span><span class="bn">ক্রস-লেয়ার ফিচার</span></div>
+      <div class="ct-cell"><span class="en">Agent Teams</span><span class="bn">এজেন্ট টিম</span></div>
+      <div class="ct-cell"><span class="en">Agents need to talk to each other</span><span class="bn">পরস্পর কথা বলা দরকার</span></div>
+    </div>
+    <div class="ct-row">
+      <div class="ct-cell"><span class="en">Migrate 200 files to new API</span><span class="bn">২০০ ফাইল মাইগ্রেশন</span></div>
+      <div class="ct-cell"><span class="en">Dynamic Workflows</span><span class="bn">ডায়নামিক ওয়ার্কফ্লো</span></div>
+      <div class="ct-cell"><span class="en">Files are independent — batch fan-out</span><span class="bn">ফাইলগুলো স্বাধীন</span></div>
+    </div>
+    <div class="ct-row">
+      <div class="ct-cell"><span class="en">Audit codebase for security issues</span><span class="bn">নিরাপত্তা অডিট</span></div>
+      <div class="ct-cell"><span class="en">Dynamic Workflows (Haiku)</span><span class="bn">ডায়নামিক (Haiku)</span></div>
+      <div class="ct-cell"><span class="en">Read-only, scoped, cheap</span><span class="bn">রিড-অনলি, সস্তা</span></div>
+    </div>
+    <div class="ct-row">
+      <div class="ct-cell"><span class="en">Add a new endpoint end-to-end</span><span class="bn">নতুন endpoint end-to-end</span></div>
+      <div class="ct-cell"><span class="en">Single session or Ep 3 subagents</span><span class="bn">সিঙ্গেল সেশন বা Ep ৩</span></div>
+      <div class="ct-cell"><span class="en">Sequential steps, swarm overkill</span><span class="bn">sequential — swarm দরকার নেই</span></div>
+    </div>
+  </div>
+  <p class="caption frag">
+    <span class="en">Let the problem shape the tool. Activity isn't value.</span>
+    <span class="bn">সমস্যা দিয়ে tool বেছে নাও। activity মানে value না।</span>
+  </p>
+</section>
+
+<!-- ============================================================ SLIDE 18 — WRAP UP -->
+<section class="slide">
+  <span class="kicker">WRAP UP</span>
+  <h2 class="auto">
+    <span class="en">One engineer. A hundred agents.</span>
+    <span class="bn">একজন ইঞ্জিনিয়ার। একশো এজেন্ট।</span>
+  </h2>
+  <div class="content frag" style="max-width: min(88vw,640px); width:100%; display:flex; flex-direction:column; gap:.6rem; text-align:left;">
+    <div class="tag" style="background: #FF6B35; align-self:flex-start;">
+      <span class="en">Agent Teams</span><span class="bn">এজেন্ট টিম</span>
+    </div>
+    <p style="font-size: clamp(.84rem,1.75vw,1.02rem);"><span class="en">Lead + teammates + mailbox + task board. <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code></span><span class="bn">লিড + টিমমেট + মেইলবক্স + টাস্ক বোর্ড।</span></p>
+    <div class="tag" style="background: var(--navy); align-self:flex-start; margin-top:.3rem;">
+      <span class="en">Dynamic Workflows</span><span class="bn">ডায়নামিক ওয়ার্কফ্লো</span>
+    </div>
+    <p style="font-size: clamp(.84rem,1.75vw,1.02rem);"><span class="en">Orchestrator + Task tool + <code>claude -p</code> + <code>--max-turns</code>. Hundreds of parallel agents — scoped, stateless, fast.</span><span class="bn">অর্কেস্ট্রেটর + Task tool। শত শত সমান্তরাল — সীমাবদ্ধ, দ্রুত।</span></p>
+  </div>
+  <div class="loop frag" style="margin-top:1.2rem; max-width: min(88vw,560px);">
+    <span class="tag" style="background:#FF6B35;">
+      <span class="en">Key rule</span><span class="bn">মূলনীতি</span>
+    </span>
+    <p><span class="en">Each agent should be <strong>focused, scoped, and replaceable</strong>. The swarm's power comes from simplicity at the leaf level.</span><span class="bn">প্রতিটা এজেন্ট <strong>কেন্দ্রীভূত, সীমাবদ্ধ, এবং প্রতিস্থাপনযোগ্য</strong> হওয়া উচিত।</span></p>
+  </div>
+  <div class="strip frag" style="margin-top:1rem; max-width: min(88vw,640px);">
+    <span class="tag" style="background: rgba(17,23,44,.15); color:var(--navy);">AGENT TEAMS</span>
+    <span class="tag" style="background: rgba(17,23,44,.15); color:var(--navy);">DYNAMIC WORKFLOWS</span>
+    <span class="tag" style="background: rgba(17,23,44,.15); color:var(--navy);">GAN PATTERN</span>
+    <span class="tag" style="background: rgba(17,23,44,.15); color:var(--navy);">PARALLEL AT SCALE</span>
+  </div>
+  <p class="caption frag" style="margin-top:.8rem;">
+    <span class="en">Season 1 complete. You've gone from one agent to a swarm. What you build next is up to you.</span>
+    <span class="bn">সিজন ১ সম্পন্ন। একটা এজেন্ট থেকে ঝাঁকে এলে। এখন তুমি কী বানাবে সেটা তোমার।</span>
+  </p>
+</section>
+
+<div id="counter" class="counter"></div>
+<script src="../../assets/deck.js"></script>
+<script data-goatcounter="https://jiteshsureka.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
