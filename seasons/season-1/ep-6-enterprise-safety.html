@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S1·E6 — Enterprise Safety & Cost Controls · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+/* ---- checklist ---- */
+.checklist {
+  list-style: none; display: flex; flex-direction: column;
+  gap: .5rem; text-align: left; max-width: min(88vw, 660px); width: 100%;
+}
+.checklist li {
+  font-weight: 600; font-size: clamp(.82rem, 1.7vw, 1.05rem);
+  padding: .38em .9em; border-radius: 12px;
+  border: 2px solid var(--navy); background: var(--paper);
+  box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: .55rem;
+}
+.checklist li.yes { border-color: var(--green); background: rgba(46,175,125,.08); }
+.checklist li.no  { border-color: var(--red);   background: rgba(224,72,58,.08); }
+.checklist li .icon { font-size: 1.1em; flex-shrink: 0; }
+
+/* ---- code block ---- */
+pre.code-block {
+  background: var(--navy); color: #e2e8f0;
+  border: 2px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  padding: clamp(.7rem,1.8vw,1.2rem) clamp(.9rem,2vw,1.4rem);
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.62rem,1.35vw,.88rem); line-height: 1.65;
+  text-align: left; max-width: min(92vw, 800px); width: 100%;
+  overflow-x: auto; white-space: pre;
+}
+pre.code-block .comment { color: #64748b; }
+pre.code-block .cmd     { color: var(--amber); }
+pre.code-block .flag    { color: #7dd3fc; }
+pre.code-block .path    { color: #86efac; }
+pre.code-block .note    { color: #c4b5fd; }
+pre.code-block .str     { color: #fca5a5; }
+pre.code-block .key     { color: var(--amber); }
+pre.code-block .val     { color: #86efac; }
+
+/* ---- permission table ---- */
+.permission-table {
+  display: flex; gap: clamp(.6rem,1.5vw,1.1rem);
+  flex-wrap: wrap; justify-content: center;
+  max-width: min(92vw, 820px); width: 100%;
+}
+.perm-col {
+  flex: 1; min-width: clamp(190px,27vw,310px);
+  border: 2px solid var(--navy); border-radius: 16px; overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+.perm-col .pc-head {
+  padding: .3em .9em; font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.88rem,1.8vw,1.15rem); color: #fff;
+}
+.perm-col ul {
+  list-style: none; background: var(--paper);
+  padding: clamp(.5rem,1.2vw,.8rem) clamp(.7rem,1.5vw,1rem);
+  display: flex; flex-direction: column; gap: .3rem;
+}
+.perm-col ul li {
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.6rem,1.2vw,.78rem); font-weight: 600; line-height: 1.4;
+  display: flex; gap: .4em; align-items: flex-start;
+}
+
+/* ---- cost meter ---- */
+.cost-meters {
+  display: flex; flex-direction: column; gap: .55rem;
+  max-width: min(86vw, 640px); width: 100%;
+}
+.cost-meter-row {
+  display: flex; align-items: center; gap: .7rem;
+}
+.cm-label {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.78rem,1.55vw,1rem); min-width: clamp(100px,16vw,150px); text-align: right;
+}
+.cm-track {
+  flex: 1; height: clamp(22px,3.2vw,30px);
+  background: rgba(17,23,44,.1); border-radius: 999px; overflow: hidden;
+  border: 1.5px solid rgba(17,23,44,.15);
+}
+.cm-fill {
+  height: 100%; border-radius: 999px;
+}
+.cm-val {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.75rem,1.5vw,.95rem); min-width: 3rem;
+}
+
+/* ---- incident card ---- */
+.incident-card {
+  background: var(--paper); border: 2.5px solid var(--red); border-radius: 18px;
+  box-shadow: var(--shadow-md); overflow: hidden;
+  max-width: min(88vw, 700px); width: 100%;
+}
+.incident-card .ic-head {
+  background: var(--red); padding: .35em 1em;
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.88rem,1.8vw,1.15rem); color: #fff;
+  display: flex; align-items: center; gap: .4em;
+}
+.incident-card .ic-body {
+  padding: clamp(.7rem,1.8vw,1.2rem) clamp(.9rem,2vw,1.3rem);
+  font-size: clamp(.7rem,1.4vw,.9rem); font-weight: 600; line-height: 1.6;
+}
+.incident-card .ic-row {
+  display: flex; gap: .6rem; margin-bottom: .35rem; align-items: flex-start;
+}
+.incident-card .ic-key {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.78rem,1.55vw,1rem); min-width: clamp(70px,11vw,110px);
+  color: var(--red);
+}
+
+/* ---- rollout checklist ---- */
+.rollout-list {
+  display: flex; flex-direction: column; gap: .45rem;
+  max-width: min(88vw, 680px); width: 100%;
+}
+.rollout-item {
+  display: flex; align-items: center; gap: .75rem;
+  background: var(--paper); border: 2px solid var(--navy); border-radius: 13px;
+  padding: .38em .9em; box-shadow: var(--shadow-sm);
+}
+.rollout-item.done  { border-color: var(--green); background: rgba(46,175,125,.07); }
+.rollout-item.warn  { border-color: var(--amber); background: rgba(251,175,50,.07); }
+.rollout-num {
+  font-family: 'Fraunces', serif; font-weight: 700;
+  font-size: clamp(.88rem,1.8vw,1.15rem); color: var(--red);
+  min-width: 1.4rem; text-align: center;
+}
+.rollout-item.done .rollout-num { color: var(--green); }
+.rollout-text {
+  font-size: clamp(.7rem,1.4vw,.9rem); font-weight: 600; line-height: 1.35; flex: 1;
+}
+.rollout-status {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.78rem,1.55vw,1rem);
+}
+.rollout-item.done .rollout-status { color: var(--green); }
+.rollout-item.warn .rollout-status { color: var(--amber); }
+
+/* ---- layer overview ---- */
+.layer-row {
+  display: flex; gap: clamp(.6rem,1.5vw,1.1rem); flex-wrap: wrap;
+  justify-content: center; max-width: min(92vw,860px); width: 100%;
+}
+.layer-card {
+  background: var(--paper); border: 2px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-sm); padding: clamp(.7rem,1.8vw,1.2rem);
+  flex: 1; min-width: clamp(170px,24vw,250px); text-align: center;
+}
+.layer-card .lc-num {
+  font-family: 'Fraunces', serif; font-weight: 700;
+  font-size: clamp(1.5rem,3vw,2.2rem); color: var(--red); line-height: 1;
+}
+.layer-card h3 {
+  font-family: 'Work Sans', sans-serif; font-weight: 700;
+  font-size: clamp(.78rem,1.55vw,.98rem); margin: .3rem 0 .2rem; line-height: 1.3;
+}
+.layer-card p {
+  font-size: clamp(.62rem,1.25vw,.8rem); color: rgba(17,23,44,.65); line-height: 1.45;
+}
+</style>
+</head>
+<body data-ep-label="S1·E6 · Enterprise Safety" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ===== SLIDE 1: TITLE ===== -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">SEASON 1 · EPISODE 6</span><span class="bn">সিজন ১ · এপিসোড ৬</span></div>
+    <h1 class="auto" style="color:#fff;font-size:clamp(1.8rem,7vw,4.8rem);line-height:.95">
+      <span class="en">ENTERPRISE<br><span style="color:var(--red)">SAFETY</span><br><span style="font-size:.5em;color:rgba(255,255,255,.7)">& Cost Controls</span></span>
+      <span class="bn b" style="color:#fff">এন্টারপ্রাইজ<br><span style="color:var(--red)">সেফটি</span><br><span style="font-size:.5em;color:rgba(255,255,255,.7)">এবং খরচ নিয়ন্ত্রণ</span></span>
+    </h1>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,700px)">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-amber">RIFAT · SENIOR ENGINEER, NOP-STATION</span>
+        <span class="en">"I gave the whole team access on Monday. By Thursday I had one runaway agent and one very unhappy CFO. Here's what I built before re-enabling access."</span>
+        <span class="bn">"সোমবার পুরো টিমকে অ্যাক্সেস দিয়েছিলাম। বৃহস্পতিবারে একটি রানওয়ে এজেন্ট এবং একজন খুব অখুশি CFO ছিল। আবার অ্যাক্সেস চালু করার আগে যা তৈরি করলাম।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 2: THE FULL ARC ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">THE FULL ARC</span><span class="bn">পুরো আর্ক</span></div>
+    <h2 class="auto"><span class="en">Season 1 in One Slide</span><span class="bn">এক স্লাইডে সিজন ১</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:stretch;gap:.7rem;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel pop" style="width:clamp(110px,16vw,165px);border-color:var(--blue)">
+        <div class="strip" style="background:var(--blue)">EP 1</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.1vw,.75rem);margin-top:.3rem">
+          <span class="en">WHY — you're the bottleneck</span><span class="bn b">কেন — তুমিই বাধা</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(110px,16vw,165px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber)">EP 2</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.1vw,.75rem);margin-top:.3rem">
+          <span class="en">HOW — sessions &amp; worktrees</span><span class="bn b">কিভাবে — সেশন ও ওয়ার্কট্রি</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(110px,16vw,165px);border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)">EP 3</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.1vw,.75rem);margin-top:.3rem">
+          <span class="en">Subagents inside one session</span><span class="bn b">এক সেশনে সাবএজেন্ট</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(110px,16vw,165px);border-color:#6C5CE7">
+        <div class="strip" style="background:#6C5CE7">EP 4</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.1vw,.75rem);margin-top:.3rem">
+          <span class="en">Coordination — shared files</span><span class="bn b">কোঅর্ডিনেশন — শেয়ার্ড ফাইল</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(110px,16vw,165px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)">EP 5</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.1vw,.75rem);margin-top:.3rem">
+          <span class="en">Hooks &amp; scheduled agents</span><span class="bn b">হুক ও শিডিউলড এজেন্ট</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,640px);margin-top:.8rem;border-color:var(--red)">
+      <span class="en">You've unlocked parallel development, subagents, coordination, and automation. Now: how do you give your whole <strong>team</strong> access without one bad day costing $500 and a production incident?</span>
+      <span class="bn b">প্যারালেল ডেভেলপমেন্ট, সাবএজেন্ট, কোঅর্ডিনেশন, এবং অটোমেশন আনলক করেছেন। এখন: কীভাবে পুরো <strong>টিমকে</strong> অ্যাক্সেস দেবেন যাতে একটি খারাপ দিন $৫০০ এবং একটি প্রোডাকশন ইনসিডেন্ট না খরচ করে?</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 3: RISK SURFACE ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">THE RISK SURFACE</span><span class="bn">ঝুঁকির পরিধি</span></div>
+    <h2 class="auto"><span class="en">Scale Multiplies Risk</span><span class="bn">স্কেল ঝুঁকি বহুগুণ করে</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-amber">RIFAT</span>
+        <span class="en">Solo, I could see what my agent was doing. At 15 engineers, 3 sessions each, with subagents — I have no idea what's running unless I build visibility into it.</span>
+        <span class="bn">একা, আমি দেখতে পারতাম আমার এজেন্ট কী করছে। ১৫ জন ইঞ্জিনিয়ার, প্রত্যেকে ৩ সেশন, সাবএজেন্ট সহ — আমি বিল্ট-ইন ভিজিবিলিটি না থাকলে বুঝতে পারি না কী চলছে।</span>
+      </div>
+    </div>
+    <div class="row frag" style="gap:.8rem;flex-wrap:wrap;justify-content:center;margin-top:.8rem">
+      <div class="tag" style="border-color:var(--red);font-size:clamp(.75rem,1.5vw,.95rem)"><span class="en">15 engineers</span><span class="bn">১৫ জন ইঞ্জিনিয়ার</span></div>
+      <div class="tag" style="border-color:var(--red);font-size:clamp(.75rem,1.5vw,.95rem)">×</div>
+      <div class="tag" style="border-color:var(--red);font-size:clamp(.75rem,1.5vw,.95rem)"><span class="en">3 sessions each</span><span class="bn">প্রত্যেকে ৩ সেশন</span></div>
+      <div class="tag" style="border-color:var(--red);font-size:clamp(.75rem,1.5vw,.95rem)">×</div>
+      <div class="tag" style="border-color:var(--red);font-size:clamp(.75rem,1.5vw,.95rem)"><span class="en">N subagents each</span><span class="bn">প্রত্যেকে N সাবএজেন্ট</span></div>
+      <div class="tag" style="border-color:var(--red);font-size:clamp(.75rem,1.5vw,.95rem)">=</div>
+      <div class="tag" style="border-color:var(--red);background:rgba(224,72,58,.1);font-size:clamp(.75rem,1.5vw,.95rem)"><span class="en">😬 enormous blast radius</span><span class="bn">😬 বিশাল বিস্ফোরণ ব্যাসার্ধ</span></div>
+    </div>
+    <div class="row frag" style="gap:.6rem;flex-wrap:wrap;justify-content:center;margin-top:.6rem">
+      <div class="mini-panel pop" style="width:clamp(140px,20vw,200px);border-color:var(--red)">
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem)">
+          <span class="en">💸 One engineer's runaway subagent = $340 bill overnight</span><span class="bn b">💸 একজনের রানওয়ে সাবএজেন্ট = রাতারাতি $৩৪০ বিল</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(140px,20vw,200px);border-color:var(--red)">
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem)">
+          <span class="en">🗑️ One bad prompt = production data deleted</span><span class="bn b">🗑️ একটি খারাপ প্রম্পট = প্রোডাকশন ডেটা মুছে যাওয়া</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(140px,20vw,200px);border-color:var(--red)">
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem)">
+          <span class="en">🔑 One leaked key in a prompt = security incident</span><span class="bn b">🔑 প্রম্পটে একটি লিক হওয়া কী = সিকিউরিটি ইনসিডেন্ট</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 4: THREE CONTROL LAYERS ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">THREE CONTROL LAYERS</span><span class="bn">তিনটি নিয়ন্ত্রণ স্তর</span></div>
+    <h2 class="auto"><span class="en">The Safety Stack</span><span class="bn">সেফটি স্ট্যাক</span></h2>
+    <div class="layer-row frag">
+      <div class="layer-card pop">
+        <div class="lc-num">1</div>
+        <h3><span class="en">Permissions</span><span class="bn">পারমিশন</span></h3>
+        <p><span class="en">What agents are allowed to do — bash commands, file paths, MCP servers. Deny by default.</span><span class="bn">এজেন্টরা কী করতে পারবে — bash কমান্ড, ফাইল পাথ, MCP সার্ভার। ডিফল্টে অস্বীকার।</span></p>
+      </div>
+      <div class="layer-card pop">
+        <div class="lc-num">2</div>
+        <h3><span class="en">Cost Controls</span><span class="bn">খরচ নিয়ন্ত্রণ</span></h3>
+        <p><span class="en">What agents are allowed to spend — per-session budgets, team caps, alerts before hard limits.</span><span class="bn">এজেন্টরা কতটুকু খরচ করতে পারবে — সেশন বাজেট, টিম সীমা, হার্ড লিমিটের আগে সতর্কতা।</span></p>
+      </div>
+      <div class="layer-card pop">
+        <div class="lc-num">3</div>
+        <h3><span class="en">Observability</span><span class="bn">দৃশ্যমানতা</span></h3>
+        <p><span class="en">What agents actually did — audit logs, tool traces, cost history. Can't fix what you can't see.</span><span class="bn">এজেন্টরা আসলে কী করেছে — অডিট লগ, টুল ট্রেস, খরচের ইতিহাস। দেখতে না পেলে ঠিক করা যায় না।</span></p>
+      </div>
+    </div>
+    <div class="caption frag" style="margin-top:.8rem">
+      <span class="en">Each layer is independent. You can add them in any order. But all three together is what "production-ready" means for team-scale agents.</span>
+      <span class="bn">প্রতিটি স্তর স্বাধীন। যেকোনো ক্রমে যোগ করতে পারেন। কিন্তু তিনটি মিলে "প্রোডাকশন-রেডি" মানে টিম-স্কেল এজেন্টের জন্য।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 5: LAYER 1 — PERMISSIONS ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">LAYER 1: PERMISSIONS</span><span class="bn">স্তর ১: পারমিশন</span></div>
+    <h2 class="auto"><span class="en">Deny by Default, Allow Explicitly</span><span class="bn">ডিফল্টে অস্বীকার, স্পষ্টভাবে অনুমতি</span></h2>
+    <div class="permission-table frag">
+      <div class="perm-col">
+        <div class="pc-head" style="background:var(--green)"><span class="en">✓ Allow list (add what team needs)</span><span class="bn">✓ অনুমতি তালিকা</span></div>
+        <ul>
+          <li><span style="color:var(--green)">✓</span><span class="en">git add, git commit, git push (non-force)</span><span class="bn">git add, commit, push (নন-ফোর্স)</span></li>
+          <li><span style="color:var(--green)">✓</span><span class="en">npm install, npm test, npm run build</span></li>
+          <li><span style="color:var(--green)">✓</span><span class="en">Read/write under <code>src/</code>, <code>tests/</code></span><span class="bn"><code>src/</code>, <code>tests/</code>-এর নিচে পড়া/লেখা</span></li>
+          <li><span style="color:var(--green)">✓</span><span class="en">gh pr create, gh pr comment</span></li>
+          <li><span style="color:var(--green)">✓</span><span class="en">Read-only DB access (SELECT only)</span><span class="bn">শুধু-পড়া DB অ্যাক্সেস (শুধু SELECT)</span></li>
+        </ul>
+      </div>
+      <div class="perm-col">
+        <div class="pc-head" style="background:var(--red)"><span class="en">✗ Block list (always deny these)</span><span class="bn">✗ ব্লক তালিকা (সবসময় অস্বীকার)</span></div>
+        <ul>
+          <li><span style="color:var(--red)">✗</span><span class="en">rm -rf (any path)</span></li>
+          <li><span style="color:var(--red)">✗</span><span class="en">git push --force / git push origin main</span></li>
+          <li><span style="color:var(--red)">✗</span><span class="en">DROP TABLE, DELETE FROM (no WHERE)</span></li>
+          <li><span style="color:var(--red)">✗</span><span class="en">curl * | bash (pipe to shell)</span></li>
+          <li><span style="color:var(--red)">✗</span><span class="en">Any write to <code>infrastructure/</code>, <code>.env</code></span><span class="bn"><code>infrastructure/</code>, <code>.env</code>-এ লেখা</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="caption frag" style="margin-top:.6rem">
+      <span class="en">Config lives in CLAUDE.md (project-level) and <code>.claude/settings.json</code>. Every session inherits it automatically.</span>
+      <span class="bn">কনফিগ CLAUDE.md (প্রজেক্ট-লেভেল) এবং <code>.claude/settings.json</code>-এ থাকে। প্রতিটি সেশন স্বয়ংক্রিয়ভাবে এটি উত্তরাধিকার সূত্রে পায়।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 6: BASH CONTROLS ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">BASH CONTROLS</span><span class="bn">BASH নিয়ন্ত্রণ</span></div>
+    <h2 class="auto"><span class="en">Blocking Dangerous Commands</span><span class="bn">বিপজ্জনক কমান্ড ব্লক করা</span></h2>
+    <pre class="code-block frag">
+<span class="comment"># .claude/settings.json — bash command restrictions</span>
+{
+  <span class="key">"permissions"</span>: {
+    <span class="key">"allow"</span>: [
+      <span class="str">"Bash(git add:*)"</span>,
+      <span class="str">"Bash(git commit:*)"</span>,
+      <span class="str">"Bash(git push origin feat/*:*)"</span>,  <span class="comment">// feature branches only</span>
+      <span class="str">"Bash(npm *:*)"</span>,
+      <span class="str">"Bash(gh pr *:*)"</span>
+    ],
+    <span class="key">"deny"</span>: [
+      <span class="str">"Bash(git push --force*)"</span>,
+      <span class="str">"Bash(git push origin main*)"</span>,
+      <span class="str">"Bash(rm -rf*)"</span>,
+      <span class="str">"Bash(curl*|*bash*)"</span>
+    ]
+  }
+}
+    </pre>
+    <div class="panel frag pop" style="max-width:min(88vw,640px);margin-top:.6rem;border-color:var(--green);background:rgba(46,175,125,.06)">
+      <span class="en">The deny list is enforced before Claude even tries. An agent cannot bypass it with clever prompting — it's a hard system-level block, not an instruction.</span>
+      <span class="bn b">ক্লড চেষ্টা করার আগেই ডেনি লিস্ট কার্যকর হয়। একটি এজেন্ট চালাক প্রম্পটিং দিয়ে এটি বাইপাস করতে পারে না — এটি একটি হার্ড সিস্টেম-লেভেল ব্লক, নির্দেশ নয়।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 7: APPROVAL GATES ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">APPROVAL GATES</span><span class="bn">অনুমোদন গেট</span></div>
+    <h2 class="auto"><span class="en">Human-in-the-Loop for Irreversible Actions</span><span class="bn">অপরিবর্তনীয় অ্যাকশনের জন্য লুপে মানুষ</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">Some actions should need explicit human approval — not just a permission check. Hook exit code <strong>2</strong> pauses Claude and surfaces the decision to a human before continuing.</span>
+      <span class="bn b">কিছু অ্যাকশনের জন্য শুধু পারমিশন চেক নয়, স্পষ্ট মানবিক অনুমোদন দরকার। হুক এক্সিট কোড <strong>2</strong> ক্লডকে থামায় এবং চালিয়ে যাওয়ার আগে মানুষের সামনে সিদ্ধান্তটি উপস্থাপন করে।</span>
+    </div>
+    <pre class="code-block frag" style="margin-top:.7rem">
+<span class="comment">#!/bin/bash</span>
+<span class="comment"># scripts/prod-guard.sh — PreToolUse:Bash hook</span>
+
+INPUT=$(cat)
+COMMAND=$(echo "$INPUT" | <span class="path">jq -r '.tool_input.command'</span>)
+
+<span class="comment"># Flag anything touching production</span>
+if echo "$COMMAND" | <span class="cmd">grep -qiE</span> <span class="str">'(prod|production|--force|DROP|DELETE.*FROM)'</span>; then
+  echo <span class="str">"⚠️  Production-affecting command detected."</span> >&2
+  echo <span class="str">"Command: $COMMAND"</span> >&2
+  echo <span class="str">"Pausing for human review before proceeding."</span> >&2
+  <span class="cmd">exit 2</span>   <span class="comment"># exit 2 = ask human, don't block entirely</span>
+fi
+
+<span class="cmd">exit 0</span>
+    </pre>
+    <div class="caption frag">
+      <span class="en"><code>exit 1</code> blocks silently. <code>exit 2</code> blocks and asks the human to approve or reject before Claude continues. Use <code>exit 2</code> for irreversible actions.</span>
+      <span class="bn"><code>exit 1</code> চুপচাপ ব্লক করে। <code>exit 2</code> ব্লক করে এবং ক্লড চালিয়ে যাওয়ার আগে মানুষকে অনুমোদন বা প্রত্যাখ্যান করতে বলে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 8: COST CONTROLS ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">LAYER 2: COST CONTROLS</span><span class="bn">স্তর ২: খরচ নিয়ন্ত্রণ</span></div>
+    <h2 class="auto"><span class="en">Budget Before Agents Run</span><span class="bn">এজেন্ট চালানোর আগে বাজেট</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">Set budgets at two levels: per-session (individual engineer) and per-month (team total). Alert at 80% — hard stop at 100%. The hard stop must be automatic, not a Slack message.</span>
+      <span class="bn b">দুটি স্তরে বাজেট সেট করুন: সেশন-প্রতি (ব্যক্তিগত ইঞ্জিনিয়ার) এবং মাসে-মাসে (টিম মোট)। ৮০%-এ সতর্ক করুন — ১০০%-এ হার্ড স্টপ। হার্ড স্টপ অবশ্যই স্বয়ংক্রিয় হতে হবে, স্ল্যাক মেসেজ নয়।</span>
+    </div>
+    <div class="cost-meters frag" style="margin-top:.8rem">
+      <div class="cost-meter-row">
+        <div class="cm-label"><span class="en">Habib (today)</span><span class="bn">হাবিব (আজ)</span></div>
+        <div class="cm-track"><div class="cm-fill" style="width:45%;background:var(--green)"></div></div>
+        <div class="cm-val" style="color:var(--green)">$4.50</div>
+      </div>
+      <div class="cost-meter-row">
+        <div class="cm-label"><span class="en">Shazzad (today)</span><span class="bn">শাজ্জাদ (আজ)</span></div>
+        <div class="cm-track"><div class="cm-fill" style="width:78%;background:var(--amber)"></div></div>
+        <div class="cm-val" style="color:var(--amber)">$7.80 ⚠️</div>
+      </div>
+      <div class="cost-meter-row">
+        <div class="cm-label"><span class="en">Team (month)</span><span class="bn">টিম (মাস)</span></div>
+        <div class="cm-track"><div class="cm-fill" style="width:62%;background:var(--blue)"></div></div>
+        <div class="cm-val" style="color:var(--blue)">$620</div>
+      </div>
+      <div class="cost-meter-row">
+        <div class="cm-label"><span class="en">Incident day</span><span class="bn">ইনসিডেন্ট দিন</span></div>
+        <div class="cm-track"><div class="cm-fill" style="width:100%;background:var(--red)"></div></div>
+        <div class="cm-val" style="color:var(--red)">$340 🛑</div>
+      </div>
+    </div>
+    <div class="caption frag" style="margin-top:.6rem">
+      <span class="en">The $340 day: one engineer's runaway subagent chain hit no limit because no limit existed. Hard stops would have capped it at $20.</span>
+      <span class="bn">$৩৪০-এর দিন: একজন ইঞ্জিনিয়ারের রানওয়ে সাবএজেন্ট চেইন কোনো সীমায় পৌঁছায়নি কারণ কোনো সীমা ছিল না। হার্ড স্টপ এটিকে $২০-এ সীমাবদ্ধ করত।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 9: COST ALERTS ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">COST ALERTS</span><span class="bn">খরচ সতর্কতা</span></div>
+    <h2 class="auto"><span class="en">Hook on Agent Spawn</span><span class="bn">এজেন্ট স্পনে হুক</span></h2>
+    <pre class="code-block frag">
+<span class="comment">#!/bin/bash</span>
+<span class="comment"># scripts/cost-guard.sh — PreToolUse:Agent hook</span>
+
+INPUT=$(cat)
+<span class="comment"># Read today's spend from your tracking file</span>
+TODAY_SPEND=$(cat <span class="path">.claude/spend-today.json</span> | <span class="path">jq '.total'</span>)
+DAILY_LIMIT=<span class="str">"15.00"</span>
+WARN_THRESHOLD=<span class="str">"12.00"</span>
+
+if (( $(echo "$TODAY_SPEND >= $DAILY_LIMIT" | <span class="cmd">bc</span>) )); then
+  echo <span class="str">"Daily limit $DAILY_LIMIT reached. Agent spawn blocked."</span> >&2
+  <span class="cmd">exit 1</span>
+fi
+
+if (( $(echo "$TODAY_SPEND >= $WARN_THRESHOLD" | <span class="cmd">bc</span>) )); then
+  echo <span class="str">"⚠️ Spend at $TODAY_SPEND — approaching daily limit."</span> >&2
+  <span class="comment"># exit 0 — warn but allow</span>
+fi
+
+<span class="cmd">exit 0</span>
+    </pre>
+    <div class="caption frag">
+      <span class="en">Track spend per engineer per day. Aggregate to team total. Alert at 80%, hard block at 100%. Update <code>.claude/spend-today.json</code> from PostToolUse hook on every Agent call.</span>
+      <span class="bn">প্রতিদিন প্রতি ইঞ্জিনিয়ারের খরচ ট্র্যাক করুন। টিম মোটে একত্রিত করুন। ৮০%-এ সতর্ক, ১০০%-এ হার্ড ব্লক।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 10: THE INCIDENT ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">THE INCIDENT</span><span class="bn">ইনসিডেন্ট</span></div>
+    <h2 class="auto"><span class="en">What Actually Happened</span><span class="bn">আসলে কী হয়েছিল</span></h2>
+    <div class="incident-card frag">
+      <div class="ic-head">🚨 Incident Report — Day 4 of Team Rollout</div>
+      <div class="ic-body">
+        <div class="ic-row">
+          <div class="ic-key"><span class="en">What</span><span class="bn">কী</span></div>
+          <div><span class="en">Engineer spawned an orchestrator agent to review 4 modules. Orchestrator spawned 4 subagents. Each subagent spawned 3 more for "deeper analysis". 12 agents total, running in parallel.</span><span class="bn">ইঞ্জিনিয়ার ৪ মডিউল রিভিউ করতে অর্কেস্ট্রেটর এজেন্ট স্পন করেছিল। অর্কেস্ট্রেটর ৪ সাবএজেন্ট স্পন করে। প্রতিটি সাবএজেন্ট "গভীর বিশ্লেষণের" জন্য আরো ৩টি স্পন করে। মোট ১২ এজেন্ট।</span></div>
+        </div>
+        <div class="ic-row">
+          <div class="ic-key"><span class="en">Cost</span><span class="bn">খরচ</span></div>
+          <div><span class="en">$340 in 4 hours. Discovered Thursday morning when the invoice arrived.</span><span class="bn">৪ ঘণ্টায় $৩৪০। বৃহস্পতিবার সকালে ইনভয়েস এলে জানা গেল।</span></div>
+        </div>
+        <div class="ic-row">
+          <div class="ic-key"><span class="en">Root cause</span><span class="bn">মূল কারণ</span></div>
+          <div><span class="en">No depth limit. No cost limit. Orchestrator prompt didn't say "do NOT spawn subagents."</span><span class="bn">কোনো ডেপথ লিমিট নেই। কোনো খরচ সীমা নেই। অর্কেস্ট্রেটর প্রম্পটে "সাবএজেন্ট স্পন করবেন না" লেখা ছিল না।</span></div>
+        </div>
+        <div class="ic-row">
+          <div class="ic-key"><span class="en">Outcome</span><span class="bn">ফলাফল</span></div>
+          <div><span class="en">Team access suspended. CFO unhappy. Rifat builds the safety stack. Access re-enabled 48 hours later.</span><span class="bn">টিম অ্যাক্সেস স্থগিত। CFO অখুশি। রিফাত সেফটি স্ট্যাক তৈরি করে। ৪৮ ঘণ্টা পরে অ্যাক্সেস আবার চালু।</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 11: INCIDENT FIX ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">INCIDENT FIX</span><span class="bn">ইনসিডেন্ট সমাধান</span></div>
+    <h2 class="auto"><span class="en">Three Changes That Prevent It</span><span class="bn">তিনটি পরিবর্তন যা এটি প্রতিরোধ করে</span></h2>
+    <div class="row frag" style="gap:.8rem;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel pop" style="flex:1;min-width:clamp(175px,25vw,255px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">Fix 1: Depth limit in prompt</span><span class="bn">সমাধান ১: প্রম্পটে ডেপথ লিমিট</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">Every subagent prompt ends with: <strong>"Do NOT spawn any subagents. You are a worker, not an orchestrator."</strong></span>
+          <span class="bn b">প্রতিটি সাবএজেন্ট প্রম্পটের শেষে: <strong>"কোনো সাবএজেন্ট স্পন করবেন না। আপনি একজন কর্মী, অর্কেস্ট্রেটর নন।"</strong></span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="flex:1;min-width:clamp(175px,25vw,255px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">Fix 2: Daily spend hook</span><span class="bn">সমাধান ২: দৈনিক খরচ হুক</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">PreToolUse on Agent: check daily spend. Block if over $15 per engineer per day.</span>
+          <span class="bn b">Agent-এ PreToolUse: দৈনিক খরচ চেক করুন। প্রতিদিন প্রতি ইঞ্জিনিয়ার $১৫-এর বেশি হলে ব্লক করুন।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="flex:1;min-width:clamp(175px,25vw,255px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">Fix 3: Team CLAUDE.md rule</span><span class="bn">সমাধান ৩: টিম CLAUDE.md নিয়ম</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">CLAUDE.md: "Max subagent depth = 1. Orchestrators spawn workers; workers return results only."</span>
+          <span class="bn b">CLAUDE.md: "সর্বোচ্চ সাবএজেন্ট ডেপথ = ১। অর্কেস্ট্রেটর কর্মী স্পন করে; কর্মীরা শুধু ফলাফল ফেরত দেয়।"</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,640px);margin-top:.8rem;border-color:var(--green);background:rgba(46,175,125,.06)">
+      <span class="en">With all three: a 12-agent recursive chain is impossible. The same scenario today would cost ~$28 instead of $340 and Claude would stop at depth 1.</span>
+      <span class="bn b">তিনটি সহ: ১২-এজেন্ট রিকার্সিভ চেইন অসম্ভব। একই পরিস্থিতিতে আজ $৩৪০-এর পরিবর্তে ~$২৮ খরচ হবে এবং ক্লড ডেপথ ১-এ থামবে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 12: OBSERVABILITY ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">LAYER 3: OBSERVABILITY</span><span class="bn">স্তর ৩: দৃশ্যমানতা</span></div>
+    <h2 class="auto"><span class="en">Know What Every Agent Did</span><span class="bn">প্রতিটি এজেন্ট কী করেছে জানুন</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">Permissions and cost controls prevent bad actions. Observability tells you what actually happened — which is just as important for debugging, compliance, and retrospectives.</span>
+      <span class="bn b">পারমিশন এবং খরচ নিয়ন্ত্রণ খারাপ অ্যাকশন প্রতিরোধ করে। দৃশ্যমানতা আসলে কী হয়েছে তা বলে — যা ডিবাগিং, কমপ্লায়েন্স, এবং রেট্রোস্পেক্টিভের জন্য সমান গুরুত্বপূর্ণ।</span>
+    </div>
+    <div class="row frag" style="gap:.8rem;flex-wrap:wrap;justify-content:center;margin-top:.8rem">
+      <div class="mini-panel pop" style="width:clamp(150px,22vw,230px);border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">Without observability</span><span class="bn">দৃশ্যমানতা ছাড়া</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.8rem);margin-top:.3rem">
+          <span class="en">$340 bill. No idea which engineer, which session, which subagent. No way to reconstruct what happened.</span>
+          <span class="bn b">$৩৪০ বিল। কোন ইঞ্জিনিয়ার, কোন সেশন, কোন সাবএজেন্ট জানা নেই। কী হয়েছে পুনর্গঠন করার উপায় নেই।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(150px,22vw,230px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">With observability</span><span class="bn">দৃশ্যমানতা সহ</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.8rem);margin-top:.3rem">
+          <span class="en">Audit log shows: Habib's session at 14:32 spawned Agent "security-review" which spawned 3 more. Total: 4 agents, 180k tokens.</span>
+          <span class="bn b">অডিট লগ দেখায়: হাবিবের সেশন ১৪:৩২-এ "security-review" এজেন্ট স্পন করে যেটা আরো ৩টি স্পন করে।</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 13: THE AUDIT HOOK ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">THE AUDIT HOOK</span><span class="bn">অডিট হুক</span></div>
+    <h2 class="auto"><span class="en">Logging Every Agent Action</span><span class="bn">প্রতিটি এজেন্ট অ্যাকশন লগ করা</span></h2>
+    <pre class="code-block frag">
+<span class="comment">#!/bin/bash</span>
+<span class="comment"># scripts/audit-logger.sh — PostToolUse hook (all tools)</span>
+
+INPUT=$(cat)
+TIMESTAMP=$(date <span class="flag">-u</span> <span class="str">'+%Y-%m-%dT%H:%M:%SZ'</span>)
+TOOL=$(echo "$INPUT"    | <span class="path">jq -r '.tool_name'</span>)
+USER=${GIT_AUTHOR_NAME:-<span class="str">"unknown"</span>}
+
+<span class="comment"># Build audit record</span>
+RECORD=$(echo "$INPUT" | <span class="path">jq</span> <span class="flag">--arg</span> ts <span class="str">"$TIMESTAMP"</span> <span class="flag">--arg</span> u <span class="str">"$USER"</span> '{
+  timestamp: $ts,
+  user: $u,
+  tool: .tool_name,
+  input: .tool_input,
+  exit_code: .tool_response.exit_code
+}')
+
+<span class="comment"># Append to daily audit log</span>
+echo "$RECORD" >> <span class="path">.claude/audit-$(date +%Y-%m-%d).jsonl</span>
+
+<span class="cmd">exit 0</span>
+    </pre>
+    <div class="caption frag">
+      <span class="en">One JSONL line per tool call. Every session, every engineer. Searchable with <code>jq</code>. Tells you exactly what happened and when — months later.</span>
+      <span class="bn">প্রতিটি টুল কলে একটি JSONL লাইন। প্রতিটি সেশন, প্রতিটি ইঞ্জিনিয়ার। <code>jq</code> দিয়ে অনুসন্ধানযোগ্য। মাস পরেও ঠিক কী ঘটেছিল বলে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 14: TEAM CLAUDE.MD ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">TEAM CLAUDE.MD</span><span class="bn">টিম CLAUDE.MD</span></div>
+    <h2 class="auto"><span class="en">The Shared Safety Constitution</span><span class="bn">শেয়ার্ড সেফটি সংবিধান</span></div>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">CLAUDE.md is the one file every agent session reads at startup. Make it your team's safety rules, not just project conventions.</span>
+      <span class="bn b">CLAUDE.md হলো একমাত্র ফাইল যা প্রতিটি এজেন্ট সেশন স্টার্টআপে পড়ে। এটিকে শুধু প্রজেক্ট কনভেনশন নয়, আপনার টিমের সেফটি নিয়মে পরিণত করুন।</span>
+    </div>
+    <pre class="code-block frag" style="margin-top:.7rem">
+<span class="comment"># CLAUDE.md — Team Safety Section (add to every project)</span>
+
+<span class="path">## Agent Safety Rules (mandatory)</span>
+
+<span class="str">**Subagent depth limit:** Max 1 level. You may spawn workers.
+Workers may NOT spawn further agents. State this explicitly
+in every subagent prompt you write.</span>
+
+<span class="str">**Production rule:** Never write to production databases,
+never force-push to main, never modify infrastructure/.
+These require a separate human-approved PR.</span>
+
+<span class="str">**Cost rule:** If a task would require more than 5 subagents
+or read more than 50 files, stop and ask the engineer first.</span>
+
+<span class="str">**Credentials rule:** Never include API keys, DB passwords,
+or secrets in your prompts or output files. They will be
+logged in the audit trail.</span>
+    </pre>
+  </div>
+</section>
+
+<!-- ===== SLIDE 15: SAFE ROLLOUT ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">SAFE ROLLOUT</span><span class="bn">নিরাপদ রোলআউট</span></div>
+    <h2 class="auto"><span class="en">Three Phases, Not One Big Bang</span><span class="bn">তিনটি পর্যায়, এক বিগ ব্যাং নয়</span></h2>
+    <div class="row frag" style="gap:.8rem;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel pop" style="flex:1;min-width:clamp(175px,25vw,260px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber)"><span class="en">Phase 1 — Pilot</span><span class="bn">পর্যায় ১ — পাইলট</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">2 engineers, 1 week. Tight permissions. Daily spend review. Collect edge cases and failure modes.</span>
+          <span class="bn b">২ ইঞ্জিনিয়ার, ১ সপ্তাহ। কঠোর পারমিশন। দৈনিক খরচ রিভিউ। এজ কেস এবং ফেলিয়ার মোড সংগ্রহ।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="flex:1;min-width:clamp(175px,25vw,260px);border-color:var(--blue)">
+        <div class="strip" style="background:var(--blue)"><span class="en">Phase 2 — Monitored</span><span class="bn">পর্যায় ২ — পর্যবেক্ষিত</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">Full team, safety stack on. Weekly audit log review. Refine rules based on real usage patterns.</span>
+          <span class="bn b">পুরো টিম, সেফটি স্ট্যাক চালু। সাপ্তাহিক অডিট লগ রিভিউ। বাস্তব ব্যবহারের প্যাটার্নের উপর ভিত্তি করে নিয়ম পরিমার্জন।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="flex:1;min-width:clamp(175px,25vw,260px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">Phase 3 — Autonomous</span><span class="bn">পর্যায় ৩ — স্বায়ত্তশাসিত</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">Automated monitoring. Alerts instead of manual checks. Team self-sufficient with established norms.</span>
+          <span class="bn b">স্বয়ংক্রিয় মনিটরিং। ম্যানুয়াল চেকের পরিবর্তে সতর্কতা। প্রতিষ্ঠিত নিয়ম সহ টিম স্বনির্ভর।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag" style="margin-top:.8rem">
+      <span class="en">Rifat's mistake: skipping Phase 1 and going straight to Phase 3. Two engineers for one week would have caught the recursive spawn problem for $40, not $340.</span>
+      <span class="bn">রিফাতের ভুল: পর্যায় ১ বাদ দিয়ে সরাসরি পর্যায় ৩-এ যাওয়া। দুই ইঞ্জিনিয়ার এক সপ্তাহের জন্য $৩৪০ নয়, $৪০-এ রিকার্সিভ স্পন সমস্যা ধরত।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 16: ROLLOUT CHECKLIST ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">ROLLOUT CHECKLIST</span><span class="bn">রোলআউট চেকলিস্ট</span></div>
+    <h2 class="auto"><span class="en">8 Things Before You Give the Team Access</span><span class="bn">টিমকে অ্যাক্সেস দেওয়ার আগে ৮টি বিষয়</span></h2>
+    <div class="rollout-list frag">
+      <div class="rollout-item done">
+        <div class="rollout-num">1</div>
+        <div class="rollout-text"><span class="en">Permission allowlist and bash blocklist in <code>.claude/settings.json</code></span><span class="bn"><code>.claude/settings.json</code>-এ পারমিশন অনুমতি তালিকা এবং bash ব্লক তালিকা</span></div>
+        <div class="rollout-status">✓</div>
+      </div>
+      <div class="rollout-item done">
+        <div class="rollout-num">2</div>
+        <div class="rollout-text"><span class="en">Daily cost limit hook — hard block at $15/engineer/day</span><span class="bn">দৈনিক খরচ সীমা হুক — প্রতিদিন প্রতি ইঞ্জিনিয়ার $১৫-এ হার্ড ব্লক</span></div>
+        <div class="rollout-status">✓</div>
+      </div>
+      <div class="rollout-item done">
+        <div class="rollout-num">3</div>
+        <div class="rollout-text"><span class="en">Audit logging hook — PostToolUse writes to <code>.claude/audit-DATE.jsonl</code></span><span class="bn">অডিট লগিং হুক — PostToolUse <code>.claude/audit-DATE.jsonl</code>-এ লেখে</span></div>
+        <div class="rollout-status">✓</div>
+      </div>
+      <div class="rollout-item done">
+        <div class="rollout-num">4</div>
+        <div class="rollout-text"><span class="en">Team CLAUDE.md — depth limit, production rules, credential rules</span><span class="bn">টিম CLAUDE.md — ডেপথ লিমিট, প্রোডাকশন নিয়ম, ক্রেডেনশিয়াল নিয়ম</span></div>
+        <div class="rollout-status">✓</div>
+      </div>
+      <div class="rollout-item done">
+        <div class="rollout-num">5</div>
+        <div class="rollout-text"><span class="en">Approval gate hook for production-touching commands (exit 2)</span><span class="bn">প্রোডাকশন-স্পর্শকারী কমান্ডের জন্য অনুমোদন গেট হুক (exit 2)</span></div>
+        <div class="rollout-status">✓</div>
+      </div>
+      <div class="rollout-item done">
+        <div class="rollout-num">6</div>
+        <div class="rollout-text"><span class="en">Pilot with 2 engineers for 1 week before full team rollout</span><span class="bn">পুরো টিম রোলআউটের আগে ২ ইঞ্জিনিয়ারের সাথে ১ সপ্তাহ পাইলট</span></div>
+        <div class="rollout-status">✓</div>
+      </div>
+      <div class="rollout-item done">
+        <div class="rollout-num">7</div>
+        <div class="rollout-text"><span class="en">Failure notification — Slack alert if any hook fails or daily limit triggers</span><span class="bn">ব্যর্থতা নোটিফিকেশন — কোনো হুক ব্যর্থ বা দৈনিক সীমা ট্রিগার হলে স্ল্যাক সতর্কতা</span></div>
+        <div class="rollout-status">✓</div>
+      </div>
+      <div class="rollout-item done">
+        <div class="rollout-num">8</div>
+        <div class="rollout-text"><span class="en">Team training session — 30 min on what agents can/can't do and the cost model</span><span class="bn">টিম ট্রেনিং সেশন — এজেন্ট কী করতে পারে/পারে না এবং খরচের মডেলে ৩০ মিনিট</span></div>
+        <div class="rollout-status">✓</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 17: WATCH OUT — CREDENTIALS ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WATCH OUT</span><span class="bn">সতর্ক থাকুন</span></div>
+    <h2 class="auto"><span class="en">Credentials in Prompts</span><span class="bn">প্রম্পটে ক্রেডেনশিয়াল</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,680px);border-color:var(--red);background:rgba(224,72,58,.06)">
+      <span class="en">Claude logs context. Your audit hook logs tool inputs. If an engineer puts a database password in a task description — "connect to postgres://user:<strong>p4ssw0rd</strong>@prod:5432/db" — that string is now in your audit logs, your session history, and potentially your context window cache.</span>
+      <span class="bn b">ক্লড কনটেক্সট লগ করে। আপনার অডিট হুক টুল ইনপুট লগ করে। কোনো ইঞ্জিনিয়ার টাস্ক বিবরণে ডেটাবেজ পাসওয়ার্ড রাখলে — সেই স্ট্রিং এখন আপনার অডিট লগ, সেশন ইতিহাস, এবং সম্ভবত কনটেক্সট ক্যাশে আছে।</span>
+    </div>
+    <div class="row frag" style="gap:.8rem;flex-wrap:wrap;justify-content:center;margin-top:.8rem">
+      <div class="mini-panel pop" style="flex:1;min-width:clamp(175px,25vw,255px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">✓ Do this</span><span class="bn">✓ এটা করুন</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">Store credentials in env vars or secrets managers. Reference them in prompts as <code>$DB_URL</code>. The value never appears in the prompt text.</span>
+          <span class="bn b">ক্রেডেনশিয়াল env ভেরিয়েবল বা সিক্রেটস ম্যানেজারে সংরক্ষণ করুন। প্রম্পটে <code>$DB_URL</code> হিসেবে রেফার করুন।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="flex:1;min-width:clamp(175px,25vw,255px);border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">✗ Never this</span><span class="bn">✗ কখনো এটা না</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">Inline secrets: API keys, passwords, tokens in task descriptions, CLAUDE.md, or shared-state files.</span>
+          <span class="bn b">ইনলাইন সিক্রেট: টাস্ক বিবরণ, CLAUDE.md, বা শেয়ার্ড-স্টেট ফাইলে API কী, পাসওয়ার্ড, টোকেন।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag">
+      <span class="en">Add to CLAUDE.md: "Never include credentials in prompts, task descriptions, or output files. Use environment variables."</span>
+      <span class="bn">CLAUDE.md-এ যোগ করুন: "প্রম্পট, টাস্ক বিবরণ, বা আউটপুট ফাইলে কখনো ক্রেডেনশিয়াল অন্তর্ভুক্ত করবেন না।"</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 18: WRAP UP — SEASON FINALE ===== -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WRAP UP · EP 6 · SEASON 1 COMPLETE</span><span class="bn">সারসংক্ষেপ · এপিসোড ৬ · সিজন ১ সম্পূর্ণ</span></div>
+    <h2 class="auto" style="color:#fff"><span class="en">Enterprise Safety</span><span class="bn">এন্টারপ্রাইজ সেফটি</span></h2>
+    <div class="row frag" style="gap:.6rem;flex-wrap:wrap;justify-content:center;margin-top:.4rem">
+      <div class="tag" style="border-color:var(--red);color:#fff;background:rgba(224,72,58,.25)"><span class="en">PERMISSIONS</span><span class="bn">পারমিশন</span></div>
+      <div class="tag" style="border-color:var(--red);color:#fff;background:rgba(224,72,58,.25)"><span class="en">COST CONTROLS</span><span class="bn">খরচ নিয়ন্ত্রণ</span></div>
+      <div class="tag" style="border-color:var(--red);color:#fff;background:rgba(224,72,58,.25)"><span class="en">OBSERVABILITY</span><span class="bn">দৃশ্যমানতা</span></div>
+      <div class="tag" style="border-color:var(--red);color:#fff;background:rgba(224,72,58,.25)"><span class="en">TEAM ROLLOUT</span><span class="bn">টিম রোলআউট</span></div>
+    </div>
+    <div class="char-summary frag" style="margin-top:.8rem;border-color:rgba(255,255,255,.2)">
+      <div class="cs-row" style="border-color:rgba(255,255,255,.12)">
+        <span class="cs-k" style="color:rgba(255,255,255,.6)"><span class="en">Layer 1</span><span class="bn">স্তর ১</span></span>
+        <span class="cs-v" style="color:#fff"><span class="en">Permissions — allowlist + blocklist in settings.json and CLAUDE.md</span><span class="bn">পারমিশন — settings.json এবং CLAUDE.md-এ অনুমতি + ব্লক তালিকা</span></span>
+      </div>
+      <div class="cs-row" style="border-color:rgba(255,255,255,.12)">
+        <span class="cs-k" style="color:rgba(255,255,255,.6)"><span class="en">Layer 2</span><span class="bn">স্তর ২</span></span>
+        <span class="cs-v" style="color:#fff"><span class="en">Cost controls — per-engineer daily limit hook. Alert at 80%, hard stop at 100%.</span><span class="bn">খরচ নিয়ন্ত্রণ — প্রতি-ইঞ্জিনিয়ার দৈনিক সীমা হুক। ৮০%-এ সতর্ক, ১০০%-এ হার্ড স্টপ।</span></span>
+      </div>
+      <div class="cs-row" style="border-color:rgba(255,255,255,.12)">
+        <span class="cs-k" style="color:rgba(255,255,255,.6)"><span class="en">Layer 3</span><span class="bn">স্তর ৩</span></span>
+        <span class="cs-v" style="color:#fff"><span class="en">Observability — audit JSONL via PostToolUse hook. Every action, every engineer.</span><span class="bn">দৃশ্যমানতা — PostToolUse হুকের মাধ্যমে অডিট JSONL। প্রতিটি অ্যাকশন, প্রতিটি ইঞ্জিনিয়ার।</span></span>
+      </div>
+    </div>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);max-width:min(88vw,640px);margin-top:.8rem">
+      <span style="color:#fff;font-size:clamp(.8rem,1.6vw,1rem)">
+        <span class="en">That's Season 1. You now have the full playbook: parallel sessions, subagents, coordination, automation, and enterprise safety. <strong style="color:var(--amber)">Ship faster. Stay safe.</strong></span>
+        <span class="bn b">এটাই সিজন ১। আপনার কাছে এখন সম্পূর্ণ প্লেবুক আছে: প্যারালেল সেশন, সাবএজেন্ট, কোঅর্ডিনেশন, অটোমেশন, এবং এন্টারপ্রাইজ সেফটি। <strong style="color:var(--amber)">দ্রুত শিপ করুন। নিরাপদ থাকুন।</strong></span>
+      </span>
+    </div>
+    <div class="caption frag" style="color:rgba(255,255,255,.5);margin-top:.6rem">
+      <span class="en">Made with ❤️ by nop-station · agents-101.jiteshsureka.github.io</span>
+      <span class="bn">nop-station দ্বারা তৈরি ❤️ · agents-101.jiteshsureka.github.io</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<script src="../../assets/deck.js"></script>
+<script data-goatcounter="https://jiteshsureka.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
