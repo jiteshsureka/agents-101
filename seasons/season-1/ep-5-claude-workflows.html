@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S1·E5 — Claude Workflows & Scheduled Agents · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+/* ---- checklist ---- */
+.checklist {
+  list-style: none; display: flex; flex-direction: column;
+  gap: .5rem; text-align: left; max-width: min(88vw, 660px); width: 100%;
+}
+.checklist li {
+  font-weight: 600; font-size: clamp(.82rem, 1.7vw, 1.05rem);
+  padding: .38em .9em; border-radius: 12px;
+  border: 2px solid var(--navy); background: var(--paper);
+  box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: .55rem;
+}
+.checklist li.yes { border-color: var(--green); background: rgba(46,175,125,.08); }
+.checklist li.no  { border-color: var(--red);   background: rgba(224,72,58,.08); }
+.checklist li .icon { font-size: 1.1em; flex-shrink: 0; }
+
+/* ---- code block ---- */
+pre.code-block {
+  background: var(--navy); color: #e2e8f0;
+  border: 2px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  padding: clamp(.7rem,1.8vw,1.2rem) clamp(.9rem,2vw,1.4rem);
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.62rem,1.35vw,.88rem); line-height: 1.65;
+  text-align: left; max-width: min(92vw, 800px); width: 100%;
+  overflow-x: auto; white-space: pre;
+}
+pre.code-block .comment { color: #64748b; }
+pre.code-block .cmd     { color: var(--amber); }
+pre.code-block .flag    { color: #7dd3fc; }
+pre.code-block .path    { color: #86efac; }
+pre.code-block .note    { color: #c4b5fd; }
+pre.code-block .str     { color: #fca5a5; }
+pre.code-block .key     { color: var(--amber); }
+pre.code-block .val     { color: #86efac; }
+
+/* ---- hook card ---- */
+.hook-card {
+  background: var(--paper); border: 2px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-sm); overflow: hidden;
+  max-width: min(88vw, 680px); width: 100%;
+}
+.hook-card .hc-event {
+  background: var(--navy); padding: .3em 1em;
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.68rem,1.35vw,.88rem);
+  color: var(--green); display: flex; align-items: center; gap: .5em;
+}
+.hook-card .hc-body {
+  padding: clamp(.6rem,1.5vw,1rem) clamp(.9rem,2vw,1.3rem);
+  font-size: clamp(.72rem,1.4vw,.9rem); line-height: 1.6; font-weight: 600;
+}
+.hook-card .hc-body .hc-cmd {
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.65rem,1.3vw,.84rem); color: var(--sky);
+  margin-top: .3rem; display: block;
+}
+.hook-card .hc-body .hc-effect {
+  font-size: clamp(.62rem,1.25vw,.8rem); color: rgba(17,23,44,.6);
+  margin-top: .25rem; display: block;
+}
+
+/* ---- workflow diagram ---- */
+.workflow-diagram {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 0; max-width: min(86vw, 520px); width: 100%;
+}
+.wf-step {
+  background: var(--paper); border: 2.5px solid var(--navy); border-radius: 14px;
+  box-shadow: var(--shadow-sm); padding: .45em 1.2em; text-align: center;
+  width: 100%;
+}
+.wf-step .wf-label {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.78rem,1.6vw,1.05rem); color: #fff;
+  border-radius: 999px; padding: .05em .7em; display: inline-block;
+  margin-bottom: .2rem;
+}
+.wf-step .wf-detail {
+  font-size: clamp(.65rem,1.3vw,.84rem); font-weight: 600;
+  color: rgba(17,23,44,.7); line-height: 1.4;
+}
+.wf-arrow {
+  font-size: clamp(1rem,2vw,1.4rem); opacity: .45;
+  font-family: 'Caveat', cursive; margin: .15rem 0;
+}
+
+/* ---- cron row ---- */
+.cron-list {
+  display: flex; flex-direction: column; gap: .5rem;
+  max-width: min(86vw,640px); width: 100%;
+}
+.cron-row {
+  display: flex; align-items: center; gap: .9rem;
+  background: var(--paper); border: 2px solid var(--navy); border-radius: 12px;
+  padding: .4em .9em; box-shadow: var(--shadow-sm);
+}
+.cron-time {
+  font-family: 'SF Mono','Fira Code',monospace; font-weight: 700;
+  font-size: clamp(.7rem,1.4vw,.9rem); color: var(--green);
+  min-width: clamp(90px,14vw,130px);
+}
+.cron-desc {
+  font-size: clamp(.68rem,1.35vw,.88rem); font-weight: 600;
+  color: rgba(17,23,44,.8); line-height: 1.35;
+}
+
+/* ---- before/after ---- */
+.before-after {
+  display: flex; gap: clamp(.7rem,1.8vw,1.3rem);
+  flex-wrap: wrap; justify-content: center;
+  max-width: min(92vw, 820px); width: 100%;
+}
+.ba-col {
+  flex: 1; min-width: clamp(200px,28vw,320px);
+  background: var(--paper); border: 2px solid var(--navy);
+  border-radius: 18px; box-shadow: var(--shadow-sm); overflow: hidden;
+}
+.ba-col .ba-head {
+  padding: .3em .9em; font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.88rem,1.8vw,1.15rem); color: #fff;
+}
+.ba-col ul {
+  list-style: none; padding: clamp(.5rem,1.2vw,.8rem) clamp(.7rem,1.5vw,1rem);
+  display: flex; flex-direction: column; gap: .35rem;
+}
+.ba-col ul li {
+  font-size: clamp(.65rem,1.3vw,.84rem); font-weight: 600;
+  line-height: 1.4; display: flex; gap: .4em; align-items: flex-start;
+}
+</style>
+</head>
+<body data-ep-label="S1·E5 · Claude Workflows" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ===== SLIDE 1: TITLE ===== -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">SEASON 1 · EPISODE 5</span><span class="bn">সিজন ১ · এপিসোড ৫</span></div>
+    <h1 class="auto" style="color:#fff;font-size:clamp(1.8rem,7vw,4.8rem);line-height:.95">
+      <span class="en">CLAUDE<br><span style="color:var(--green)">WORKFLOWS</span><br><span style="font-size:.5em;color:rgba(255,255,255,.7)">& Scheduled Agents</span></span>
+      <span class="bn b" style="color:#fff">ক্লড<br><span style="color:var(--green)">ওয়ার্কফ্লো</span><br><span style="font-size:.5em;color:rgba(255,255,255,.7)">এবং শিডিউলড এজেন্ট</span></span>
+    </h1>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,700px)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-green">SHAZZAD · FULL-STACK ENGINEER, NOP-STATION</span>
+        <span class="en">"Every Wednesday at 11pm, an agent checks our tests, writes our changelog, and drafts our release notes. Nobody set an alarm."</span>
+        <span class="bn">"প্রতি বুধবার রাত ১১টায়, একটি এজেন্ট আমাদের টেস্ট চেক করে, চেঞ্জলগ লেখে, এবং রিলিজ নোট ড্রাফট করে। কেউ অ্যালার্ম দেয়নি।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 2: RECAP ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">RECAP · EP 1–4</span><span class="bn">সারসংক্ষেপ · এপিসোড ১–৪</span></div>
+    <h2 class="auto"><span class="en">The Story So Far</span><span class="bn">এ পর্যন্ত গল্প</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:stretch;gap:.8rem;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel pop" style="width:clamp(130px,19vw,190px);border-color:var(--blue)">
+        <div class="strip" style="background:var(--blue)">EP 1</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem);margin-top:.3rem">
+          <span class="en">WHY parallel — you're the bottleneck</span>
+          <span class="bn b">কেন প্যারালেল — তুমিই বাধা</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(130px,19vw,190px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber)">EP 2</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem);margin-top:.3rem">
+          <span class="en">HOW — sessions, worktrees, rotation</span>
+          <span class="bn b">কিভাবে — সেশন, ওয়ার্কট্রি, রোটেশন</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(130px,19vw,190px);border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)">EP 3</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem);margin-top:.3rem">
+          <span class="en">Subagents — fan-out inside one session</span>
+          <span class="bn b">সাবএজেন্ট — একটি সেশনে ফ্যান-আউট</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(130px,19vw,190px);border-color:#6C5CE7">
+        <div class="strip" style="background:#6C5CE7">EP 4</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem);margin-top:.3rem">
+          <span class="en">Coordination — shared files, merge order</span>
+          <span class="bn b">কোঅর্ডিনেশন — শেয়ার্ড ফাইল, মার্জ অর্ডার</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,640px);margin-top:.8rem;border-color:var(--green)">
+      <span class="en">Eps 1–4: you trigger everything. Today: agents that <strong>trigger themselves</strong> — on events and on schedules.</span>
+      <span class="bn b">এপিসোড ১–৪: তুমি সব ট্রিগার কর। আজ: এজেন্ট যারা <strong>নিজেরাই ট্রিগার হয়</strong> — ইভেন্টে এবং শিডিউলে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 3: THE UPGRADE ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">THE UPGRADE</span><span class="bn">আপগ্রেড</span></div>
+    <h2 class="auto"><span class="en">From Reactive to Proactive</span><span class="bn">রিঅ্যাক্টিভ থেকে প্রোঅ্যাক্টিভ</span></h2>
+    <div class="row frag" style="gap:1rem;align-items:stretch;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel" style="flex:1;min-width:clamp(190px,27vw,280px);border-color:var(--blue)">
+        <div class="strip" style="background:var(--blue)"><span class="en">Reactive (Eps 1–4)</span><span class="bn">রিঅ্যাক্টিভ (এপি ১–৪)</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">You open a terminal. You type a prompt. You wait. You come back later. You trigger everything.</span>
+          <span class="bn b">তুমি টার্মিনাল খোলো। প্রম্পট টাইপ করো। অপেক্ষা করো। পরে ফিরে আসো। তুমিই সব ট্রিগার করো।</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="flex:1;min-width:clamp(190px,27vw,280px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">Proactive (Ep 5)</span><span class="bn">প্রোঅ্যাক্টিভ (এপি ৫)</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">An event fires. Or a clock ticks. Claude wakes up, does the work, and puts the output where you need it. Nobody triggered anything.</span>
+          <span class="bn b">একটি ইভেন্ট ঘটে। বা একটি ঘড়ি টিক করে। ক্লড জেগে ওঠে, কাজ করে, এবং যেখানে দরকার সেখানে আউটপুট রাখে। কেউ কিছু ট্রিগার করেনি।</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,640px);margin-top:.8rem;border-color:var(--green);background:rgba(46,175,125,.06)">
+      <span class="en">This is the jump from <strong>tool</strong> to <strong>teammate</strong>. A tool waits for you. A teammate shows up when the work is ready.</span>
+      <span class="bn b">এটাই <strong>টুল</strong> থেকে <strong>টিমমেট</strong>-এ লাফ দেওয়া। টুল তোমার জন্য অপেক্ষা করে। টিমমেট কাজ প্রস্তুত হলে নিজেই আসে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 4: TWO PRIMITIVES ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">TWO PRIMITIVES</span><span class="bn">দুটি প্রিমিটিভ</span></div>
+    <h2 class="auto"><span class="en">Hooks vs Scheduled Agents</span><span class="bn">হুক বনাম শিডিউলড এজেন্ট</span></h2>
+    <div class="row frag" style="gap:1rem;align-items:stretch;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel" style="flex:1;min-width:clamp(200px,30vw,310px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">⚡ Hooks</span><span class="bn">⚡ হুক</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en"><strong>Trigger:</strong> Claude Code events (tool use, file edit, session end)<br><strong>Speed:</strong> milliseconds — same session<br><strong>Purpose:</strong> validate, block, log, react</span>
+          <span class="bn b"><strong>ট্রিগার:</strong> ক্লড কোড ইভেন্ট (টুল ব্যবহার, ফাইল এডিট, সেশন শেষ)<br><strong>গতি:</strong> মিলিসেকেন্ড — একই সেশন<br><strong>উদ্দেশ্য:</strong> যাচাই, ব্লক, লগ, প্রতিক্রিয়া</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="flex:1;min-width:clamp(200px,30vw,310px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber)"><span class="en">🕐 Scheduled Agents</span><span class="bn">🕐 শিডিউলড এজেন্ট</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en"><strong>Trigger:</strong> time (cron) or external event (CI, PR, webhook)<br><strong>Speed:</strong> minutes — new Claude session<br><strong>Purpose:</strong> automate recurring tasks end-to-end</span>
+          <span class="bn b"><strong>ট্রিগার:</strong> সময় (cron) বা বাহ্যিক ইভেন্ট (CI, PR, ওয়েবহুক)<br><strong>গতি:</strong> মিনিট — নতুন ক্লড সেশন<br><strong>উদ্দেশ্য:</strong> পুনরাবৃত্তিমূলক কাজ এন্ড-টু-এন্ড স্বয়ংক্রিয় করা</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag" style="margin-top:.8rem">
+      <span class="en">Hooks guard individual actions in real time. Scheduled agents run whole workflows on their own schedule. Both can run without a human present.</span>
+      <span class="bn">হুক রিয়েল-টাইমে পৃথক অ্যাকশন রক্ষা করে। শিডিউলড এজেন্ট নিজের শিডিউলে পুরো ওয়ার্কফ্লো চালায়। দুটোই মানুষ ছাড়া চলতে পারে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 5: HOOKS ANATOMY ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">HOOKS ANATOMY</span><span class="bn">হুকের গঠন</span></div>
+    <h2 class="auto"><span class="en">How Hooks Work</span><span class="bn">হুক কীভাবে কাজ করে</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">A hook is a shell command wired to a Claude Code event. Claude fires the event → your shell script runs → exit code tells Claude what to do next.</span>
+      <span class="bn b">হুক হলো একটি ক্লড কোড ইভেন্টের সাথে সংযুক্ত শেল কমান্ড। ক্লড ইভেন্ট ফায়ার করে → আপনার শেল স্ক্রিপ্ট চলে → এক্সিট কোড ক্লডকে জানায় পরবর্তীতে কী করতে হবে।</span>
+    </div>
+    <div class="row frag" style="gap:.6rem;flex-wrap:wrap;justify-content:center;margin-top:.6rem">
+      <div class="tag" style="border-color:var(--green)"><span class="en">PreToolUse — before any tool runs</span><span class="bn">PreToolUse — যেকোনো টুল চলার আগে</span></div>
+      <div class="tag" style="border-color:var(--green)"><span class="en">PostToolUse — after a tool completes</span><span class="bn">PostToolUse — টুল শেষ হওয়ার পরে</span></div>
+      <div class="tag" style="border-color:var(--green)"><span class="en">Stop — when Claude finishes its turn</span><span class="bn">Stop — ক্লড তার টার্ন শেষ করলে</span></div>
+      <div class="tag" style="border-color:var(--green)"><span class="en">Notification — when Claude needs attention</span><span class="bn">Notification — ক্লডের মনোযোগ দরকার হলে</span></div>
+    </div>
+    <pre class="code-block frag" style="margin-top:.7rem">
+<span class="comment"># .claude/settings.json — hook config</span>
+{
+  <span class="key">"hooks"</span>: {
+    <span class="key">"PreToolUse"</span>: [{
+      <span class="key">"matcher"</span>: <span class="str">"Bash"</span>,
+      <span class="key">"hooks"</span>: [{ <span class="key">"type"</span>: <span class="str">"command"</span>, <span class="key">"command"</span>: <span class="str">"./scripts/check-bash.sh"</span> }]
+    }]
+  }
+}
+
+<span class="comment"># Exit codes:</span>
+<span class="cmd">exit 0</span>  → <span class="note">allow Claude to proceed</span>
+<span class="cmd">exit 1</span>  → <span class="note">block + show stderr to Claude as context</span>
+<span class="cmd">exit 2</span>  → <span class="note">block + ask human before continuing</span>
+    </pre>
+  </div>
+</section>
+
+<!-- ===== SLIDE 6: HOOK USE CASES ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">HOOK USE CASES</span><span class="bn">হুকের ব্যবহার</span></div>
+    <h2 class="auto"><span class="en">What Hooks Are Good For</span><span class="bn">হুক কীসের জন্য ভালো</span></h2>
+    <ul class="checklist frag">
+      <li class="yes"><span class="icon">🔒</span><span class="en">PreToolUse: block dangerous bash commands before they run (<code>rm -rf</code>, force push)</span><span class="bn">PreToolUse: বিপজ্জনক bash কমান্ড চলার আগে ব্লক করুন (<code>rm -rf</code>, ফোর্স পুশ)</span></li>
+      <li class="yes"><span class="icon">⚡</span><span class="en">PostToolUse: run type-check after every file edit — Claude sees failures immediately</span><span class="bn">PostToolUse: প্রতিটি ফাইল এডিটের পরে টাইপ-চেক চালান — ক্লড সাথে সাথে ব্যর্থতা দেখে</span></li>
+      <li class="yes"><span class="icon">💰</span><span class="en">PreToolUse: log token estimate before subagent spawn — catch runaway costs early</span><span class="bn">PreToolUse: সাবএজেন্ট স্পন করার আগে টোকেন এস্টিমেট লগ করুন — আগে খরচ ধরুন</span></li>
+      <li class="yes"><span class="icon">📋</span><span class="en">PostToolUse: append audit log entry — timestamp, tool, args — for every action</span><span class="bn">PostToolUse: প্রতিটি অ্যাকশনের জন্য অডিট লগ এন্ট্রি যোগ করুন</span></li>
+      <li class="yes"><span class="icon">🔔</span><span class="en">Notification: send Slack message when Claude is waiting for human input</span><span class="bn">Notification: ক্লড মানুষের ইনপুটের জন্য অপেক্ষা করলে স্ল্যাক মেসেজ পাঠান</span></li>
+    </ul>
+  </div>
+</section>
+
+<!-- ===== SLIDE 7: SHOW ME — BLOCK HOOK ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">SHOW ME</span><span class="bn">দেখাও</span></div>
+    <h2 class="auto"><span class="en">Hook: Block Push if Tests Fail</span><span class="bn">হুক: টেস্ট ফেল হলে পুশ ব্লক করুন</span></h2>
+    <pre class="code-block frag">
+<span class="comment">#!/bin/bash</span>
+<span class="comment"># scripts/pre-push-guard.sh — wired to PreToolUse:Bash</span>
+
+<span class="comment"># Only intercept git push commands</span>
+INPUT=$(cat)
+COMMAND=$(echo "$INPUT" | <span class="path">jq -r '.tool_input.command'</span>)
+
+if echo "$COMMAND" | <span class="cmd">grep -q</span> <span class="str">"git push"</span>; then
+  <span class="comment"># Run the test suite first</span>
+  if ! <span class="cmd">npm test</span> <span class="flag">--silent</span> 2>/dev/null; then
+    echo <span class="str">"Tests failing — push blocked. Fix tests first."</span> >&2
+    <span class="cmd">exit 1</span>   <span class="comment"># Claude sees this message and stops</span>
+  fi
+fi
+
+<span class="cmd">exit 0</span>  <span class="comment"># Tests pass — allow push</span>
+    </pre>
+    <div class="panel frag pop" style="max-width:min(88vw,620px);margin-top:.6rem;border-color:var(--green);background:rgba(46,175,125,.06)">
+      <span class="en">Claude tries to run <code>git push</code>. Hook intercepts → runs tests → tests fail → hook exits 1 → Claude sees "Tests failing — push blocked" and stops itself. Nobody had to babysit.</span>
+      <span class="bn b">ক্লড <code>git push</code> চালানোর চেষ্টা করে। হুক ইন্টারসেপ্ট করে → টেস্ট চালায় → টেস্ট ফেল → হুক 1 দিয়ে বের হয় → ক্লড "Tests failing — push blocked" দেখে নিজেই থামে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 8: SHOW ME — EDIT SUMMARY HOOK ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">SHOW ME</span><span class="bn">দেখাও</span></div>
+    <h2 class="auto"><span class="en">Hook: Auto-Log Every File Edit</span><span class="bn">হুক: প্রতিটি ফাইল এডিট স্বয়ংক্রিয় লগ করুন</span></h2>
+    <pre class="code-block frag">
+<span class="comment">#!/bin/bash</span>
+<span class="comment"># scripts/edit-logger.sh — wired to PostToolUse:Edit</span>
+
+INPUT=$(cat)
+FILE=$(echo "$INPUT" | <span class="path">jq -r '.tool_input.file_path'</span>)
+TIMESTAMP=$(date <span class="flag">-u</span> <span class="str">'+%Y-%m-%dT%H:%M:%SZ'</span>)
+
+<span class="comment"># Append to the sprint edit log</span>
+echo <span class="str">"[$TIMESTAMP] EDIT $FILE"</span> >> <span class="path">.claude/edit-log.md</span>
+
+<span class="cmd">exit 0</span>
+    </pre>
+    <div class="hook-card frag">
+      <div class="hc-event">📄 .claude/edit-log.md (auto-generated during session)</div>
+      <div class="hc-body">
+        <span>[2026-06-19T10:14:22Z] EDIT src/auth/token.ts</span>
+        <span>[2026-06-19T10:17:05Z] EDIT src/auth/middleware.ts</span>
+        <span>[2026-06-19T10:31:44Z] EDIT migrations/0004_jwt_secret.sql</span>
+        <span>[2026-06-19T11:02:18Z] EDIT src/api/routes.ts</span>
+        <span class="hc-effect">→ Instant audit trail. No extra effort. Every session builds it automatically.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 9: SCHEDULED AGENTS ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">SCHEDULED AGENTS</span><span class="bn">শিডিউলড এজেন্ট</span></div>
+    <h2 class="auto"><span class="en">GitHub Actions + Claude Code</span><span class="bn">গিটহাব অ্যাকশন + ক্লড কোড</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">GitHub Actions is the most common scheduler. Claude Code is the worker. The pattern: a cron trigger fires → Actions checks out the repo → runs <code>claude -p "your prompt"</code> → output goes where you route it.</span>
+      <span class="bn b">গিটহাব অ্যাকশন সবচেয়ে সাধারণ শিডিউলার। ক্লড কোড হলো কর্মী। প্যাটার্ন: cron ট্রিগার ফায়ার → Actions রেপো চেকআউট করে → <code>claude -p "আপনার প্রম্পট"</code> চালায় → আউটপুট রাউট করে।</span>
+    </div>
+    <div class="workflow-diagram frag" style="margin-top:.8rem">
+      <div class="wf-step">
+        <span class="wf-label" style="background:var(--amber);color:var(--navy)"><span class="en">⏰ Trigger</span><span class="bn">⏰ ট্রিগার</span></span>
+        <div class="wf-detail"><span class="en">cron: every Wednesday at 23:00 UTC</span><span class="bn">cron: প্রতি বুধবার রাত ২৩:০০ UTC</span></div>
+      </div>
+      <div class="wf-arrow">↓</div>
+      <div class="wf-step">
+        <span class="wf-label" style="background:var(--blue)"><span class="en">📦 Context</span><span class="bn">📦 কনটেক্সট</span></span>
+        <div class="wf-detail"><span class="en">checkout repo, read failing tests, git log since last tag</span><span class="bn">রেপো চেকআউট, ফেলিং টেস্ট পড়া, শেষ ট্যাগ থেকে git log</span></div>
+      </div>
+      <div class="wf-arrow">↓</div>
+      <div class="wf-step">
+        <span class="wf-label" style="background:var(--green)"><span class="en">🤖 Task</span><span class="bn">🤖 কাজ</span></span>
+        <div class="wf-detail"><code>claude -p "release-prep-prompt.md"</code></div>
+      </div>
+      <div class="wf-arrow">↓</div>
+      <div class="wf-step">
+        <span class="wf-label" style="background:#6C5CE7"><span class="en">📤 Output</span><span class="bn">📤 আউটপুট</span></span>
+        <div class="wf-detail"><span class="en">PR comment, changelog file, Slack notification</span><span class="bn">PR কমেন্ট, চেঞ্জলগ ফাইল, স্ল্যাক নোটিফিকেশন</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 10: ANATOMY ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">ANATOMY</span><span class="bn">গঠন</span></div>
+    <h2 class="auto"><span class="en">What Every Scheduled Workflow Needs</span><span class="bn">প্রতিটি শিডিউলড ওয়ার্কফ্লোর যা দরকার</span></h2>
+    <div class="cron-list frag">
+      <div class="cron-row">
+        <div class="cron-time">1. Trigger</div>
+        <div class="cron-desc"><span class="en">When does it run? Cron expression, PR event, CI signal, webhook.</span><span class="bn">কখন চলবে? Cron এক্সপ্রেশন, PR ইভেন্ট, CI সিগনাল, ওয়েবহুক।</span></div>
+      </div>
+      <div class="cron-row">
+        <div class="cron-time">2. Context</div>
+        <div class="cron-desc"><span class="en">What does Claude need to know? Repo state, relevant files, last-run output.</span><span class="bn">ক্লডের কী জানা দরকার? রেপো স্টেট, প্রাসঙ্গিক ফাইল, শেষ-রানের আউটপুট।</span></div>
+      </div>
+      <div class="cron-row">
+        <div class="cron-time">3. Task</div>
+        <div class="cron-desc"><span class="en">A clear, scoped prompt. What to do. What to produce. What format.</span><span class="bn">স্পষ্ট, সীমাবদ্ধ প্রম্পট। কী করবে। কী তৈরি করবে। কী ফরম্যাটে।</span></div>
+      </div>
+      <div class="cron-row">
+        <div class="cron-time">4. Output</div>
+        <div class="cron-desc"><span class="en">Where does the result go? File commit, PR comment, Slack post, email.</span><span class="bn">ফলাফল কোথায় যাবে? ফাইল কমিট, PR কমেন্ট, স্ল্যাক পোস্ট, ইমেইল।</span></div>
+      </div>
+      <div class="cron-row">
+        <div class="cron-time">5. Failure</div>
+        <div class="cron-desc"><span class="en">What happens if it fails? Notification hook, retry policy, fallback output.</span><span class="bn">ব্যর্থ হলে কী হবে? নোটিফিকেশন হুক, রিট্রাই পলিসি, ফলব্যাক আউটপুট।</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 11: LIVE EXAMPLE ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">LIVE EXAMPLE</span><span class="bn">লাইভ উদাহরণ</span></div>
+    <h2 class="auto"><span class="en">Shazzad's Release Prep Agent</span><span class="bn">শাজ্জাদের রিলিজ প্রেপ এজেন্ট</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-green">SHAZZAD</span>
+        <span class="en">Every Thursday we ship. The Wednesday night before, I used to spend 45 minutes writing changelog entries, finding failing tests, and drafting the PR body. Now an agent does it at 11pm while I sleep.</span>
+        <span class="bn">প্রতি বৃহস্পতিবার আমরা শিপ করি। আগে বুধবার রাতে চেঞ্জলগ এন্ট্রি লিখতে, ফেলিং টেস্ট খুঁজতে, এবং PR বডি ড্রাফট করতে ৪৫ মিনিট লাগত। এখন রাত ১১টায় এজেন্ট করে, আমি ঘুমাই।</span>
+      </div>
+    </div>
+    <div class="cron-list frag" style="margin-top:.8rem">
+      <div class="cron-row">
+        <div class="cron-time">⏰ Wed 23:00</div>
+        <div class="cron-desc"><span class="en">Cron fires. Actions checks out main branch.</span><span class="bn">Cron ফায়ার। Actions main ব্র্যাঞ্চ চেকআউট করে।</span></div>
+      </div>
+      <div class="cron-row">
+        <div class="cron-time">📋 Context</div>
+        <div class="cron-desc"><span class="en">Reads: failing test list, <code>git log</code> since last release tag, open PRs.</span><span class="bn">পড়ে: ফেলিং টেস্ট, শেষ রিলিজ ট্যাগ থেকে <code>git log</code>, ওপেন PR।</span></div>
+      </div>
+      <div class="cron-row">
+        <div class="cron-time">🤖 Claude</div>
+        <div class="cron-desc"><span class="en">Generates: changelog entries, failing test summary, PR description draft, risk flags.</span><span class="bn">তৈরি করে: চেঞ্জলগ এন্ট্রি, ফেলিং টেস্ট সারসংক্ষেপ, PR বিবরণ ড্রাফট, ঝুঁকির পতাকা।</span></div>
+      </div>
+      <div class="cron-row">
+        <div class="cron-time">📤 Output</div>
+        <div class="cron-desc"><span class="en">Commits <code>CHANGELOG.md</code>, posts summary as PR comment, Slack notification to #releases.</span><span class="bn"><code>CHANGELOG.md</code> কমিট, PR কমেন্ট হিসেবে সারসংক্ষেপ, #releases-এ স্ল্যাক নোটিফিকেশন।</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 12: SHOW ME — GITHUB ACTIONS YAML ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">SHOW ME</span><span class="bn">দেখাও</span></div>
+    <h2 class="auto"><span class="en">The GitHub Actions Workflow</span><span class="bn">গিটহাব অ্যাকশন ওয়ার্কফ্লো</span></h2>
+    <pre class="code-block frag">
+<span class="comment"># .github/workflows/release-prep.yml</span>
+name: <span class="str">Release Prep Agent</span>
+
+on:
+  schedule:
+    - cron: <span class="str">'0 23 * * 3'</span>  <span class="comment"># every Wednesday at 23:00 UTC</span>
+
+jobs:
+  prep:
+    runs-on: <span class="str">ubuntu-latest</span>
+    steps:
+      - uses: <span class="path">actions/checkout@v4</span>
+        with: { fetch-depth: 0 }  <span class="comment"># need full history for git log</span>
+
+      - name: <span class="str">Run release prep agent</span>
+        env:
+          ANTHROPIC_API_KEY: <span class="flag">${{ secrets.ANTHROPIC_API_KEY }}</span>
+          GH_TOKEN: <span class="flag">${{ secrets.GITHUB_TOKEN }}</span>
+        run: |
+          <span class="comment"># Feed context + run Claude</span>
+          git log <span class="flag">$(git describe --tags --abbrev=0)..HEAD</span> \
+            <span class="flag">--oneline</span> > /tmp/commits.txt
+          npm test <span class="flag">2>&1</span> | tail -50 > /tmp/test-summary.txt
+
+          <span class="cmd">claude</span> <span class="flag">-p</span> <span class="str">".claude/prompts/release-prep.md"</span> \
+            <span class="flag">--no-interactive</span>
+    </pre>
+  </div>
+</section>
+
+<!-- ===== SLIDE 13: SHOW ME — THE PROMPT ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">SHOW ME</span><span class="bn">দেখাও</span></div>
+    <h2 class="auto"><span class="en">The Release Prep Prompt</span><span class="bn">রিলিজ প্রেপ প্রম্পট</span></h2>
+    <div class="hook-card frag">
+      <div class="hc-event">📄 .claude/prompts/release-prep.md</div>
+      <div class="hc-body">
+        <span class="en">You are preparing the release notes for our Thursday ship.<br><br>
+        <strong>Context files to read:</strong><br>
+        - /tmp/commits.txt — all commits since last release<br>
+        - /tmp/test-summary.txt — current failing tests<br>
+        - CHANGELOG.md — existing format to follow<br><br>
+        <strong>Deliverables:</strong><br>
+        1. Add new changelog section to CHANGELOG.md (keep existing format)<br>
+        2. Write RELEASE-NOTES.md with: summary, breaking changes, failing tests that block ship, and files changed in 2+ open PRs (risk flag)<br>
+        3. Run: gh pr comment &lt;latest-pr&gt; --body "$(cat RELEASE-NOTES.md)"<br><br>
+        Do NOT push to main. Do NOT merge any PRs. Read-only except CHANGELOG.md and RELEASE-NOTES.md.</span>
+      </div>
+    </div>
+    <div class="caption frag" style="margin-top:.6rem">
+      <span class="en">Scope + deliverables + output format + explicit constraints. A scheduled agent has no human to ask — the prompt must be self-contained.</span>
+      <span class="bn">স্কোপ + ডেলিভারেবল + আউটপুট ফরম্যাট + স্পষ্ট সীমাবদ্ধতা। শিডিউলড এজেন্টের জিজ্ঞেস করার মানুষ নেই — প্রম্পট অবশ্যই স্বয়ংসম্পূর্ণ হতে হবে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 14: WHAT IT PRODUCES ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">WHAT IT PRODUCES</span><span class="bn">কী তৈরি করে</span></div>
+    <h2 class="auto"><span class="en">Shazzad's Thursday Morning</span><span class="bn">শাজ্জাদের বৃহস্পতিবার সকাল</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">Shazzad opens GitHub at 9am. The release prep agent already ran at 11pm. Everything is ready.</span>
+      <span class="bn b">শাজ্জাদ সকাল ৯টায় গিটহাব খোলে। রিলিজ প্রেপ এজেন্ট রাত ১১টায় চলে গেছে। সব প্রস্তুত।</span>
+    </div>
+    <div class="row frag" style="gap:.8rem;flex-wrap:wrap;justify-content:center;margin-top:.6rem">
+      <div class="mini-panel pop" style="width:clamp(150px,22vw,220px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">Changelog</span><span class="bn">চেঞ্জলগ</span></div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem);margin-top:.3rem">
+          <span class="en">CHANGELOG.md updated. 14 entries, grouped by feature and fix. Correct format.</span>
+          <span class="bn b">CHANGELOG.md আপডেট। ১৪টি এন্ট্রি, ফিচার ও ফিক্স অনুযায়ী গ্রুপ করা।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(150px,22vw,220px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber)"><span class="en">Risk flags</span><span class="bn">ঝুঁকির পতাকা</span></div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem);margin-top:.3rem">
+          <span class="en">2 files touched by 3+ open PRs flagged. Potential conflict before ship.</span>
+          <span class="bn b">৩+ ওপেন PR-এ ২টি ফাইল স্পর্শ করা হয়েছে। শিপের আগে সম্ভাব্য কনফ্লিক্ট।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(150px,22vw,220px);border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">Blockers</span><span class="bn">ব্লকার</span></div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem);margin-top:.3rem">
+          <span class="en">3 failing tests listed. 1 blocks ship (auth token test). 2 non-blocking.</span>
+          <span class="bn b">৩টি ফেলিং টেস্ট তালিকাবদ্ধ। ১টি শিপ ব্লক করে (অথ টোকেন টেস্ট)। ২টি ব্লক করে না।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag" style="margin-top:.6rem">
+      <span class="en">Shazzad fixes the one blocking test and ships by 10am. Previously this prep took until noon.</span>
+      <span class="bn">শাজ্জাদ একটি ব্লকিং টেস্ট ঠিক করে সকাল ১০টায় শিপ করে। আগে এই প্রস্তুতি দুপুর পর্যন্ত লাগত।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 15: CHAINING ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">CHAINING</span><span class="bn">চেইনিং</span></div>
+    <h2 class="auto"><span class="en">Output of One Triggers the Next</span><span class="bn">একটির আউটপুট পরেরটা ট্রিগার করে</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,660px)">
+      <span class="en">Workflows can chain. The release prep agent commits CHANGELOG.md → that commit triggers a second workflow → which drafts the PR and notifies Slack.</span>
+      <span class="bn b">ওয়ার্কফ্লোগুলো চেইন করা যায়। রিলিজ প্রেপ এজেন্ট CHANGELOG.md কমিট করে → সেই কমিট একটি দ্বিতীয় ওয়ার্কফ্লো ট্রিগার করে → যেটা PR ড্রাফট করে এবং স্ল্যাক নোটিফাই করে।</span>
+    </div>
+    <div class="workflow-diagram frag" style="margin-top:.8rem">
+      <div class="wf-step">
+        <span class="wf-label" style="background:var(--green)"><span class="en">Wed 23:00 — Release Prep Agent</span><span class="bn">বুধ ২৩:০০ — রিলিজ প্রেপ এজেন্ট</span></span>
+        <div class="wf-detail"><span class="en">reads tests, git log → writes CHANGELOG.md, RELEASE-NOTES.md</span><span class="bn">টেস্ট, git log পড়ে → CHANGELOG.md, RELEASE-NOTES.md লেখে</span></div>
+      </div>
+      <div class="wf-arrow">↓ <span style="font-size:.7em;font-family:'Work Sans',sans-serif;opacity:.6"><span class="en">push triggers</span><span class="bn">পুশ ট্রিগার করে</span></span></div>
+      <div class="wf-step">
+        <span class="wf-label" style="background:var(--blue)"><span class="en">PR Draft Agent</span><span class="bn">PR ড্রাফট এজেন্ট</span></span>
+        <div class="wf-detail"><span class="en">reads RELEASE-NOTES.md → opens draft PR with body filled in</span><span class="bn">RELEASE-NOTES.md পড়ে → বডি পূর্ণ করা ড্রাফট PR খোলে</span></div>
+      </div>
+      <div class="wf-arrow">↓ <span style="font-size:.7em;font-family:'Work Sans',sans-serif;opacity:.6"><span class="en">PR creation triggers</span><span class="bn">PR তৈরি ট্রিগার করে</span></span></div>
+      <div class="wf-step">
+        <span class="wf-label" style="background:#6C5CE7"><span class="en">Slack Notification Hook</span><span class="bn">স্ল্যাক নোটিফিকেশন হুক</span></span>
+        <div class="wf-detail"><span class="en">#releases: "Release PR ready. 1 test blocking. See RELEASE-NOTES.md."</span><span class="bn">#releases: "রিলিজ PR প্রস্তুত। ১ টেস্ট ব্লকিং। RELEASE-NOTES.md দেখুন।"</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 16: COST MODEL ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">COST MODEL</span><span class="bn">খরচের মডেল</span></div>
+    <h2 class="auto"><span class="en">Budget Before You Schedule</span><span class="bn">শিডিউল করার আগে বাজেট করুন</span></h2>
+    <div class="row frag" style="gap:1rem;align-items:stretch;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel" style="flex:1;min-width:clamp(190px,27vw,280px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">✓ Low cost runs</span><span class="bn">✓ কম খরচের রান</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">Read a few files, write one document. ~20–40k tokens. Runs once a week. Cheap.</span>
+          <span class="bn b">কয়েকটি ফাইল পড়া, একটি ডকুমেন্ট লেখা। ~২০–৪০k টোকেন। সপ্তাহে একবার চলে। সস্তা।</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="flex:1;min-width:clamp(190px,27vw,280px);border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">✗ Dangerous patterns</span><span class="bn">✗ বিপজ্জনক প্যাটার্ন</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">Runs every 5 minutes. Reads entire codebase. Spawns subagents. That's real money, fast.</span>
+          <span class="bn b">প্রতি ৫ মিনিটে চলে। পুরো কোডবেজ পড়ে। সাবএজেন্ট স্পন করে। এটা দ্রুত প্রচুর অর্থ।</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,640px);margin-top:.8rem;border-color:var(--amber)">
+      <span class="en"><strong>Rule:</strong> estimate tokens per run × runs per month before scheduling. Add a <code>--max-tokens</code> flag. Add a notification hook on failure. Scheduled agents fail silently at 3am if you don't.</span>
+      <span class="bn b"><strong>নিয়ম:</strong> শিডিউল করার আগে প্রতি রানে টোকেন × মাসে রানের সংখ্যা এস্টিমেট করুন। <code>--max-tokens</code> ফ্ল্যাগ যোগ করুন। ব্যর্থতায় নোটিফিকেশন হুক যোগ করুন।</span>
+    </div>
+    <div class="caption frag">
+      <span class="en">Also: add an idempotency check — skip the run if nothing changed since last time. Most cron triggers fire even on quiet nights.</span>
+      <span class="bn">এছাড়া: আইডেম্পোটেন্সি চেক যোগ করুন — শেষবারের পর কিছু না বদলালে রান স্কিপ করুন।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 17: WATCH OUT — STALE CONTEXT ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WATCH OUT</span><span class="bn">সতর্ক থাকুন</span></div>
+    <h2 class="auto"><span class="en">Stale Context</span><span class="bn">পুরনো কনটেক্সট</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,680px);border-color:var(--red);background:rgba(224,72,58,.06)">
+      <span class="en">A scheduled agent doesn't know what your team decided in Monday's standup. It only knows what's in the repo at run time. If your CLAUDE.md and shared-state files are outdated, the agent will act on outdated assumptions.</span>
+      <span class="bn b">একটি শিডিউলড এজেন্ট জানে না সোমবারের স্ট্যান্ডআপে আপনার টিম কী সিদ্ধান্ত নিয়েছে। সে শুধু রান টাইমে রেপোতে যা আছে তাই জানে। CLAUDE.md এবং শেয়ার্ড-স্টেট ফাইল পুরনো হলে এজেন্ট পুরনো অনুমানে কাজ করবে।</span>
+    </div>
+    <div class="row frag" style="gap:1rem;margin-top:.8rem;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel" style="flex:1;min-width:clamp(190px,27vw,280px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">Fix 1: Explicit context files</span><span class="bn">সমাধান ১: স্পষ্ট কনটেক্সট ফাইল</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">Prompt: "Read <code>.claude/shared-state.md</code> and <code>CLAUDE.md</code> before starting. Treat them as ground truth."</span>
+          <span class="bn b">প্রম্পট: "শুরু করার আগে <code>.claude/shared-state.md</code> এবং <code>CLAUDE.md</code> পড়ুন। এগুলোকে সত্য হিসেবে বিবেচনা করুন।"</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="flex:1;min-width:clamp(190px,27vw,280px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber)"><span class="en">Fix 2: Scope narrow</span><span class="bn">সমাধান ২: সংকীর্ণ স্কোপ</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem);margin-top:.3rem">
+          <span class="en">Scheduled agents work best on well-defined, stable tasks. Avoid tasks that need fresh human context every run.</span>
+          <span class="bn b">শিডিউলড এজেন্ট সু-সংজ্ঞায়িত, স্থিতিশীল কাজে সবচেয়ে ভালো কাজ করে। প্রতিটি রানে তাজা মানবিক কনটেক্সট প্রয়োজন এমন কাজ এড়িয়ে চলুন।</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 18: WATCH OUT — SILENT FAILURES ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WATCH OUT</span><span class="bn">সতর্ক থাকুন</span></div>
+    <h2 class="auto"><span class="en">Silent Failures</span><span class="bn">নীরব ব্যর্থতা</span></h2>
+    <div class="panel frag" style="max-width:min(88vw,680px);border-color:var(--red);background:rgba(224,72,58,.06)">
+      <span class="en">Your release prep agent failed at 2am with a rate limit error. You find out Thursday morning when the changelog isn't there. Without a failure notification, scheduled agents fail quietly.</span>
+      <span class="bn b">রিলিজ প্রেপ এজেন্ট রাত ২টায় রেট লিমিট এররে ব্যর্থ হয়েছে। বৃহস্পতিবার সকালে জানতে পারলেন যখন চেঞ্জলগ নেই। ফেলিয়ার নোটিফিকেশন ছাড়া শিডিউলড এজেন্ট নীরবে ব্যর্থ হয়।</span>
+    </div>
+    <pre class="code-block frag" style="margin-top:.7rem">
+<span class="comment"># Always wrap scheduled runs with failure notification</span>
+- name: <span class="str">Run release prep agent</span>
+  run: |
+    <span class="cmd">claude</span> <span class="flag">-p</span> <span class="path">.claude/prompts/release-prep.md</span> <span class="flag">--no-interactive</span>
+  id: agent-run
+
+- name: <span class="str">Notify on failure</span>
+  <span class="cmd">if</span>: failure()
+  run: |
+    curl <span class="flag">-X POST</span> <span class="str">"$SLACK_WEBHOOK"</span> \
+      <span class="flag">-d</span> <span class="str">'{"text":"⚠️ Release prep agent failed. Check Actions logs."}'</span>
+    </pre>
+    <div class="caption frag">
+      <span class="en">Rule: every scheduled workflow must have a failure path. If it fails silently, it doesn't exist.</span>
+      <span class="bn">নিয়ম: প্রতিটি শিডিউলড ওয়ার্কফ্লোতে অবশ্যই একটি ব্যর্থতার পথ থাকতে হবে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 19: THE RESULT ===== -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">THE RESULT</span><span class="bn">ফলাফল</span></div>
+    <h2 class="auto"><span class="en">Shazzad's Wednesday — Before vs After</span><span class="bn">শাজ্জাদের বুধবার — আগে বনাম পরে</span></h2>
+    <div class="before-after frag">
+      <div class="ba-col">
+        <div class="ba-head" style="background:var(--red)"><span class="en">✗ Before (manual)</span><span class="bn">✗ আগে (ম্যানুয়াল)</span></div>
+        <ul>
+          <li><span>😩</span><span class="en">8pm: start writing changelog from git log manually</span><span class="bn">রাত ৮টা: ম্যানুয়ালি git log থেকে চেঞ্জলগ লেখা শুরু</span></li>
+          <li><span>🔍</span><span class="en">8:30: hunt for failing tests across 4 test suites</span><span class="bn">৮:৩০: ৪টি টেস্ট স্যুটে ফেলিং টেস্ট খোঁজা</span></li>
+          <li><span>✍️</span><span class="en">9:00: draft PR description from memory</span><span class="bn">৯:০০: স্মৃতি থেকে PR বিবরণ ড্রাফট করা</span></li>
+          <li><span>😴</span><span class="en">9:45: done. Tired. Hope nothing was missed.</span><span class="bn">৯:৪৫: শেষ। ক্লান্ত। আশা করি কিছু মিস হয়নি।</span></li>
+        </ul>
+      </div>
+      <div class="ba-col">
+        <div class="ba-head" style="background:var(--green)"><span class="en">✓ After (automated)</span><span class="bn">✓ পরে (স্বয়ংক্রিয়)</span></div>
+        <ul>
+          <li><span>🛋️</span><span class="en">8pm: Shazzad watches a film</span><span class="bn">রাত ৮টা: শাজ্জাদ সিনেমা দেখে</span></li>
+          <li><span>😴</span><span class="en">11pm: sleeps. Agent fires automatically.</span><span class="bn">১১টা: ঘুমায়। এজেন্ট স্বয়ংক্রিয়ভাবে চালু হয়।</span></li>
+          <li><span>☀️</span><span class="en">Thu 9am: opens GitHub. PR drafted. Changelog done. Risk flags visible.</span><span class="bn">বৃহঃ ৯টা: গিটহাব খোলে। PR ড্রাফট। চেঞ্জলগ শেষ। ঝুঁকির পতাকা দৃশ্যমান।</span></li>
+          <li><span>🚀</span><span class="en">10am: ships. Two hours earlier than before.</span><span class="bn">১০টা: শিপ করে। আগের চেয়ে দুই ঘণ্টা আগে।</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SLIDE 20: WRAP UP ===== -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">WRAP UP · EP 5</span><span class="bn">সারসংক্ষেপ · এপিসোড ৫</span></div>
+    <h2 class="auto" style="color:#fff"><span class="en">Claude Workflows</span><span class="bn">ক্লড ওয়ার্কফ্লো</span></h2>
+    <div class="row frag" style="gap:.6rem;flex-wrap:wrap;justify-content:center;margin-top:.4rem">
+      <div class="tag" style="border-color:var(--green);color:#fff;background:rgba(46,175,125,.25)"><span class="en">HOOKS</span><span class="bn">হুক</span></div>
+      <div class="tag" style="border-color:var(--green);color:#fff;background:rgba(46,175,125,.25)"><span class="en">SCHEDULED AGENTS</span><span class="bn">শিডিউলড এজেন্ট</span></div>
+      <div class="tag" style="border-color:var(--green);color:#fff;background:rgba(46,175,125,.25)"><span class="en">GITHUB ACTIONS</span><span class="bn">গিটহাব অ্যাকশন</span></div>
+      <div class="tag" style="border-color:var(--green);color:#fff;background:rgba(46,175,125,.25)"><span class="en">ALWAYS-ON</span><span class="bn">সবসময়-চালু</span></div>
+    </div>
+    <div class="char-summary frag" style="margin-top:.8rem;border-color:rgba(255,255,255,.2)">
+      <div class="cs-row" style="border-color:rgba(255,255,255,.12)">
+        <span class="cs-k" style="color:rgba(255,255,255,.6)"><span class="en">Hooks</span><span class="bn">হুক</span></span>
+        <span class="cs-v" style="color:#fff"><span class="en">Wire shell scripts to Claude Code events. Guard, log, validate in real time.</span><span class="bn">ক্লড কোড ইভেন্টে শেল স্ক্রিপ্ট সংযুক্ত করুন। রিয়েল টাইমে গার্ড, লগ, যাচাই করুন।</span></span>
+      </div>
+      <div class="cs-row" style="border-color:rgba(255,255,255,.12)">
+        <span class="cs-k" style="color:rgba(255,255,255,.6)"><span class="en">Scheduled</span><span class="bn">শিডিউলড</span></span>
+        <span class="cs-v" style="color:#fff"><span class="en">GitHub Actions + Claude Code. Cron fires → agent runs whole workflow → output routes itself.</span><span class="bn">গিটহাব অ্যাকশন + ক্লড কোড। Cron ফায়ার → এজেন্ট পুরো ওয়ার্কফ্লো চালায় → আউটপুট রাউট হয়।</span></span>
+      </div>
+      <div class="cs-row" style="border-color:rgba(255,255,255,.12)">
+        <span class="cs-k" style="color:rgba(255,255,255,.6)"><span class="en">Always add</span><span class="bn">সবসময় যোগ করুন</span></span>
+        <span class="cs-v" style="color:#fff"><span class="en">Failure notification. Token budget. Idempotency check. Scope constraints in prompt.</span><span class="bn">ফেলিয়ার নোটিফিকেশন। টোকেন বাজেট। আইডেম্পোটেন্সি চেক। প্রম্পটে স্কোপ সীমাবদ্ধতা।</span></span>
+      </div>
+    </div>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);max-width:min(88vw,600px);margin-top:.8rem">
+      <span style="color:rgba(255,255,255,.7);font-size:clamp(.75rem,1.5vw,.95rem)">
+        <span class="en">Next → <strong style="color:var(--amber)">Episode 6:</strong> Rifat gives the whole team access. What could go wrong? Everything. Enterprise safety, permissions, and cost controls.</span>
+        <span class="bn b">পরবর্তী → <strong style="color:var(--amber)">এপিসোড ৬:</strong> রিফাত পুরো টিমকে অ্যাক্সেস দেয়। কী ভুল হতে পারে? সব কিছু। এন্টারপ্রাইজ সেফটি, পারমিশন, এবং খরচ নিয়ন্ত্রণ।</span>
+      </span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<script src="../../assets/deck.js"></script>
+<script data-goatcounter="https://jiteshsureka.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
