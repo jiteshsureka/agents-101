@@ -1,0 +1,33 @@
+name: Link check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '0 6 * * 1'   # weekly, Monday 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linkcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Scan all HTML + Markdown. Accept rate-limit / forbidden codes that
+          # external docs hosts sometimes return to CI so they don't flake the build.
+          args: >-
+            --no-progress
+            --max-retries 2
+            --retry-wait-time 3
+            --accept 200,206,403,429
+            --exclude-mail
+            "./**/*.html"
+            "./**/*.md"
+          fail: true

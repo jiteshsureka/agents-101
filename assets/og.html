@@ -1,38 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Work+Sans:wght@600;700&family=Caveat:wght@700&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; width: 1200px; height: 630px; overflow: hidden; background: #11172C; }
+  svg { display: block; }
+</style>
+</head>
+<body>
+<!-- 1200x630 OG card — rendered to assets/og.png via headless Chrome. Edit here, re-run the build, never hand-edit the PNG. -->
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
   <defs>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&amp;family=Work+Sans:wght@600;700&amp;family=Caveat:wght@700&amp;display=swap');
-    </style>
     <radialGradient id="dots" cx="50%" cy="50%">
       <stop offset="0%" stop-color="rgba(73,146,193,0.08)"/>
       <stop offset="100%" stop-color="rgba(73,146,193,0)"/>
     </radialGradient>
+    <pattern id="grid" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1.2" fill="rgba(73,146,193,0.18)"/>
+    </pattern>
   </defs>
 
-  <!-- Background -->
   <rect width="1200" height="630" fill="#11172C"/>
-
-  <!-- Dot grid pattern -->
-  <pattern id="grid" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
-    <circle cx="1" cy="1" r="1.2" fill="rgba(73,146,193,0.18)"/>
-  </pattern>
   <rect width="1200" height="630" fill="url(#grid)"/>
-
-  <!-- Left accent bar -->
   <rect x="0" y="0" width="8" height="630" fill="#FBAF32"/>
 
-  <!-- Top-left label -->
   <rect x="40" y="40" width="200" height="44" rx="22" fill="#FBAF32"/>
   <text x="140" y="68" font-family="'Caveat', cursive" font-weight="700" font-size="26" fill="#11172C" text-anchor="middle">nop-station</text>
 
-  <!-- Main title -->
   <text x="60" y="230" font-family="'Fraunces', Georgia, serif" font-weight="700" font-size="112" fill="#FBAF32" letter-spacing="-4">agents</text>
   <text x="60" y="345" font-family="'Fraunces', Georgia, serif" font-weight="700" font-size="112" fill="#ffffff" letter-spacing="-4">-101</text>
 
-  <!-- Subtitle -->
   <text x="60" y="415" font-family="'Work Sans', Arial, sans-serif" font-weight="600" font-size="30" fill="rgba(255,255,255,0.65)">Enterprise AI Agent Development</text>
 
-  <!-- Tag pills -->
   <rect x="60" y="455" width="230" height="42" rx="21" fill="rgba(73,146,193,0.2)" stroke="#4992C1" stroke-width="2"/>
   <text x="175" y="481" font-family="'Work Sans', Arial, sans-serif" font-weight="700" font-size="18" fill="#4992C1" text-anchor="middle">Parallel Sessions</text>
 
@@ -42,35 +42,26 @@
   <rect x="536" y="455" width="220" height="42" rx="21" fill="rgba(26,158,215,0.15)" stroke="#1A9ED7" stroke-width="2"/>
   <text x="646" y="481" font-family="'Work Sans', Arial, sans-serif" font-weight="700" font-size="18" fill="#1A9ED7" text-anchor="middle">Claude Workflows</text>
 
-  <!-- Right side: character illustration -->
-  <!-- Agent character (simplified) -->
   <circle cx="1000" cy="240" r="90" fill="#4992C1" stroke="rgba(255,255,255,0.15)" stroke-width="3"/>
   <circle cx="1000" cy="240" r="68" fill="#F5F8FB" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
-  <!-- Eyes -->
   <circle cx="982" cy="232" r="20" fill="white" stroke="#11172C" stroke-width="3"/>
   <circle cx="1018" cy="232" r="20" fill="white" stroke="#11172C" stroke-width="3"/>
   <circle cx="984" cy="234" r="8" fill="#11172C"/>
   <circle cx="1020" cy="234" r="8" fill="#11172C"/>
-  <!-- Smile -->
   <path d="M985 260 Q1000 278 1015 260" fill="none" stroke="#11172C" stroke-width="3.5" stroke-linecap="round"/>
-  <!-- Body -->
   <rect x="940" y="334" width="120" height="100" rx="22" fill="#11172C"/>
   <text x="1000" y="396" font-family="monospace" font-size="32" font-weight="bold" fill="#FBAF32" text-anchor="middle">&gt;_</text>
-  <!-- Antenna -->
   <line x1="1000" y1="148" x2="1000" y2="165" stroke="#11172C" stroke-width="5" stroke-linecap="round"/>
   <circle cx="1000" cy="143" r="10" fill="#FBAF32" stroke="#11172C" stroke-width="3"/>
 
-  <!-- Dev character (offset, behind) -->
   <circle cx="1110" cy="310" r="65" fill="#F6D7B0" stroke="rgba(255,255,255,0.1)" stroke-width="2"/>
-  <!-- Hair -->
   <path d="M1045 308 Q1043 270 1110 268 Q1177 270 1175 308 L1162 292 Q1155 278 1110 278 Q1065 278 1058 292Z" fill="#2C2C2C"/>
-  <!-- Glasses -->
   <rect x="1090" y="305" width="22" height="14" rx="4" fill="none" stroke="#11172C" stroke-width="2.5"/>
   <rect x="1118" y="305" width="22" height="14" rx="4" fill="none" stroke="#11172C" stroke-width="2.5"/>
   <line x1="1112" y1="312" x2="1118" y2="312" stroke="#11172C" stroke-width="2.5"/>
-  <!-- Body hoodie -->
   <rect x="1062" y="375" width="96" height="80" rx="18" fill="#4992C1"/>
 
-  <!-- URL bottom right -->
   <text x="1160" y="598" font-family="'Work Sans', Arial, sans-serif" font-weight="600" font-size="22" fill="rgba(255,255,255,0.35)" text-anchor="end">jiteshsureka.github.io/agents-101</text>
 </svg>
+</body>
+</html>

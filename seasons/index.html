@@ -5,57 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Seasons — agents-101 · nop-station</title>
 <meta name="description" content="All seasons of the agents-101 storybook series — parallel agent development, Claude skills, context engineering, and more. By nop-station.">
+<link rel="canonical" href="https://jiteshsureka.github.io/agents-101/seasons/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jiteshsureka.github.io/agents-101/seasons/">
+<meta property="og:title" content="Seasons — agents-101">
+<meta property="og:description" content="All seasons of the agents-101 storybook series — parallel agent development, Claude skills, context engineering, and more.">
+<meta property="og:image" content="https://jiteshsureka.github.io/agents-101/assets/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Seasons — agents-101">
+<meta name="twitter:description" content="All seasons of the agents-101 storybook series — parallel agent development, Claude skills, context engineering, and more.">
+<meta name="twitter:image" content="https://jiteshsureka.github.io/agents-101/assets/og.png">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
 <style>
-:root {
-  --amber:  #FBAF32;
-  --blue:   #4992C1;
-  --navy:   #11172C;
-  --sky:    #1A9ED7;
-  --light:  #F5F8FB;
-  --paper:  #FFFFFF;
-  --ink:    #11172C;
-  --shadow-sm: 0 4px 12px rgba(17,23,44,.10);
-  --shadow-md: 0 8px 24px rgba(17,23,44,.13);
-  --shadow-lg: 0 16px 40px rgba(17,23,44,.18);
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  font-family: 'Work Sans', sans-serif; color: var(--ink);
-  background: var(--light);
-  background-image: radial-gradient(rgba(73,146,193,.07) 1px, transparent 1.4px);
-  background-size: 28px 28px;
-  min-height: 100vh; display: flex; flex-direction: column;
-}
-
-/* ---- topbar ---- */
-.topbar {
-  position: sticky; top: 0; z-index: 20;
-  display: flex; align-items: center; gap: 1rem;
-  padding: .6rem clamp(1rem, 4vw, 2.5rem);
-  background: rgba(245,248,251,.94); backdrop-filter: blur(6px);
-  border-bottom: 2px solid var(--navy);
-}
-.topbar .back {
-  font-family: 'Caveat', cursive; font-weight: 700;
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  color: var(--ink); text-decoration: none;
-  background: var(--paper); border: 2px solid var(--navy);
-  border-radius: 999px; padding: .06em .85em;
-  box-shadow: var(--shadow-sm); transition: transform .12s, box-shadow .12s;
-}
-.topbar .back:hover { transform: translate(-1px,-1px); box-shadow: var(--shadow-md); }
-.topbar .breadcrumb {
-  font-family: 'Caveat', cursive; font-weight: 700;
-  font-size: clamp(1rem, 2vw, 1.25rem); opacity: .72;
-}
-.topbar .breadcrumb a { color: var(--sky); text-decoration: none; }
-.topbar .breadcrumb a:hover { text-decoration: underline; }
-
-/* ---- page ---- */
-.page { flex: 1; display: flex; flex-direction: column; align-items: center; padding: clamp(2rem,6vw,4rem) clamp(1rem,4vw,3rem) 4rem; }
-
 /* ---- hero ---- */
 .hero { text-align: center; max-width: 760px; margin-bottom: clamp(2.2rem,5vw,3.5rem); }
 .kicker {
