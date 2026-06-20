@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S2·E6 — Skills at Team Scale · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+.folder-tree {
+  font-family: monospace;
+  font-size: clamp(.72rem, 1.5vw, .92rem);
+  text-align: left;
+  background: var(--navy);
+  color: #e8eaf0;
+  border-radius: 14px;
+  padding: clamp(.7rem, 2vw, 1.2rem) clamp(1rem, 2.5vw, 1.6rem);
+  max-width: min(90vw, 680px);
+  line-height: 1.75;
+  border: 2.5px solid rgba(255,255,255,.12);
+  box-shadow: var(--shadow-md);
+}
+.folder-tree .hi-amber { color: #FBAF32; font-weight: 700; }
+.folder-tree .hi-sky   { color: #1A9ED7; }
+.folder-tree .hi-green { color: #2EAF7D; }
+.folder-tree .hi-red   { color: #E0483A; }
+
+.scope-row {
+  display: flex; gap: clamp(.8rem,2vw,1.4rem);
+  flex-wrap: wrap; justify-content: center;
+  margin-top: .4rem;
+}
+.scope-card {
+  background: var(--paper); border: 2.5px solid var(--navy);
+  border-radius: 18px; box-shadow: var(--shadow-md);
+  padding: clamp(.7rem,1.8vw,1.2rem) clamp(.9rem,2.2vw,1.6rem);
+  text-align: center; min-width: clamp(160px,22vw,240px);
+}
+.scope-card .sc-icon {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(1.6rem,3.5vw,2.4rem); margin-bottom: .3rem;
+}
+.scope-card .sc-path {
+  font-family: monospace; font-size: clamp(.6rem,1.2vw,.8rem);
+  background: rgba(17,23,44,.07); border-radius: 6px;
+  padding: .15em .5em; margin: .35rem 0; display: inline-block;
+  font-weight: 700;
+}
+.scope-card .sc-desc {
+  font-size: clamp(.6rem,1.2vw,.8rem); font-weight: 600;
+  color: rgba(17,23,44,.62); line-height: 1.55;
+}
+
+.danger-list {
+  list-style: none; display: flex; flex-direction: column;
+  gap: .45rem; text-align: left; max-width: min(88vw, 660px); width: 100%;
+}
+.danger-list li {
+  font-weight: 600; font-size: clamp(.8rem, 1.65vw, 1rem);
+  padding: .38em .9em; border-radius: 12px;
+  border: 2px solid var(--red); background: rgba(224,72,58,.07);
+  box-shadow: var(--shadow-sm); display: flex; align-items: flex-start; gap: .55rem;
+}
+.danger-list li .icon { font-size: 1.1em; flex-shrink: 0; margin-top: .05em; }
+</style>
+</head>
+<body data-ep-label="S2·E6 · Skills at Team Scale" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ============ SLIDE 1: TITLE ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:#E0483A;color:#fff"><span class="en">SEASON 2 · EPISODE 6</span><span class="bn">সিজন ২ · এপিসোড ৬</span></div>
+    <h1 class="auto" style="color:#fff;font-size:clamp(2.4rem,9.5vw,6rem);line-height:.9">
+      <span class="en">SKILLS AT <span style="color:#E0483A">TEAM</span> SCALE</span>
+      <span class="bn" style="color:#fff">দলের স্কেলে <span style="color:#E0483A">স্কিলস</span></span>
+    </h1>
+    <p class="auto" style="color:rgba(255,255,255,.65);font-family:'Caveat',cursive;font-weight:700;font-size:clamp(1rem,2.2vw,1.45rem);letter-spacing:.06em">
+      <span class="en">TRAINING THE GUILD</span><span class="bn">গিল্ড প্রশিক্ষণ</span>
+    </p>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,700px)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">RIFAT · SENIOR ENGINEER, NOP-STATION</span>
+        <span class="en">"I've built dozens of skills that make me 3× faster. But every other dev on the team is starting from scratch every single day."</span>
+        <span class="bn">"আমি ডজনখানেক স্কিল বানিয়েছি যা আমাকে ৩ গুণ দ্রুত করে। কিন্তু দলের অন্য প্রতিটি ডেভ প্রতিদিন শূন্য থেকে শুরু করছে।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2: THE HOOK ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#E0483A;color:#fff"><span class="en">THE PROBLEM</span><span class="bn">সমস্যা</span></div>
+    <h2 class="auto"><span class="en">Brilliant Skills — Trapped on One Laptop</span><span class="bn">চমৎকার স্কিল — একটা ল্যাপটপে বন্দী</span></h2>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">RIFAT</span>
+        <span class="en">"I have a <code>/review-pr</code> skill that catches security issues automatically. A <code>/seed-db</code> that sets up test data in seconds. A <code>/changelog</code> that writes itself. None of that exists for Mouneeta or Ankan."</span>
+        <span class="bn">"আমার কাছে একটা <code>/review-pr</code> স্কিল আছে যা স্বয়ংক্রিয়ভাবে সিকিউরিটি ইস্যু ধরে। একটা <code>/seed-db</code> যা সেকেন্ডে টেস্ট ডেটা সেটআপ করে। একটা <code>/changelog</code> যা নিজেই লেখে। মৌনিতা বা অঙ্কনের জন্য এর কিছুই নেই।"</span>
+      </div>
+    </div>
+    <div class="row frag" style="margin-top:.5rem;align-items:stretch">
+      <div class="mini-panel pop" style="border-color:#E0483A">
+        <div class="strip" style="background:#E0483A"><span class="en">RIFAT'S REALITY</span><span class="bn">রাফিদের বাস্তবতা</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">~/.claude/skills/<br>✓ review-pr<br>✓ seed-db<br>✓ changelog<br>✓ 14 more…</span>
+          <span class="bn b">~/.claude/skills/<br>✓ review-pr<br>✓ seed-db<br>✓ changelog<br>✓ আরও ১৪টি…</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="opacity:.55">
+        <div class="strip"><span class="en">HABIB'S REALITY</span><span class="bn">মৌনিতাের বাস্তবতা</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">~/.claude/skills/<br>(empty)<br><br><br></span>
+          <span class="bn b">~/.claude/skills/<br>(খালি)<br><br><br></span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="opacity:.45">
+        <div class="strip"><span class="en">SHAZZAD'S REALITY</span><span class="bn">অঙ্কনের বাস্তবতা</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">~/.claude/skills/<br>(empty)<br><br><br></span>
+          <span class="bn b">~/.claude/skills/<br>(খালি)<br><br><br></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3: SKILLS SILOED = INCONSISTENCY ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">THE COST OF SILOS</span><span class="bn">সাইলোর মূল্য</span></div>
+    <h2 class="auto"><span class="en">Per-Developer Skills = Team Inconsistency</span><span class="bn">প্রতি-ডেভেলপার স্কিল = দলের অসঙ্গতি</span></h2>
+    <div class="row" style="margin-top:.45rem;align-items:stretch">
+      <div class="mini-panel frag pop" style="border-color:#E0483A">
+        <div class="strip" style="background:#E0483A"><span class="en">BEFORE — SILOED</span><span class="bn">আগে — সাইলোড</span></div>
+        <div style="text-align:left;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.85;padding:.35rem .1rem;width:100%">
+          <span class="en">
+            ✗ Rafid reviews PRs with AI<br>
+            ✗ Mouneeta reviews manually<br>
+            ✗ Different quality bars<br>
+            ✗ Duplicated prompt work<br>
+            ✗ Knowledge leaves with person
+          </span>
+          <span class="bn b">
+            ✗ রাফিদ AI দিয়ে PR রিভিউ করে<br>
+            ✗ মৌনিতা ম্যানুয়ালি রিভিউ করে<br>
+            ✗ ভিন্ন মানের মানদণ্ড<br>
+            ✗ ডুপ্লিকেট প্রম্পট কাজ<br>
+            ✗ জ্ঞান মানুষের সাথে চলে যায়
+          </span>
+        </div>
+      </div>
+      <div class="mini-panel frag pop" style="border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">AFTER — SHARED</span><span class="bn">পরে — শেয়ার্ড</span></div>
+        <div style="text-align:left;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.85;padding:.35rem .1rem;width:100%">
+          <span class="en">
+            ✓ Everyone uses /review-pr<br>
+            ✓ Consistent quality checks<br>
+            ✓ One skill, maintained once<br>
+            ✓ New hires inherit it all<br>
+            ✓ Improvements benefit everyone
+          </span>
+          <span class="bn b">
+            ✓ সবাই /review-pr ব্যবহার করে<br>
+            ✓ সামঞ্জস্যপূর্ণ মানের চেক<br>
+            ✓ একটা স্কিল, একবার মেইনটেইন<br>
+            ✓ নতুন কর্মীরা সব পায়<br>
+            ✓ উন্নতি সবাই পায়
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">A skill locked to one developer's machine is institutional knowledge waiting to be lost. The fix is one folder.</span><span class="bn">একজন ডেভেলপারের মেশিনে আটকে থাকা স্কিল হলো হারিয়ে যাওয়ার অপেক্ষায় থাকা প্রাতিষ্ঠানিক জ্ঞান। সমাধান একটি ফোল্ডার।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: THE KEY MOVE — PROJECT SKILLS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#E0483A;color:#fff"><span class="en">THE KEY MOVE</span><span class="bn">মূল পদক্ষেপ</span></div>
+    <h2 class="auto"><span class="en">Put Skills in <code style="font-size:.75em">.claude/skills/</code> — Commit to the Repo</span><span class="bn">স্কিল <code style="font-size:.75em">.claude/skills/</code>-এ রাখো — রেপোতে কমিট করো</span></h2>
+    <pre class="folder-tree frag">
+<span class="hi-amber">nopstation-backend/</span>          <span class="hi-sky"># your project repo</span>
+├── src/
+├── tests/
+└── <span class="hi-amber">.claude/</span>
+    └── <span class="hi-amber">skills/</span>              <span class="hi-sky"># committed to git ← the magic</span>
+        ├── <span class="hi-green">review-pr/</span>
+        │   └── <span class="hi-green">skill.md</span>
+        ├── <span class="hi-green">seed-db/</span>
+        │   └── <span class="hi-green">skill.md</span>
+        └── <span class="hi-green">changelog/</span>
+            └── <span class="hi-green">skill.md</span></pre>
+    <div class="caption frag amber"><span class="en">Every teammate who <code>git clone</code>s this repo gets all three skills — automatically, on day one, no setup required.</span><span class="bn">যে কেউ এই রেপো <code>git clone</code> করে সে তিনটি স্কিলই পায় — স্বয়ংক্রিয়ভাবে, প্রথম দিনেই, কোনো সেটআপ ছাড়া।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5: PERSONAL vs PROJECT ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto"><span class="en">TWO SCOPES</span><span class="bn">দুটো স্কোপ</span></div>
+    <h2 class="auto"><span class="en">Personal vs Project Skills</span><span class="bn">ব্যক্তিগত বনাম প্রজেক্ট স্কিল</span></h2>
+    <div class="scope-row frag">
+      <div class="scope-card">
+        <div class="sc-icon">🧑‍💻</div>
+        <div style="font-family:'Fraunces',serif;font-weight:700;font-size:clamp(.9rem,2vw,1.3rem);margin-bottom:.3rem"><span class="en">Personal</span><span class="bn">ব্যক্তিগত</span></div>
+        <div class="sc-path">~/.claude/skills/</div>
+        <div class="sc-desc">
+          <span class="en">Just you. Any repo. Not versioned with the project. Your personal toolkit — experiments, drafts, preferences.</span>
+          <span class="bn">শুধু তুমি। যেকোনো রেপো। প্রজেক্টের সাথে ভার্সন করা নয়। তোমার ব্যক্তিগত টুলকিট — পরীক্ষা, ড্রাফট, পছন্দ।</span>
+        </div>
+      </div>
+      <div class="scope-card" style="border-color:#E0483A">
+        <div class="sc-icon">👥</div>
+        <div style="font-family:'Fraunces',serif;font-weight:700;font-size:clamp(.9rem,2vw,1.3rem);margin-bottom:.3rem;color:#E0483A"><span class="en">Project</span><span class="bn">প্রজেক্ট</span></div>
+        <div class="sc-path" style="background:rgba(224,72,58,.1)">./.claude/skills/</div>
+        <div class="sc-desc">
+          <span class="en">The whole team. This repo only. Versioned in git. Reviewed in PRs. Shared knowledge that outlives any individual.</span>
+          <span class="bn">পুরো দল। শুধু এই রেপো। গিটে ভার্সন করা। PR-এ রিভিউ করা। যেকোনো ব্যক্তির চেয়ে দীর্ঘস্থায়ী শেয়ার্ড জ্ঞান।</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.5rem">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">HABIB · BACKEND ENGINEER</span>
+        <span class="en">"So I put my personal experiments in <code>~/.claude/skills/</code>, but anything the whole team should use goes into the repo's <code>.claude/skills/</code>. Got it."</span>
+        <span class="bn">"তাহলে আমার ব্যক্তিগত পরীক্ষাগুলো <code>~/.claude/skills/</code>-এ রাখি, আর পুরো দলের জন্য যা দরকার তা রেপোর <code>.claude/skills/</code>-এ যায়। বুঝেছি।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: PLUGINS — BUNDLE AND SHARE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">LEVEL UP</span><span class="bn">পরবর্তী স্তর</span></div>
+    <h2 class="auto"><span class="en">Plugins: Bundle Skills + Config into One Package</span><span class="bn">প্লাগইন: স্কিল + কনফিগ এক প্যাকেজে</span></h2>
+    <div class="caption frag"><span class="en">A plugin bundles skills, subagents, hooks, and MCP server config — installable across many repos with a single command.</span><span class="bn">একটি প্লাগইন স্কিল, সাবএজেন্ট, হুক এবং MCP সার্ভার কনফিগ একসাথে বান্ডেল করে — একটি কমান্ডে অনেক রেপোতে ইনস্টল করা যায়।</span></div>
+    <pre class="folder-tree frag">
+<span class="hi-amber">nopstation-plugin/</span>           <span class="hi-sky"># sharable plugin package</span>
+├── <span class="hi-amber">package.json</span>             <span class="hi-sky"># name, version, description</span>
+└── <span class="hi-amber">.claude/</span>
+    ├── <span class="hi-green">skills/</span>
+    │   ├── review-pr/
+    │   │   └── skill.md
+    │   └── seed-db/
+    │       └── skill.md
+    ├── <span class="hi-sky">agents/</span>
+    │   └── qa-agent/
+    │       └── agent.md
+    ├── <span class="hi-sky">hooks/</span>
+    │   └── pre-commit-lint.sh
+    └── <span class="hi-sky">settings.json</span>           <span class="hi-sky"># MCP server config, permissions</span></pre>
+    <div class="caption frag"><span class="en">One plugin = all the team's shared automation in one versioned, installable artifact.</span><span class="bn">একটি প্লাগইন = একটি ভার্সনড, ইনস্টলযোগ্য আর্টিফ্যাক্টে দলের সমস্ত শেয়ার্ড অটোমেশন।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: MARKETPLACE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">DISCOVER</span><span class="bn">আবিষ্কার</span></div>
+    <h2 class="auto"><span class="en">The Plugin Marketplace</span><span class="bn">প্লাগইন মার্কেটপ্লেস</span></h2>
+    <div class="caption frag"><span class="en">Community and org plugins let you install shared capabilities without building everything from scratch.</span><span class="bn">কমিউনিটি এবং অর্গ প্লাগইন তোমাকে সব কিছু নতুন করে না বানিয়ে শেয়ার্ড সক্ষমতা ইনস্টল করতে দেয়।</span></div>
+    <div class="row frag" style="margin-top:.45rem;flex-wrap:wrap;justify-content:center;gap:.9rem">
+      <div class="mini-panel pop" style="min-width:clamp(140px,20vw,220px)">
+        <div class="strip" style="background:var(--sky)"><span class="en">COMMUNITY</span><span class="bn">কমিউনিটি</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.2vw,.8rem)">
+          <span class="en">Open plugins on the Claude marketplace — security scanners, doc generators, test runners.</span>
+          <span class="bn">Claude মার্কেটপ্লেসে ওপেন প্লাগইন — সিকিউরিটি স্ক্যানার, ডক জেনারেটর, টেস্ট রানার।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="min-width:clamp(140px,20vw,220px);border-color:#E0483A">
+        <div class="strip" style="background:#E0483A"><span class="en">ORG-PRIVATE</span><span class="bn">অর্গ-প্রাইভেট</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.2vw,.8rem)">
+          <span class="en">Plugins published privately within your org — company-specific conventions, internal tooling, approved MCP servers.</span>
+          <span class="bn">তোমার অর্গের মধ্যে প্রাইভেটলি প্রকাশিত প্লাগইন — কোম্পানি-নির্দিষ্ট কনভেনশন, অভ্যন্তরীণ টুলিং, অনুমোদিত MCP সার্ভার।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="min-width:clamp(140px,20vw,220px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">INSTALL</span><span class="bn">ইনস্টল</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.2vw,.8rem)">
+          <span class="en">Browse, install, enable — discoverable from inside Claude Code without leaving the terminal.</span>
+          <span class="bn">ব্রাউজ করো, ইনস্টল করো, এনেবল করো — টার্মিনাল না ছেড়ে Claude Code-এর ভেতর থেকে।</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.4rem">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">AGENT</span>
+        <span class="en">"Think of it like npm for your AI workflows. Don't reinvent the wheel — find it, install it, extend it."</span>
+        <span class="bn">"এটাকে তোমার AI ওয়ার্কফ্লোর জন্য npm-এর মতো ভাবো। চাকা পুনরায় উদ্ভাবন করো না — খুঁজে নাও, ইনস্টল করো, বাড়াও।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8: VERSIONING LIKE CODE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">VERSIONED</span><span class="bn">ভার্সনড</span></div>
+    <h2 class="auto"><span class="en">Treat a Skill Change Like a Code Change</span><span class="bn">একটি স্কিল পরিবর্তনকে কোড পরিবর্তনের মতো বিবেচনা করো</span></h2>
+    <div class="row frag" style="margin-top:.45rem;align-items:stretch">
+      <div class="mini-panel pop" style="border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">WHAT YOU GET FREE</span><span class="bn">বিনামূল্যে যা পাও</span></div>
+        <div style="text-align:left;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.9;padding:.35rem .1rem;width:100%">
+          <span class="en">
+            ✓ Full change history (git log)<br>
+            ✓ Blame — who changed what, when<br>
+            ✓ Rollback — git revert a bad skill<br>
+            ✓ Branch — test new skill in isolation<br>
+            ✓ PR review before it hits main<br>
+            ✓ CI can lint skills automatically
+          </span>
+          <span class="bn b">
+            ✓ সম্পূর্ণ পরিবর্তনের ইতিহাস (git log)<br>
+            ✓ Blame — কে কখন কী পরিবর্তন করেছে<br>
+            ✓ Rollback — খারাপ স্কিল git revert করো<br>
+            ✓ Branch — আলাদায় নতুন স্কিল পরীক্ষা করো<br>
+            ✓ main-এ যাওয়ার আগে PR রিভিউ<br>
+            ✓ CI স্বয়ংক্রিয়ভাবে স্কিল লিন্ট করতে পারে
+          </span>
+        </div>
+      </div>
+      <div class="mini-panel pop">
+        <div class="strip"><span class="en">REAL WORKFLOW</span><span class="bn">বাস্তব ওয়ার্কফ্লো</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.82rem)">
+          <span class="en">Rafid improves <code>/review-pr</code> →<br>opens a PR →<br>Mouneeta reviews the skill change →<br>merged to main →<br>Ankan pulls and gets the improvement instantly.</span>
+          <span class="bn b">রাফিদ <code>/review-pr</code> উন্নত করে →<br>PR খোলে →<br>মৌনিতা স্কিল পরিবর্তন রিভিউ করে →<br>main-এ মার্জ →<br>অঙ্কন pull করে তাৎক্ষণিক উন্নতি পায়।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Skills in git aren't just shared — they're <strong>auditable, reversible, and collaborative</strong>. The same discipline that keeps your code safe keeps your skills safe.</span><span class="bn">গিটে স্কিল শুধু শেয়ার করা নয় — সেগুলো <strong>অডিটযোগ্য, বিপরীতযোগ্য এবং সহযোগিতামূলক</strong>। তোমার কোড নিরাপদ রাখার একই শৃঙ্খলা তোমার স্কিলও নিরাপদ রাখে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9: ORG CONVENTIONS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">ORG CONVENTIONS</span><span class="bn">অর্গ কনভেনশন</span></div>
+    <h2 class="auto"><span class="en">Build a Shared Team Catalog</span><span class="bn">একটি শেয়ার্ড দলের ক্যাটালগ তৈরি করো</span></h2>
+    <div class="row frag" style="margin-top:.45rem;align-items:flex-start;gap:1rem">
+      <div class="mini-panel pop">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">NAMING</span><span class="bn">নামকরণ</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.82rem)">
+          <span class="en">Agree on prefixes:<br><code>ns-review-pr</code><br><code>ns-seed-db</code><br><code>ns-changelog</code><br><br>The <code>ns-</code> prefix marks it as an official nop-station skill.</span>
+          <span class="bn b">প্রিফিক্সে একমত হও:<br><code>ns-review-pr</code><br><code>ns-seed-db</code><br><code>ns-changelog</code><br><br><code>ns-</code> প্রিফিক্স এটিকে অফিশিয়াল nop-station স্কিল হিসেবে চিহ্নিত করে।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop">
+        <div class="strip" style="background:var(--blue);color:#fff"><span class="en">SHARED CLAUDE.md</span><span class="bn">শেয়ার্ড CLAUDE.md</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.82rem)">
+          <span class="en">The repo's <code>CLAUDE.md</code> documents all shared skills, their purpose, and usage — living alongside the code it describes.</span>
+          <span class="bn b">রেপোর <code>CLAUDE.md</code> সমস্ত শেয়ার্ড স্কিল, তাদের উদ্দেশ্য এবং ব্যবহার ডকুমেন্ট করে — এটি যে কোডটি বর্ণনা করে তার পাশেই থাকে।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="border-color:#E0483A">
+        <div class="strip" style="background:#E0483A"><span class="en">SKILLS CATALOG</span><span class="bn">স্কিলস ক্যাটালগ</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.82rem)">
+          <span class="en">This repo has <code>skills/index.html</code> — a browsable catalog of all team skills. Acts as the guild's skill directory.</span>
+          <span class="bn b">এই রেপোতে <code>skills/index.html</code> আছে — সমস্ত দলের স্কিলের একটি ব্রাউজযোগ্য ক্যাটালগ। গিল্ডের স্কিল ডিরেক্টরি হিসেবে কাজ করে।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Conventions are cheap to establish and expensive to fix later. Agree on naming and cataloging before you have 40 skills.</span><span class="bn">কনভেনশন প্রতিষ্ঠা করা সস্তা এবং পরে ঠিক করা ব্যয়বহুল। ৪০টি স্কিল হওয়ার আগেই নামকরণ এবং ক্যাটালগিং নিয়ে একমত হও।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: LIVE BUILD — PLUGIN LAYOUT ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#E0483A;color:#fff"><span class="en">LIVE BUILD · PART 1</span><span class="bn">লাইভ বিল্ড · পর্ব ১</span></div>
+    <h2 class="auto"><span class="en">Package a Plugin — Folder Layout</span><span class="bn">একটি প্লাগইন প্যাকেজ করো — ফোল্ডার লেআউট</span></h2>
+    <div class="caption frag"><span class="en">Rafid packages nop-station's three core skills into a distributable plugin:</span><span class="bn">রাফিদ nop-station-এর তিনটি মূল স্কিল একটি বিতরণযোগ্য প্লাগইনে প্যাকেজ করে:</span></div>
+    <pre class="folder-tree frag">
+<span class="hi-amber">nopstation-claude-plugin/</span>
+├── <span class="hi-amber">package.json</span>
+│     { "name": "@nopstation/claude-plugin",
+│       "version": "1.0.0",
+│       "description": "nop-station shared Claude skills" }
+│
+└── <span class="hi-amber">.claude/</span>
+    ├── <span class="hi-green">skills/</span>
+    │   ├── ns-review-pr/skill.md
+    │   ├── ns-seed-db/skill.md
+    │   └── ns-changelog/skill.md
+    ├── <span class="hi-sky">agents/</span>
+    │   └── ns-qa-agent/agent.md
+    ├── <span class="hi-sky">hooks/</span>
+    │   └── ns-lint-on-stop.sh
+    └── <span class="hi-sky">settings.json</span>         <span class="hi-sky"># MCP servers, permissions</span></pre>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11: LIVE BUILD — INSTALL STEP ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#E0483A;color:#fff"><span class="en">LIVE BUILD · PART 2</span><span class="bn">লাইভ বিল্ড · পর্ব ২</span></div>
+    <h2 class="auto"><span class="en">Distribute &amp; Enable the Plugin</span><span class="bn">প্লাগইন বিতরণ ও এনেবল করো</span></h2>
+    <div class="caption frag"><span class="en">Publish to your org's registry (or a private npm), then install in any repo:</span><span class="bn">তোমার অর্গের রেজিস্ট্রিতে (বা একটি প্রাইভেট npm-এ) প্রকাশ করো, তারপর যেকোনো রেপোতে ইনস্টল করো:</span></div>
+    <pre class="folder-tree frag">
+<span class="hi-sky"># 1. Publish the plugin (from plugin repo)</span>
+npm publish --access restricted
+
+<span class="hi-sky"># 2. In any project repo — install the plugin</span>
+claude plugin install @nopstation/claude-plugin
+
+<span class="hi-sky"># 3. Enable it for this project</span>
+claude plugin enable @nopstation/claude-plugin
+
+<span class="hi-sky"># 4. Mouneeta opens Claude Code — skills are live</span>
+/ns-review-pr       <span class="hi-green"># ← works immediately</span>
+/ns-seed-db         <span class="hi-green"># ← works immediately</span>
+/ns-changelog       <span class="hi-green"># ← works immediately</span></pre>
+    <div class="caption frag amber"><span class="en">One install, all skills, all teammates — no manual copying, no personal setup docs to follow.</span><span class="bn">একটি ইনস্টল, সমস্ত স্কিল, সমস্ত দলের সদস্য — কোনো ম্যানুয়াল কপি নেই, কোনো ব্যক্তিগত সেটআপ ডকস অনুসরণ করতে হয় না।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12: ONBOARDING WIN ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">ONBOARDING WIN</span><span class="bn">অনবোর্ডিং জয়</span></div>
+    <h2 class="auto"><span class="en">New Hire, Day One — Already Productive</span><span class="bn">নতুন কর্মী, প্রথম দিন — ইতোমধ্যে উৎপাদনশীল</span></h2>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">SHAZZAD · JUNIOR ENGINEER (NEW HIRE)</span>
+        <span class="en">"I cloned the repo, ran <code>npm install</code>, did <code>claude plugin enable @nopstation/claude-plugin</code>, and I had every skill the senior engineers use. I ran my first <code>/ns-review-pr</code> before lunch on day one."</span>
+        <span class="bn">"আমি রেপো ক্লোন করলাম, <code>npm install</code> চালালাম, <code>claude plugin enable @nopstation/claude-plugin</code> করলাম, এবং সিনিয়র ইঞ্জিনিয়াররা যে স্কিল ব্যবহার করে সব পেলাম। প্রথম দিন দুপুরের আগেই আমার প্রথম <code>/ns-review-pr</code> চালালাম।"</span>
+      </div>
+    </div>
+    <div class="row frag" style="margin-top:.5rem;align-items:stretch;gap:1rem">
+      <div class="mini-panel pop" style="border-color:#E0483A">
+        <div class="strip" style="background:#E0483A"><span class="en">OLD ONBOARDING</span><span class="bn">পুরোনো অনবোর্ডিং</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.2vw,.8rem)">
+          <span class="en">Week 1: setup docs.<br>Week 2: find Rafid's prompts.<br>Week 3: maybe productive.</span>
+          <span class="bn b">সপ্তাহ ১: সেটআপ ডকস।<br>সপ্তাহ ২: রাফিদের প্রম্পট খোঁজো।<br>সপ্তাহ ৩: হয়তো উৎপাদনশীল।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">NEW ONBOARDING</span><span class="bn">নতুন অনবোর্ডিং</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.2vw,.8rem)">
+          <span class="en">Day 1: clone + enable plugin.<br>Day 1 afternoon: first PR review.<br>Week 1: already at team speed.</span>
+          <span class="bn b">দিন ১: clone + plugin enable।<br>দিন ১ বিকেল: প্রথম PR রিভিউ।<br>সপ্তাহ ১: ইতিমধ্যে দলের গতিতে।</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13: GOTCHAS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#E0483A;color:#fff"><span class="en">WATCH OUT</span><span class="bn">সাবধান</span></div>
+    <h2 class="auto"><span class="en">Pitfalls When Sharing Skills at Scale</span><span class="bn">স্কেলে স্কিল শেয়ার করার সময় বিপদ</span></h2>
+    <ul class="danger-list">
+      <li class="frag pop">
+        <span class="icon">⚠️</span>
+        <div><span class="en"><strong>Drift:</strong> A dev tweaks their personal copy of a skill. Now personal and project versions diverge silently. Fix: treat the repo copy as the source of truth, always.</span><span class="bn"><strong>ড্রিফট:</strong> একজন ডেভ স্কিলের ব্যক্তিগত কপি পরিবর্তন করে। এখন ব্যক্তিগত এবং প্রজেক্ট সংস্করণ নীরবে আলাদা হয়ে যায়। সমাধান: রেপো কপিকে সর্বদা সত্যের উৎস হিসেবে বিবেচনা করো।</span></div>
+      </li>
+      <li class="frag pop">
+        <span class="icon">⚠️</span>
+        <div><span class="en"><strong>Unreviewed skills:</strong> A shortcut skill lands in main without a PR. It has bad instructions or prompt-injects something unsafe. Fix: require PR review for any change to <code>.claude/skills/</code>.</span><span class="bn"><strong>অপরীক্ষিত স্কিল:</strong> একটি শর্টকাট স্কিল PR ছাড়াই main-এ পৌঁছায়। এটি ভুল নির্দেশনা বা কিছু অনিরাপদ প্রম্পট-ইনজেক্ট করে। সমাধান: <code>.claude/skills/</code>-এর যেকোনো পরিবর্তনের জন্য PR রিভিউ প্রয়োজন।</span></div>
+      </li>
+      <li class="frag pop">
+        <span class="icon">⚠️</span>
+        <div><span class="en"><strong>No owner:</strong> A skill rots because nobody owns updating it. Fix: put an <code>owner:</code> field in each skill's front-matter so responsibility is explicit.</span><span class="bn"><strong>কোনো মালিক নেই:</strong> কেউ আপডেট না করায় একটি স্কিল পুরানো হয়ে যায়। সমাধান: প্রতিটি স্কিলের ফ্রন্ট-ম্যাটারে একটি <code>owner:</code> ফিল্ড রাখো যাতে দায়িত্ব স্পষ্ট থাকে।</span></div>
+      </li>
+      <li class="frag pop">
+        <span class="icon">⛔</span>
+        <div><span class="en"><strong>Secrets in skills:</strong> Someone bakes an API key or token into a shared skill. It lands in git history forever. Fix: skills must never contain credentials — reference env vars instead.</span><span class="bn"><strong>স্কিলে সিক্রেট:</strong> কেউ একটি শেয়ার্ড স্কিলে API key বা টোকেন বেক করে। এটি চিরতরে git ইতিহাসে থাকে। সমাধান: স্কিলে কখনো ক্রেডেনশিয়াল থাকবে না — পরিবর্তে env var রেফারেন্স করো।</span></div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14: QUICK REFERENCE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">QUICK REFERENCE</span><span class="bn">দ্রুত রেফারেন্স</span></div>
+    <h2 class="auto"><span class="en">The Three-Step Guild Rollout</span><span class="bn">তিন-ধাপের গিল্ড রোলআউট</span></h2>
+    <div class="row frag" style="margin-top:.5rem;align-items:stretch;gap:.8rem;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel pop" style="min-width:clamp(145px,22vw,230px)">
+        <div class="strip" style="background:#E0483A"><span class="en">STEP 1 — COLLECT</span><span class="bn">ধাপ ১ — সংগ্রহ</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.2vw,.8rem)">
+          <span class="en">Identify the best personal skills across the team. Nominate them for the shared repo via PR.</span>
+          <span class="bn">দল জুড়ে সেরা ব্যক্তিগত স্কিল সনাক্ত করো। PR-এর মাধ্যমে শেয়ার্ড রেপোর জন্য মনোনীত করো।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="min-width:clamp(145px,22vw,230px);border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">STEP 2 — REVIEW</span><span class="bn">ধাপ ২ — রিভিউ</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.2vw,.8rem)">
+          <span class="en">At least two reviewers check: accuracy, safety, no secrets, clear instructions, named owner.</span>
+          <span class="bn">কমপক্ষে দুজন রিভিউয়ার চেক করে: নির্ভুলতা, নিরাপত্তা, কোনো সিক্রেট নেই, স্পষ্ট নির্দেশনা, নামকৃত মালিক।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="min-width:clamp(145px,22vw,230px);border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">STEP 3 — DISTRIBUTE</span><span class="bn">ধাপ ৩ — বিতরণ</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.2vw,.8rem)">
+          <span class="en">Merge to main. Plugin auto-updates. Every dev gets the improvement on next <code>git pull</code>.</span>
+          <span class="bn">main-এ মার্জ করো। প্লাগইন স্বয়ংক্রিয়ভাবে আপডেট হয়। পরের <code>git pull</code>-এ প্রতিটি ডেভ উন্নতি পায়।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Three steps from "Rafid's personal skill" to "everyone on the team has it." Takes about 15 minutes per skill.</span><span class="bn">"রাফিদের ব্যক্তিগত স্কিল" থেকে "দলের সবাই এটা পেয়েছে" পর্যন্ত তিনটি ধাপ। প্রতিটি স্কিলে প্রায় ১৫ মিনিট সময় লাগে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 15: HABIB AND SHAZZAD REACTION ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">THE TEAM REACTS</span><span class="bn">দলের প্রতিক্রিয়া</span></div>
+    <h2 class="auto"><span class="en">From Silo to Guild</span><span class="bn">সাইলো থেকে গিল্ড</span></h2>
+    <div class="panel frag pop">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">HABIB</span>
+        <span class="en">"I reviewed Rafid's <code>/ns-review-pr</code> skill in a PR. Caught one edge case in the instructions, left a comment, he fixed it. That's exactly how we review code — why wouldn't we do the same for skills?"</span>
+        <span class="bn">"আমি PR-এ রাফিদের <code>/ns-review-pr</code> স্কিল রিভিউ করলাম। নির্দেশনায় একটি edge case ধরলাম, মন্তব্য রাখলাম, সে ঠিক করল। এটাই হলো আমরা কোড রিভিউ করার উপায় — স্কিলের জন্য একই কাজ কেন করব না?"</span>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.4rem">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">SHAZZAD</span>
+        <span class="en">"My old job had a 30-page onboarding doc and I still spent two weeks finding stuff. Here I ran <code>claude plugin enable</code> and had everything. I wish every team did this."</span>
+        <span class="bn">"আমার আগের কাজে ৩০ পৃষ্ঠার অনবোর্ডিং ডকস ছিল এবং দুই সপ্তাহ ধরে জিনিস খুঁজতাম। এখানে <code>claude plugin enable</code> চালালাম এবং সব পেয়ে গেলাম। আশা করি প্রতিটি দল এটা করুক।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 16: BEFORE / AFTER SUMMARY ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto"><span class="en">BEFORE &amp; AFTER</span><span class="bn">আগে ও পরে</span></div>
+    <h2 class="auto"><span class="en">nop-station — Skills Transformation</span><span class="bn">nop-station — স্কিলস রূপান্তর</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:stretch">
+      <div class="mini-panel pop" style="border-color:#E0483A">
+        <div class="strip" style="background:#E0483A"><span class="en">BEFORE</span><span class="bn">আগে</span></div>
+        <div style="text-align:left;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.9;padding:.35rem .1rem;width:100%">
+          <span class="en">
+            ✗ Skills live on 1 laptop<br>
+            ✗ No versioning or review<br>
+            ✗ New hires take weeks to ramp<br>
+            ✗ Best practices not shared<br>
+            ✗ Skills lost when people leave
+          </span>
+          <span class="bn b">
+            ✗ স্কিল ১টি ল্যাপটপে থাকে<br>
+            ✗ কোনো ভার্সনিং বা রিভিউ নেই<br>
+            ✗ নতুন কর্মীদের রেম্প আপ করতে সপ্তাহ লাগে<br>
+            ✗ সেরা অনুশীলন শেয়ার করা হয় না<br>
+            ✗ মানুষ চলে গেলে স্কিল হারিয়ে যায়
+          </span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">AFTER</span><span class="bn">পরে</span></div>
+        <div style="text-align:left;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.9;padding:.35rem .1rem;width:100%">
+          <span class="en">
+            ✓ Skills in git, owned by team<br>
+            ✓ PR-reviewed, versioned, rollback-able<br>
+            ✓ New hires productive on day one<br>
+            ✓ Best practices enforced by default<br>
+            ✓ Knowledge outlives any individual
+          </span>
+          <span class="bn b">
+            ✓ স্কিল গিটে, দলের মালিকানায়<br>
+            ✓ PR-রিভিউড, ভার্সনড, রোলব্যাকযোগ্য<br>
+            ✓ নতুন কর্মীরা প্রথম দিনেই উৎপাদনশীল<br>
+            ✓ সেরা অনুশীলন ডিফল্টে প্রয়োগ হয়<br>
+            ✓ জ্ঞান যেকোনো ব্যক্তির চেয়ে দীর্ঘস্থায়ী
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag amber"><span class="en">The guild model: every skill one person builds makes every other person stronger.</span><span class="bn">গিল্ড মডেল: একজন যে স্কিল তৈরি করে তা প্রতিটি অন্য ব্যক্তিকে শক্তিশালী করে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 17: WRAP-UP ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:#E0483A;color:#fff"><span class="en">WRAP UP</span><span class="bn">সারসংক্ষেপ</span></div>
+    <h2 class="auto" style="color:#fff"><span class="en">Skills at Team Scale</span><span class="bn">দলের স্কেলে স্কিলস</span></h2>
+    <div class="row frag" style="margin-top:.4rem;flex-wrap:wrap;justify-content:center">
+      <span class="tag" style="border-color:#E0483A;background:rgba(224,72,58,.12)"><span class="en">PROJECT SKILLS</span><span class="bn">প্রজেক্ট স্কিলস</span></span>
+      <span class="tag" style="border-color:var(--amber)"><span class="en">PLUGINS</span><span class="bn">প্লাগইনস</span></span>
+      <span class="tag" style="border-color:var(--green)"><span class="en">VERSIONED</span><span class="bn">ভার্সনড</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">ONBOARDING</span><span class="bn">অনবোর্ডিং</span></span>
+    </div>
+    <div class="caption frag" style="color:rgba(255,255,255,.72);margin-top:.5rem">
+      <span class="en">A skill lives in <code style="color:var(--amber)">.claude/skills/</code> → it belongs to the team, not the individual. Commit it. Review it. Bundle it. Distribute it.</span>
+      <span class="bn">একটি স্কিল <code style="color:var(--amber)">.claude/skills/</code>-এ থাকে → এটি দলের, ব্যক্তির নয়। কমিট করো। রিভিউ করো। বান্ডেল করো। বিতরণ করো।</span>
+    </div>
+    <div class="char-summary frag">
+      <span class="en">Next → <strong>Episode 7:</strong> Skills in Practice — Master at Work.<br>Rafid's most powerful skills, live on a real sprint ticket, from prompt to PR.</span>
+      <span class="bn b">পরবর্তী → <strong>এপিসোড ৭:</strong> Skills in Practice — কাজে মাস্টার।<br>রাফিদের সবচেয়ে শক্তিশালী স্কিল, একটি বাস্তব স্প্রিন্ট টিকেটে লাইভ, প্রম্পট থেকে PR পর্যন্ত।</span>
+    </div>
+  </div>
+</section>
+
+</main><!-- /deck -->
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<div class="hint">← → to navigate · space to advance</div>
+<script src="../../assets/deck.js"></script>
+<script data-goatcounter="https://jiteshsureka.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

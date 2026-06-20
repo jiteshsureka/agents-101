@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S2·E1 — Skills 101 · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+.skill-file {
+  background: var(--paper); border: 2.5px solid var(--navy);
+  border-radius: 16px; box-shadow: var(--shadow-md);
+  font-family: monospace; font-size: clamp(.68rem,1.35vw,.88rem);
+  text-align: left; padding: clamp(.7rem,1.8vw,1.2rem) clamp(.9rem,2.2vw,1.5rem);
+  max-width: min(90vw, 780px); width: 100%; line-height: 1.7;
+  white-space: pre-wrap; word-break: break-word;
+}
+.skill-file .yaml-key   { color: var(--sky); font-weight: 700; }
+.skill-file .yaml-val   { color: #2a7a3b; font-weight: 600; }
+.skill-file .md-head    { color: var(--navy); font-weight: 700; }
+.skill-file .md-comment { color: rgba(17,23,44,.45); font-style: italic; }
+.skill-file .hi         { background: rgba(73,146,193,.18); border-radius: 4px; padding: 0 3px; }
+
+.trigger-table {
+  width: 100%; max-width: min(90vw, 820px);
+  border-collapse: separate; border-spacing: 0;
+  font-size: clamp(.65rem,1.3vw,.86rem); font-weight: 600;
+}
+.trigger-table th {
+  background: var(--navy); color: #fff;
+  padding: .45em .9em; font-family: 'Caveat', cursive; font-size: 1.05em;
+  letter-spacing: .04em;
+}
+.trigger-table th:first-child { border-radius: 12px 0 0 0; }
+.trigger-table th:last-child  { border-radius: 0 12px 0 0; }
+.trigger-table td {
+  background: var(--paper); border: 1.5px solid rgba(17,23,44,.12);
+  padding: .4em .85em; vertical-align: top; line-height: 1.55;
+}
+.trigger-table tr:last-child td:first-child { border-radius: 0 0 0 12px; }
+.trigger-table tr:last-child td:last-child  { border-radius: 0 0 12px 0; }
+.trigger-table .good { color: #2a7a3b; }
+.trigger-table .bad  { color: var(--red,#e0483a); }
+
+.disc-row {
+  display: flex; flex-direction: column; gap: .4rem;
+  max-width: min(90vw, 720px); width: 100%;
+}
+.disc-row .disc-item {
+  display: flex; align-items: flex-start; gap: .7rem;
+  background: var(--paper); border: 2px solid var(--navy);
+  border-radius: 12px; padding: .42em .9em;
+  font-size: clamp(.68rem,1.3vw,.86rem); font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+.disc-row .disc-item .badge {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.75rem,1.4vw,.9rem); white-space: nowrap;
+  min-width: 90px; text-align: right; padding-top: .05em;
+}
+.disc-row .disc-item.always  { border-color: var(--sky); }
+.disc-row .disc-item.invoked { border-color: #4992C1; }
+.disc-row .disc-item.demand  { border-color: var(--amber); }
+
+.comparison-table {
+  width: 100%; max-width: min(90vw, 800px);
+  border-collapse: separate; border-spacing: 0;
+  font-size: clamp(.64rem,1.28vw,.84rem); font-weight: 600;
+}
+.comparison-table th {
+  padding: .4em .75em; font-family: 'Caveat', cursive; font-size: 1.08em;
+  background: var(--paper); border: 2px solid var(--navy); text-align: center;
+}
+.comparison-table td {
+  background: var(--paper); border: 1.5px solid rgba(17,23,44,.13);
+  padding: .38em .8em; vertical-align: top; line-height: 1.55;
+}
+.comparison-table .row-label {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.72rem,1.35vw,.9rem); color: var(--navy);
+  background: var(--light,#F5F8FB); border-right: 2px solid var(--navy);
+}
+</style>
+</head>
+<body data-ep-label="S2·E1 · Skills 101" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ============ SLIDE 1: TITLE ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:#4992C1;color:#fff"><span class="en">SEASON 2 · EPISODE 1</span><span class="bn">সিজন ২ · এপিসোড ১</span></div>
+    <h1 class="auto" style="color:#fff;font-size:clamp(2.6rem,10vw,6rem);line-height:.9">
+      <span class="en">SKILLS <span style="color:#4992C1">101</span></span>
+      <span class="bn" style="color:#fff">স্কিলস <span style="color:#4992C1">১০১</span></span>
+    </h1>
+    <p class="auto" style="color:rgba(255,255,255,.65);font-family:'Caveat',cursive;font-weight:700;font-size:clamp(1rem,2.4vw,1.5rem);letter-spacing:.06em">
+      <span class="en">THE APPRENTICE ARRIVES</span><span class="bn">শিক্ষানবিশ আসে</span>
+    </p>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,700px)">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">AGENT · EVERY NEW SESSION</span>
+        <span class="en">"Hi! I'm Claude Code. How can I help today? What are your project conventions?"</span>
+        <span class="bn">"হ্যালো! আমি Claude Code। আজকে কীভাবে সাহায্য করতে পারি? আপনার প্রজেক্টের কনভেনশন কী?"</span>
+      </div>
+    </div>
+    <div class="caption frag" style="color:rgba(255,255,255,.55);font-family:'Caveat',cursive;font-weight:700;font-size:clamp(.85rem,1.8vw,1.1rem)">
+      <span class="en">Every. Single. Session.</span><span class="bn">প্রতিটি। একক। সেশনে।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2: THE PAIN ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#4992C1;color:#fff"><span class="en">THE PAIN</span><span class="bn">সমস্যা</span></div>
+    <h2 class="auto"><span class="en">Rafid's Groundhog Day</span><span class="bn">রাফিদের পুনরাবৃত্তি</span></h2>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">RIFAT · SENIOR ENGINEER, NOP-STATION</span>
+        <span class="en">"Every morning I paste the same paragraph into Claude — our folder structure, naming rules, which test runner we use, how we write PR descriptions. I've done it maybe 60 times this quarter. It takes two minutes. Every. Time."</span>
+        <span class="bn">"প্রতিদিন সকালে Claude-এ একই প্যারাগ্রাফ পেস্ট করি — ফোল্ডার স্ট্রাকচার, নামকরণের নিয়ম, কোন টেস্ট রানার ব্যবহার করি, PR ডেসক্রিপশন কীভাবে লিখি। এই কোয়ার্টারে হয়তো ৬০ বার করেছি। প্রতিবার দুই মিনিট।"</span>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.3rem">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">HABIB · BACKEND ENGINEER</span>
+        <span class="en">"Same here. And if I forget to paste it, Claude gives me something that completely ignores our stack. I wish it just… knew."</span>
+        <span class="bn">"আমারও একই অবস্থা। আর যদি পেস্ট করতে ভুলি, Claude আমাদের স্ট্যাক সম্পূর্ণ উপেক্ষা করে কিছু দেয়। ইশ, সে যদি আগে থেকেই জানত।"</span>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Retyping conventions into every session is the highest-friction tax in daily Claude Code usage. Skills kill that tax.</span><span class="bn">প্রতিটি সেশনে কনভেনশন টাইপ করা দৈনিক Claude Code ব্যবহারের সবচেয়ে বেশি ঘর্ষণজনক ট্যাক্স। স্কিলস এই ট্যাক্স বন্ধ করে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3: WHAT IS A SKILL ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#4992C1;color:#fff"><span class="en">THE CONCEPT</span><span class="bn">ধারণা</span></div>
+    <h2 class="auto"><span class="en">What Is a Skill?</span><span class="bn">স্কিল কী?</span></h2>
+    <div class="bigq auto" style="font-size:clamp(1.5rem,5.5vw,3.5rem)">
+      <span class="en">A reusable procedure card<br>you hand the apprentice <em>once.</em></span>
+      <span class="bn">একটি পুনর্ব্যবহারযোগ্য পদ্ধতি কার্ড<br>যা তুমি শিক্ষানবিশকে <em>একবার</em> দাও।</span>
+    </div>
+    <div class="row frag" style="margin-top:.5rem;align-items:flex-start">
+      <div class="mini-panel pop">
+        <div class="strip" style="background:#4992C1"><span class="en">BEFORE SKILLS</span><span class="bn">স্কিলের আগে</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">Rafid types "nop-station conventions" at the start of every session — project structure, test runner, PR style, style guide…</span>
+          <span class="bn">রাফিদ প্রতিটি সেশনের শুরুতে "nop-station কনভেনশন" টাইপ করে — প্রজেক্ট স্ট্রাকচার, টেস্ট রানার, PR স্টাইল, স্টাইল গাইড…</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">AFTER SKILLS</span><span class="bn">স্কিলের পরে</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">Rafid types <strong>/nop-conventions</strong> — or Claude auto-loads it when the request matches. Zero paste, zero re-explaining.</span>
+          <span class="bn">রাফিদ <strong>/nop-conventions</strong> টাইপ করে — অথবা Claude রিকোয়েস্ট মিলে গেলে নিজেই লোড করে। শূন্য পেস্ট, শূন্য পুনরায় ব্যাখ্যা।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">A skill is a folder with a <strong>SKILL.md</strong> inside. That file tells Claude exactly how to execute a named procedure — on demand or automatically.</span><span class="bn">একটি স্কিল হল একটি ফোল্ডার যার ভেতরে একটি <strong>SKILL.md</strong> আছে। সেই ফাইলটি Claude-কে বলে কীভাবে একটি নামকৃত পদ্ধতি চালাতে হবে — চাহিদায় বা স্বয়ংক্রিয়ভাবে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: ANATOMY ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#4992C1;color:#fff"><span class="en">ANATOMY</span><span class="bn">গঠন</span></div>
+    <h2 class="auto"><span class="en">Inside a SKILL.md</span><span class="bn">SKILL.md-এর ভেতরে</span></h2>
+    <pre class="skill-file frag">
+<span class="md-comment">---  ← YAML frontmatter (required)</span>
+<span class="yaml-key">name</span>: <span class="yaml-val">new-episode</span>
+<span class="yaml-key">description</span>: <span class="yaml-val hi">Create a new episode slide deck for the agents-101 series</span>
+<span class="md-comment">---  ← end frontmatter</span>
+
+<span class="md-head"># new-episode skill</span>
+<span class="md-comment">(everything below here is the body — loaded only when invoked)</span>
+
+Creates a new episode HTML file for agents-101.
+
+<span class="md-head">## Usage</span>
+
+/new-episode
+
+Prompts for season number, episode number, slug, title, subtitle.
+
+<span class="md-head">## Steps</span>
+
+1. Copy <span class="yaml-val">template.html</span> → <span class="yaml-val">seasons/season-N/ep-N-slug.html</span>
+2. Replace every placeholder with the provided values
+3. Report the new file path to the user
+</pre>
+    <div class="caption frag"><span class="en">Two parts: the <strong>frontmatter</strong> (name + description) is always visible to Claude. The <strong>body</strong> (steps, examples, notes) loads only when the skill is invoked. That split is the whole secret.</span><span class="bn">দুটি অংশ: <strong>ফ্রন্টম্যাটার</strong> (নাম + বিবরণ) Claude-এর কাছে সবসময় দৃশ্যমান। <strong>বডি</strong> (ধাপ, উদাহরণ, নোট) শুধুমাত্র স্কিল ডাকা হলে লোড হয়। সেই বিভাজনটাই পুরো রহস্য।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5: DESCRIPTION IS THE TRIGGER ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">THE KEY INSIGHT</span><span class="bn">মূল উপলব্ধি</span></div>
+    <h2 class="auto"><span class="en">The Description IS the Trigger</span><span class="bn">বিবরণই হল ট্রিগার</span></h2>
+    <div class="caption frag"><span class="en">Claude always loads every skill's <strong>name</strong> and <strong>description</strong> — and nothing else — into its context. When your request matches a description, the skill fires.</span><span class="bn">Claude সবসময় প্রতিটি স্কিলের <strong>নাম</strong> এবং <strong>বিবরণ</strong> — এবং শুধুমাত্র সেটাই — তার কনটেক্সটে লোড করে। তোমার রিকোয়েস্ট কোনো বিবরণের সাথে মিলে গেলে, স্কিল চালু হয়।</span></div>
+    <table class="trigger-table frag" style="margin-top:.5rem">
+      <tr>
+        <th><span class="en">Description</span><span class="bn">বিবরণ</span></th>
+        <th><span class="en">User says…</span><span class="bn">ব্যবহারকারী বলে…</span></th>
+        <th><span class="en">Auto-invoked?</span><span class="bn">স্বয়ংক্রিয়?</span></th>
+      </tr>
+      <tr>
+        <td class="good"><span class="en">"Create a new episode slide deck for the agents-101 series"</span><span class="bn">"agents-101 সিরিজের জন্য একটি নতুন এপিসোড স্লাইড ডেক তৈরি করো"</span></td>
+        <td><span class="en">"make episode 7 for season 2"</span><span class="bn">"সিজন ২-এর এপিসোড ৭ তৈরি করো"</span></td>
+        <td class="good"><span class="en">✓ Yes — precise match</span><span class="bn">✓ হ্যাঁ — সঠিক মিল</span></td>
+      </tr>
+      <tr>
+        <td class="bad"><span class="en">"Does stuff with HTML"</span><span class="bn">"HTML দিয়ে কিছু করে"</span></td>
+        <td><span class="en">"make episode 7 for season 2"</span><span class="bn">"সিজন ২-এর এপিসোড ৭ তৈরি করো"</span></td>
+        <td class="bad"><span class="en">✗ No — too vague</span><span class="bn">✗ না — অত্যন্ত অস্পষ্ট</span></td>
+      </tr>
+      <tr>
+        <td class="bad"><span class="en">"Handles everything"</span><span class="bn">"সব কিছু সামলায়"</span></td>
+        <td><span class="en">anything</span><span class="bn">যেকোনো কিছু</span></td>
+        <td class="bad"><span class="en">✗ No — collides with every request</span><span class="bn">✗ না — প্রতিটি রিকোয়েস্টের সাথে সংঘর্ষ</span></td>
+      </tr>
+    </table>
+    <div class="caption frag amber"><span class="en">Rule: write the description as if it were a search query for the exact kind of request you want this skill to handle.</span><span class="bn">নিয়ম: বিবরণটি এমনভাবে লিখো যেন এটি ঠিক সেই ধরনের রিকোয়েস্টের জন্য একটি সার্চ কোয়েরি যা তুমি এই স্কিল দিয়ে সামলাতে চাও।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: PROGRESSIVE DISCLOSURE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#4992C1;color:#fff"><span class="en">PROGRESSIVE DISCLOSURE</span><span class="bn">ক্রমিক প্রকাশ</span></div>
+    <h2 class="auto"><span class="en">Three Loading Tiers</span><span class="bn">তিনটি লোডিং স্তর</span></h2>
+    <div class="disc-row frag">
+      <div class="disc-item always">
+        <span class="badge" style="color:var(--sky)"><span class="en">ALWAYS</span><span class="bn">সবসময়</span></span>
+        <div>
+          <span class="en"><strong>name + description</strong> — a one-liner listing in Claude's context. Costs almost nothing. Every session, every skill.</span>
+          <span class="bn"><strong>নাম + বিবরণ</strong> — Claude-এর কনটেক্সটে একটি এক-লাইন তালিকা। প্রায় কোনো খরচ নেই। প্রতিটি সেশনে, প্রতিটি স্কিলের।</span>
+        </div>
+      </div>
+      <div class="disc-item invoked">
+        <span class="badge" style="color:#4992C1"><span class="en">ON INVOKE</span><span class="bn">ডাকলে</span></span>
+        <div>
+          <span class="en"><strong>full SKILL.md body</strong> — the steps, examples, notes. Loaded the moment Claude decides this skill applies.</span>
+          <span class="bn"><strong>সম্পূর্ণ SKILL.md বডি</strong> — ধাপ, উদাহরণ, নোট। মুহূর্তেই লোড হয় যখন Claude সিদ্ধান্ত নেয় এই স্কিল প্রযোজ্য।</span>
+        </div>
+      </div>
+      <div class="disc-item demand">
+        <span class="badge" style="color:var(--amber)"><span class="en">ON DEMAND</span><span class="bn">প্রয়োজনে</span></span>
+        <div>
+          <span class="en"><strong>bundled files</strong> — scripts, templates, examples stored next to SKILL.md. Claude reads them only when the skill's steps say to.</span>
+          <span class="bn"><strong>বান্ডেল করা ফাইল</strong> — SKILL.md-এর পাশে সংরক্ষিত স্ক্রিপ্ট, টেমপ্লেট, উদাহরণ। স্কিলের ধাপ বললেই Claude সেগুলো পড়ে।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">This is why skills don't bloat your context window even when you have 30 of them. Only the triggered skill's body costs real tokens.</span><span class="bn">এই কারণেই ৩০টি স্কিল থাকলেও স্কিলগুলো তোমার কনটেক্সট উইন্ডো ফুলিয়ে তোলে না। শুধুমাত্র চালু হওয়া স্কিলের বডিই আসল টোকেন খরচ করে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: HOW INVOCATION WORKS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#4992C1;color:#fff"><span class="en">INVOCATION</span><span class="bn">ইনভোকেশন</span></div>
+    <h2 class="auto"><span class="en">How Skills Get Called</span><span class="bn">স্কিলস কীভাবে ডাকা হয়</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:flex-start">
+      <div class="mini-panel pop" style="border-color:#4992C1;width:clamp(185px,30vw,320px)">
+        <div class="strip" style="background:#4992C1"><span class="en">AUTO-INVOKE</span><span class="bn">স্বয়ংক্রিয়</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">User: <em>"make episode 3 of season 2"</em><br><br>Claude matches the request against all skill descriptions → finds <strong>new-episode</strong> → loads body → follows steps.</span>
+          <span class="bn">ব্যবহারকারী: <em>"সিজন ২-এর এপিসোড ৩ তৈরি করো"</em><br><br>Claude সব স্কিল বিবরণের সাথে রিকোয়েস্ট মেলায় → <strong>new-episode</strong> খুঁজে পায় → বডি লোড করে → ধাপ অনুসরণ করে।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--amber);width:clamp(185px,30vw,320px)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">EXPLICIT SLASH</span><span class="bn">সরাসরি স্ল্যাশ</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">User: <em>"/new-episode"</em><br><br>Claude sees the slash command, maps it directly to the skill by <strong>name</strong>, and loads the body. No matching needed.</span>
+          <span class="bn">ব্যবহারকারী: <em>"/new-episode"</em><br><br>Claude স্ল্যাশ কমান্ড দেখে, সরাসরি <strong>নাম</strong> দিয়ে স্কিলে ম্যাপ করে, এবং বডি লোড করে। কোনো ম্যাচিং দরকার নেই।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Both paths execute the same body. Slash commands are the shortcut; auto-invoke is the intelligence. Use both.</span><span class="bn">দুটি পথই একই বডি চালায়। স্ল্যাশ কমান্ড হল শর্টকাট; অটো-ইনভোক হল বুদ্ধিমত্তা। দুটোই ব্যবহার করো।</span></div>
+    <div class="panel frag pop" style="margin-top:.3rem">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">SHAZZAD · ENGINEER</span>
+        <span class="en">"So <strong>/new-episode</strong> and <em>'make me a new episode'</em> both do the same thing? That's surprisingly clean."</span>
+        <span class="bn">"তাহলে <strong>/new-episode</strong> এবং <em>'আমাকে একটা নতুন এপিসোড বানিয়ে দাও'</em> — দুটো একই কাজ করে? এটা আশ্চর্যজনক রকম পরিষ্কার।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8: SKILL vs CLAUDE.MD vs PROMPT ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--navy);color:#fff"><span class="en">DISAMBIGUATION</span><span class="bn">পার্থক্য</span></div>
+    <h2 class="auto"><span class="en">Skill vs CLAUDE.md vs Plain Prompt</span><span class="bn">স্কিল বনাম CLAUDE.md বনাম সাধারণ প্রম্পট</span></h2>
+    <table class="comparison-table frag" style="margin-top:.4rem">
+      <tr>
+        <th></th>
+        <th style="color:#4992C1"><span class="en">SKILL</span><span class="bn">স্কিল</span></th>
+        <th style="color:var(--amber)"><span class="en">CLAUDE.md</span><span class="bn">CLAUDE.md</span></th>
+        <th style="color:var(--navy)"><span class="en">PLAIN PROMPT</span><span class="bn">সাধারণ প্রম্পট</span></th>
+      </tr>
+      <tr>
+        <td class="row-label"><span class="en">Loaded when</span><span class="bn">লোড হয় যখন</span></td>
+        <td><span class="en">Description matches or /invoked</span><span class="bn">বিবরণ মিলে বা /ডাকা হয়</span></td>
+        <td><span class="en">Always, every session</span><span class="bn">সবসময়, প্রতিটি সেশনে</span></td>
+        <td><span class="en">You paste it manually</span><span class="bn">তুমি নিজে পেস্ট করো</span></td>
+      </tr>
+      <tr>
+        <td class="row-label"><span class="en">Lifespan</span><span class="bn">মেয়াদ</span></td>
+        <td><span class="en">Permanent — reusable</span><span class="bn">স্থায়ী — পুনর্ব্যবহারযোগ্য</span></td>
+        <td><span class="en">Permanent — project-wide</span><span class="bn">স্থায়ী — প্রজেক্ট-ব্যাপী</span></td>
+        <td><span class="en">One-off — session only</span><span class="bn">একবারের — শুধু সেশনের</span></td>
+      </tr>
+      <tr>
+        <td class="row-label"><span class="en">Best for</span><span class="bn">ভালো যখন</span></td>
+        <td><span class="en">Repeatable multi-step procedures</span><span class="bn">পুনরাবৃত্তিযোগ্য বহু-ধাপ পদ্ধতি</span></td>
+        <td><span class="en">Always-on context &amp; rules</span><span class="bn">সর্বদা সক্রিয় কনটেক্সট ও নিয়ম</span></td>
+        <td><span class="en">Ad-hoc one-time instructions</span><span class="bn">এককালীন নির্দেশনা</span></td>
+      </tr>
+      <tr>
+        <td class="row-label"><span class="en">Context cost</span><span class="bn">কনটেক্সট খরচ</span></td>
+        <td><span class="en">Near-zero until triggered</span><span class="bn">ট্রিগার না হওয়া পর্যন্ত প্রায় শূন্য</span></td>
+        <td><span class="en">Loaded in full every time</span><span class="bn">প্রতিবার সম্পূর্ণ লোড</span></td>
+        <td><span class="en">Exactly what you paste</span><span class="bn">ঠিক যতটা পেস্ট করো</span></td>
+      </tr>
+    </table>
+    <div class="caption frag"><span class="en">Think of them as layers: CLAUDE.md is the <em>foundation</em> (always there), skills are <em>procedure cards</em> (retrieved on demand), and plain prompts are <em>sticky notes</em> (disposable).</span><span class="bn">স্তর হিসেবে ভাবো: CLAUDE.md হল <em>ভিত্তি</em> (সবসময় আছে), স্কিলগুলো হল <em>পদ্ধতি কার্ড</em> (চাহিদায় পুনরুদ্ধার), এবং সাধারণ প্রম্পট হল <em>স্টিকি নোট</em> (ক্ষণস্থায়ী)।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9: WHERE SKILLS LIVE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#4992C1;color:#fff"><span class="en">LOCATION</span><span class="bn">অবস্থান</span></div>
+    <h2 class="auto"><span class="en">Where Do Skills Live?</span><span class="bn">স্কিল কোথায় থাকে?</span></h2>
+    <div class="disc-row frag" style="gap:.55rem">
+      <div class="disc-item" style="border-color:#4992C1">
+        <span class="badge" style="color:#4992C1;min-width:110px"><span class="en">PROJECT</span><span class="bn">প্রজেক্ট</span></span>
+        <div>
+          <code style="font-family:monospace;font-size:.9em;background:rgba(73,146,193,.12);padding:1px 5px;border-radius:4px">.claude/skills/&lt;name&gt;/SKILL.md</code><br>
+          <span class="en" style="font-size:clamp(.63rem,1.25vw,.82rem)">Lives inside the repo. Committed to git. The whole team shares it — Rafid, Mouneeta, and Ankan all get <strong>/new-episode</strong> automatically.</span>
+          <span class="bn" style="font-size:clamp(.63rem,1.25vw,.82rem)">রেপোর ভেতরে থাকে। git-এ কমিট হয়। পুরো টিম শেয়ার করে — রাফিদ, মৌনিতা, অঙ্কন সবাই স্বয়ংক্রিয়ভাবে <strong>/new-episode</strong> পায়।</span>
+        </div>
+      </div>
+      <div class="disc-item" style="border-color:var(--amber)">
+        <span class="badge" style="color:var(--amber);min-width:110px"><span class="en">PERSONAL</span><span class="bn">ব্যক্তিগত</span></span>
+        <div>
+          <code style="font-family:monospace;font-size:.9em;background:rgba(251,175,50,.15);padding:1px 5px;border-radius:4px">~/.claude/skills/&lt;name&gt;/SKILL.md</code><br>
+          <span class="en" style="font-size:clamp(.63rem,1.25vw,.82rem)">Lives in your home directory. Private to you. Follows you across <em>all</em> projects. Great for personal workflow shortcuts.</span>
+          <span class="bn" style="font-size:clamp(.63rem,1.25vw,.82rem)">তোমার হোম ডিরেক্টরিতে থাকে। শুধু তোমার জন্য ব্যক্তিগত। <em>সব</em> প্রজেক্টে তোমার সাথে যায়। ব্যক্তিগত ওয়ার্কফ্লো শর্টকাটের জন্য দারুণ।</span>
+        </div>
+      </div>
+    </div>
+    <div class="row frag" style="margin-top:.5rem">
+      <div class="mini-panel pop" style="border-color:var(--green);max-width:min(90vw,680px)">
+        <div class="strip" style="background:var(--green)"><span class="en">THE FOLDER STRUCTURE</span><span class="bn">ফোল্ডার স্ট্রাকচার</span></div>
+        <pre style="text-align:left;font-family:monospace;font-size:clamp(.65rem,1.3vw,.85rem);line-height:1.65;margin:.4rem 0;padding:.2rem .4rem">
+.claude/
+  skills/
+    new-episode/
+      SKILL.md        <span style="color:rgba(17,23,44,.45);font-style:italic">← required</span>
+      template.html   <span style="color:rgba(17,23,44,.45);font-style:italic">← bundled asset (loaded on demand)</span>
+    nop-conventions/
+      SKILL.md
+    deploy-checklist/
+      SKILL.md
+      pre-deploy.sh   <span style="color:rgba(17,23,44,.45);font-style:italic">← script the skill can run</span></pre>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">One folder = one skill. Nest as many skills as your team needs — they stay invisible to Claude until called.</span><span class="bn">একটি ফোল্ডার = একটি স্কিল। টিমের দরকার মতো যত স্কিল চাও রাখো — ডাকা না হলে Claude-এর কাছে অদৃশ্য থাকে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: LIVE BUILD — READING THE SKILL ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">LIVE BUILD</span><span class="bn">লাইভ নির্মাণ</span></div>
+    <h2 class="auto"><span class="en">Dissecting Our Own new-episode Skill</span><span class="bn">আমাদের নিজের new-episode স্কিল বিশ্লেষণ</span></h2>
+    <p class="auto" style="font-size:clamp(.7rem,1.4vw,.9rem);font-weight:600;opacity:.7;margin-bottom:.3rem">
+      <span class="en">File: <code style="font-family:monospace">.claude/skills/new-episode/SKILL.md</code></span>
+      <span class="bn">ফাইল: <code style="font-family:monospace">.claude/skills/new-episode/SKILL.md</code></span>
+    </p>
+    <pre class="skill-file frag">
+<span class="yaml-key">---</span>
+<span class="yaml-key">name</span>: <span class="yaml-val">new-episode</span>                              <span class="md-comment">← the /slash name</span>
+<span class="yaml-key">description</span>: <span class="yaml-val hi">Create a new episode HTML file for agents-101</span>  <span class="md-comment">← the trigger</span>
+<span class="yaml-key">---</span>
+
+<span class="md-head"># new-episode skill</span>
+
+Creates a new episode HTML file for agents-101.
+
+<span class="md-head">## Usage</span>
+/new-episode
+
+Prompts for:
+- Season number   (e.g. <span class="yaml-val">1</span>)
+- Episode number  (e.g. <span class="yaml-val">3</span>)
+- Episode slug    (e.g. <span class="yaml-val">cross-session-coordination</span>)
+- Episode title   (e.g. <span class="yaml-val">"Cross-Session Coordination"</span>)
+- Subtitle / description  (one sentence)
+
+<span class="md-head">## Steps</span>
+1. Copy <span class="yaml-val">template.html</span> → <span class="yaml-val">seasons/season-{N}/ep-{N}-{slug}.html</span>
+2. Replace all <span class="yaml-val">{{PLACEHOLDERS}}</span> with provided values
+3. Report the new file path
+</pre>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11: WALKING THROUGH EACH PART ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">LIVE BUILD · PART 2</span><span class="bn">লাইভ নির্মাণ · পর্ব ২</span></div>
+    <h2 class="auto"><span class="en">What Each Line Does</span><span class="bn">প্রতিটি লাইন কী করে</span></h2>
+    <div class="disc-row frag" style="gap:.48rem">
+      <div class="disc-item" style="border-color:#4992C1">
+        <span class="badge" style="color:#4992C1;min-width:120px"><span class="en">name:</span><span class="bn">নাম:</span></span>
+        <div><span class="en"><code style="font-family:monospace">new-episode</code> — becomes the slash command <code>/new-episode</code>. Must be one word, lowercase, hyphens ok.</span><span class="bn"><code style="font-family:monospace">new-episode</code> — স্ল্যাশ কমান্ড <code>/new-episode</code> হয়ে যায়। একটি শব্দ, ছোট হাতে, হাইফেন চলবে।</span></div>
+      </div>
+      <div class="disc-item" style="border-color:var(--amber)">
+        <span class="badge" style="color:var(--amber);min-width:120px"><span class="en">description:</span><span class="bn">বিবরণ:</span></span>
+        <div><span class="en">Loaded into Claude's context ALWAYS. This is what Claude pattern-matches against your message. Make it specific enough to fire on the right request — and only then.</span><span class="bn">Claude-এর কনটেক্সটে সবসময় লোড হয়। এটাই Claude তোমার বার্তার বিপরীতে প্যাটার্ন-ম্যাচ করে। সঠিক রিকোয়েস্টে চালু হওয়ার মতো যথেষ্ট নির্দিষ্ট করো — এবং কেবল তখনই।</span></div>
+      </div>
+      <div class="disc-item" style="border-color:var(--green)">
+        <span class="badge" style="color:var(--green);min-width:120px"><span class="en">## Steps</span><span class="bn">## ধাপ</span></span>
+        <div><span class="en">The body — loaded only on invocation. Numbered steps give Claude a deterministic procedure. Think of it as writing a runbook for a junior engineer.</span><span class="bn">বডি — শুধুমাত্র ইনভোকেশনে লোড হয়। নম্বরযুক্ত ধাপগুলো Claude-কে একটি নির্ধারিত পদ্ধতি দেয়। একজন জুনিয়র ইঞ্জিনিয়ারের জন্য রানবুক লেখার মতো মনে করো।</span></div>
+      </div>
+      <div class="disc-item" style="border-color:var(--sky)">
+        <span class="badge" style="color:var(--sky);min-width:120px"><span class="en">template.html</span><span class="bn">টেমপ্লেট</span></span>
+        <div><span class="en">A bundled asset sitting next to SKILL.md. Claude reads it only when step 1 says to copy it. Not loaded by default — no wasted tokens.</span><span class="bn">SKILL.md-এর পাশে রাখা একটি বান্ডেল অ্যাসেট। স্টেপ ১ কপি করতে বললেই Claude পড়ে। ডিফল্টে লোড হয় না — কোনো টোকেন অপচয় নেই।</span></div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.3rem">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">AGENT · ON INVOKE</span>
+        <span class="en">"I see <strong>/new-episode</strong>. Loading SKILL.md body… reading template.html… What season, episode, and title should I use?"</span>
+        <span class="bn">"<strong>/new-episode</strong> দেখছি। SKILL.md বডি লোড করছি… template.html পড়ছি… সিজন, এপিসোড, এবং শিরোনাম কী হবে?"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12: A SECOND SKILL EXAMPLE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#4992C1;color:#fff"><span class="en">SECOND EXAMPLE</span><span class="bn">দ্বিতীয় উদাহরণ</span></div>
+    <h2 class="auto"><span class="en">Building a nop-conventions Skill</span><span class="bn">nop-conventions স্কিল তৈরি করা</span></h2>
+    <div class="caption frag"><span class="en">Rafid's pain from slide 2 — solved with one skill. Here's what it looks like:</span><span class="bn">স্লাইড ২-এর রাফিদের যন্ত্রণা — একটি স্কিল দিয়ে সমাধান। এটা দেখতে এরকম:</span></div>
+    <pre class="skill-file frag" style="margin-top:.35rem">
+<span class="yaml-key">---</span>
+<span class="yaml-key">name</span>: <span class="yaml-val">nop-conventions</span>
+<span class="yaml-key">description</span>: <span class="yaml-val hi">Load nop-station project conventions, folder structure, naming rules, and PR style guide</span>
+<span class="yaml-key">---</span>
+
+<span class="md-head"># nop-station Project Conventions</span>
+
+<span class="md-head">## Stack</span>
+- Backend: ASP.NET Core 8, PostgreSQL, Redis
+- Frontend: Vue 3 + TypeScript, Tailwind CSS
+- Tests: xUnit (backend), Vitest (frontend)
+
+<span class="md-head">## Folder structure</span>
+src/
+  Nop.Plugin.{Category}.{Name}/
+    Controllers/, Models/, Services/, Views/
+
+<span class="md-head">## PR description template</span>
+**What:** (one sentence)
+**Why:** (one sentence)
+**How tested:** (checklist)
+</pre>
+    <div class="caption frag"><span class="en">Now Rafid types <strong>/nop-conventions</strong> (or just says "follow our conventions") and Claude loads the full rulebook — every session, in two seconds.</span><span class="bn">এখন রাফিদ <strong>/nop-conventions</strong> টাইপ করে (বা শুধু বলে "আমাদের কনভেনশন অনুসরণ করো") এবং Claude সম্পূর্ণ রুলবুক লোড করে — প্রতিটি সেশনে, দুই সেকেন্ডে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13: GOTCHAS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red,#e0483a);color:#fff"><span class="en">GOTCHAS</span><span class="bn">সাবধানতা</span></div>
+    <h2 class="auto"><span class="en">Three Ways Skills Go Wrong</span><span class="bn">স্কিল তিনভাবে ব্যর্থ হয়</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:flex-start">
+      <div class="mini-panel pop" style="border-color:var(--red,#e0483a);width:clamp(170px,26vw,280px)">
+        <div class="strip" style="background:var(--red,#e0483a)"><span class="en">VAGUE DESCRIPTION</span><span class="bn">অস্পষ্ট বিবরণ</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.25vw,.82rem)">
+          <span class="en"><em>"Helps with coding tasks"</em> — matches almost everything. The skill either fires when it shouldn't, or Claude can't distinguish it from three others and ignores all of them.</span>
+          <span class="bn"><em>"কোডিং কাজে সাহায্য করে"</em> — প্রায় সব কিছুর সাথে মেলে। স্কিল হয় ভুল সময়ে চালু হয়, অথবা Claude তিনটির মধ্যে পার্থক্য করতে পারে না এবং সবগুলো উপেক্ষা করে।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--red,#e0483a);width:clamp(170px,26vw,280px)">
+        <div class="strip" style="background:var(--red,#e0483a)"><span class="en">BLOATED BODY</span><span class="bn">ফোলা বডি</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.25vw,.82rem)">
+          <span class="en">A SKILL.md with 500 lines of context dumps the entire team wiki into one skill. Once invoked, it eats your whole context window and slows everything down. Move large assets to bundled files instead.</span>
+          <span class="bn">৫০০ লাইনের SKILL.md পুরো টিম উইকি একটি স্কিলে ঢেলে দেয়। ইনভোকেশনের পরে, এটা তোমার পুরো কনটেক্সট উইন্ডো খেয়ে ফেলে এবং সব ধীর করে দেয়। বড় অ্যাসেটগুলো বান্ডেল ফাইলে সরিয়ে দাও।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--red,#e0483a);width:clamp(170px,26vw,280px)">
+        <div class="strip" style="background:var(--red,#e0483a)"><span class="en">ONE SKILL = MANY JOBS</span><span class="bn">এক স্কিল = অনেক কাজ</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.25vw,.82rem)">
+          <span class="en">A "do-everything" skill with 12 sub-commands is hard to trigger reliably and hard to maintain. One skill should do one job, with a sharp, specific description.</span>
+          <span class="bn">১২টি সাব-কমান্ড সহ "সব-করো" স্কিল নির্ভরযোগ্যভাবে ট্রিগার করা এবং রক্ষণাবেক্ষণ করা কঠিন। এক স্কিল এক কাজ করবে, একটি তীক্ষ্ণ, নির্দিষ্ট বিবরণ সহ।</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.3rem">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">RIFAT</span>
+        <span class="en">"I made a skill called <em>'general helper'</em> with description <em>'helps when I need help'</em>. It literally never triggered."</span>
+        <span class="bn">"আমি <em>'general helper'</em> নামে একটি স্কিল বানিয়েছিলাম, বিবরণ <em>'যখন সাহায্য দরকার তখন সাহায্য করে'</em>। এটা আক্ষরিক অর্থেই কখনো ট্রিগার হয়নি।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14: SKILLS AT NOP-STATION ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#4992C1;color:#fff"><span class="en">IN PRACTICE</span><span class="bn">বাস্তবে</span></div>
+    <h2 class="auto"><span class="en">Rafid's Skill Library — Week 2</span><span class="bn">রাফিদের স্কিল লাইব্রেরি — সপ্তাহ ২</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:flex-start;flex-wrap:wrap;gap:.6rem;justify-content:center">
+      <div class="mini-panel pop" style="border-color:#4992C1;min-width:clamp(140px,22vw,230px)">
+        <div class="strip" style="background:#4992C1">/new-episode</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem)"><span class="en">Creates HTML slide deck — 10s instead of 10m setup.</span><span class="bn">HTML স্লাইড ডেক তৈরি করে — ১০ মিনিট সেটআপের বদলে ১০ সেকেন্ড।</span></div>
+      </div>
+      <div class="mini-panel pop" style="border-color:#4992C1;min-width:clamp(140px,22vw,230px)">
+        <div class="strip" style="background:#4992C1">/nop-conventions</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem)"><span class="en">Loads full project stack, folder rules, PR template.</span><span class="bn">সম্পূর্ণ প্রজেক্ট স্ট্যাক, ফোল্ডার নিয়ম, PR টেমপ্লেট লোড করে।</span></div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--amber);min-width:clamp(140px,22vw,230px)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)">/deploy-checklist</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem)"><span class="en">Runs pre-deploy steps: migrations, env var audit, smoke test list.</span><span class="bn">প্রি-ডিপ্লয় ধাপ চালায়: মাইগ্রেশন, এনভ ভেরিয়েবল অডিট, স্মোক টেস্ট লিস্ট।</span></div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--green);min-width:clamp(140px,22vw,230px)">
+        <div class="strip" style="background:var(--green)">/code-review</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem)"><span class="en">Reviews a diff against nop-station quality standards — security, perf, naming.</span><span class="bn">nop-station গুণমান মান অনুযায়ী diff রিভিউ করে — সিকিউরিটি, পার্ফ, নামকরণ।</span></div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Four skills. Zero context pasted. Mouneeta and Ankan got them all the moment Rafid committed the <code>.claude/skills/</code> folder to the repo.</span><span class="bn">চারটি স্কিল। শূন্য কনটেক্সট পেস্ট। রাফিদ <code>.claude/skills/</code> ফোল্ডার রেপোতে কমিট করার সাথে সাথে মৌনিতা এবং অঙ্কন সব পেয়ে গেল।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 15: THE DIALOGUE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">THE SHIFT</span><span class="bn">পরিবর্তন</span></div>
+    <h2 class="auto"><span class="en">From Re-explaining to Invoking</span><span class="bn">পুনরায় ব্যাখ্যা থেকে ইনভোকেশনে</span></h2>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">HABIB</span>
+        <span class="en">"I just opened a Claude session and typed <em>'set up a PR for the email validation feature following our conventions'</em>. It auto-loaded <strong>/nop-conventions</strong> without me doing anything. That was a first."</span>
+        <span class="bn">"আমি একটি Claude সেশন খুলে টাইপ করলাম <em>'আমাদের কনভেনশন অনুসরণ করে ইমেইল ভ্যালিডেশন ফিচারের জন্য একটি PR সেটআপ করো'</em>। আমি কিছু না করতেই এটা <strong>/nop-conventions</strong> অটো-লোড করল। এটা প্রথমবার।"</span>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.3rem">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">SHAZZAD</span>
+        <span class="en">"I added a <strong>/debug-postgres</strong> skill to my personal ~/.claude/skills folder — connection pooling checks I always forget. It's mine, not the team's, and it's there in every project I open."</span>
+        <span class="bn">"আমি আমার ব্যক্তিগত ~/.claude/skills ফোল্ডারে একটি <strong>/debug-postgres</strong> স্কিল যোগ করেছি — কানেকশন পুলিং চেক যা আমি সবসময় ভুলে যাই। এটা আমার, টিমের না, এবং আমি যে প্রজেক্টই খুলি সেখানে আছে।"</span>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Skills travel with the engineer (personal) or with the codebase (project). Both scopes coexist cleanly.</span><span class="bn">স্কিলগুলো ইঞ্জিনিয়ারের সাথে (ব্যক্তিগত) বা কোডবেসের সাথে (প্রজেক্ট) চলে। উভয় স্কোপ পরিষ্কারভাবে একসাথে থাকে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 16: BUILDING YOUR FIRST SKILL ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">YOUR TURN</span><span class="bn">তোমার পালা</span></div>
+    <h2 class="auto"><span class="en">Building Your First Skill — 5 Steps</span><span class="bn">তোমার প্রথম স্কিল তৈরি করা — ৫ ধাপ</span></h2>
+    <div class="disc-row frag">
+      <div class="disc-item" style="border-color:var(--green)">
+        <span class="badge" style="color:var(--green);min-width:30px;font-family:'Fraunces',serif;font-size:1.3em">1</span>
+        <div><span class="en">Find a task you paste context for more than twice a week.</span><span class="bn">এমন একটি কাজ খুঁজে নাও যার জন্য সপ্তাহে দুবারের বেশি কনটেক্সট পেস্ট করো।</span></div>
+      </div>
+      <div class="disc-item" style="border-color:var(--green)">
+        <span class="badge" style="color:var(--green);min-width:30px;font-family:'Fraunces',serif;font-size:1.3em">2</span>
+        <div><span class="en">Create <code style="font-family:monospace">.claude/skills/your-name/SKILL.md</code>.</span><span class="bn"><code style="font-family:monospace">.claude/skills/your-name/SKILL.md</code> তৈরি করো।</span></div>
+      </div>
+      <div class="disc-item" style="border-color:var(--green)">
+        <span class="badge" style="color:var(--green);min-width:30px;font-family:'Fraunces',serif;font-size:1.3em">3</span>
+        <div><span class="en">Write the YAML frontmatter: <code>name</code> (slug) and <code>description</code> (specific trigger phrase).</span><span class="bn">YAML ফ্রন্টম্যাটার লিখো: <code>name</code> (স্লাগ) এবং <code>description</code> (নির্দিষ্ট ট্রিগার বাক্য)।</span></div>
+      </div>
+      <div class="disc-item" style="border-color:var(--green)">
+        <span class="badge" style="color:var(--green);min-width:30px;font-family:'Fraunces',serif;font-size:1.3em">4</span>
+        <div><span class="en">Write the body as numbered steps — clear enough for a junior engineer to follow.</span><span class="bn">বডি নম্বরযুক্ত ধাপ হিসেবে লিখো — একজন জুনিয়র ইঞ্জিনিয়ার যথেষ্ট স্পষ্ট করে অনুসরণ করতে পারে।</span></div>
+      </div>
+      <div class="disc-item" style="border-color:var(--green)">
+        <span class="badge" style="color:var(--green);min-width:30px;font-family:'Fraunces',serif;font-size:1.3em">5</span>
+        <div><span class="en">Test both ways: type <code>/your-name</code> and then try a natural-language request that should match.</span><span class="bn">দুটো উপায়ে পরীক্ষা করো: <code>/your-name</code> টাইপ করো, তারপর একটি প্রাকৃতিক ভাষার রিকোয়েস্ট দিয়ে দেখো যা মিলে যাওয়া উচিত।</span></div>
+      </div>
+    </div>
+    <div class="caption frag amber"><span class="en">Total time to ship your first skill: 5 minutes. Total time saved over a quarter: hours.</span><span class="bn">প্রথম স্কিল পাঠানোর মোট সময়: ৫ মিনিট। এক কোয়ার্টারে মোট সাশ্রয় হওয়া সময়: ঘণ্টার পর ঘণ্টা।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 17: DARK WRAP-UP ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:#4992C1;color:#fff"><span class="en">THE SHIFT</span><span class="bn">পরিবর্তন</span></div>
+    <h2 class="auto" style="color:#fff;font-size:clamp(1.8rem,6vw,4rem)">
+      <span class="en">Claude started as a <span style="color:rgba(255,255,255,.4)">blank slate</span>.<br>Skills make it an <span style="color:#4992C1">apprentice who remembers.</span></span>
+      <span class="bn">Claude শুরু হয়েছিল একটি <span style="color:rgba(255,255,255,.4)">ফাঁকা স্লেট</span> হিসেবে।<br>স্কিলস এটাকে পরিণত করে একজন <span style="color:#4992C1">স্মৃতিধর শিক্ষানবিশে।</span></span>
+    </h2>
+    <div class="row frag" style="margin-top:.6rem">
+      <div class="mini-panel" style="background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.2)">
+        <div class="strip" style="background:rgba(255,255,255,.15);color:#fff"><span class="en">OLD RIFAT</span><span class="bn">পুরোনো রাফিদ</span></div>
+        <div class="bubble" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18);color:#fff;font-size:clamp(.68rem,1.35vw,.88rem)">
+          <span class="en">2 minutes per session explaining conventions.<br>× 3 sessions/day × 5 days = <strong style="color:rgba(255,100,100,.9)">30 min/week lost</strong>.</span>
+          <span class="bn">প্রতি সেশনে ২ মিনিট কনভেনশন ব্যাখ্যায়।<br>× ৩ সেশন/দিন × ৫ দিন = <strong style="color:rgba(255,100,100,.9)">৩০ মিনিট/সপ্তাহ নষ্ট</strong>।</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="background:rgba(255,255,255,.06);border-color:#4992C1">
+        <div class="strip" style="background:#4992C1"><span class="en">NEW RIFAT</span><span class="bn">নতুন রাফিদ</span></div>
+        <div class="bubble" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.18);color:#fff;font-size:clamp(.68rem,1.35vw,.88rem)">
+          <span class="en">One <code style="font-family:monospace">/nop-conventions</code>. Zero re-explaining.<br>The apprentice already knows the rules.</span>
+          <span class="bn">একটি <code style="font-family:monospace">/nop-conventions</code>। শূন্য পুনরায় ব্যাখ্যা।<br>শিক্ষানবিশ ইতিমধ্যে নিয়ম জানে।</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 18: WRAP-UP ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#4992C1;color:#fff"><span class="en">WRAP UP</span><span class="bn">সারসংক্ষেপ</span></div>
+    <h2 class="auto"><span class="en">Skills 101 — What You Now Know</span><span class="bn">স্কিলস ১০১ — তুমি এখন যা জানো</span></h2>
+    <div class="row frag" style="margin-top:.4rem;flex-wrap:wrap">
+      <span class="tag" style="border-color:#4992C1"><span class="en">SKILL.md</span><span class="bn">SKILL.md</span></span>
+      <span class="tag" style="border-color:var(--amber)"><span class="en">FRONTMATTER</span><span class="bn">ফ্রন্টম্যাটার</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">PROGRESSIVE DISCLOSURE</span><span class="bn">ক্রমিক প্রকাশ</span></span>
+      <span class="tag" style="border-color:var(--green)"><span class="en">AUTO-INVOKE</span><span class="bn">অটো-ইনভোক</span></span>
+      <span class="tag"><span class="en">PROJECT vs PERSONAL</span><span class="bn">প্রজেক্ট বনাম ব্যক্তিগত</span></span>
+    </div>
+    <div class="row frag" style="margin-top:.5rem;align-items:flex-start">
+      <div class="mini-panel pop" style="border-color:#4992C1;max-width:min(90vw,560px)">
+        <div class="strip" style="background:#4992C1"><span class="en">THE THREE RULES</span><span class="bn">তিনটি নিয়ম</span></div>
+        <div style="text-align:left;font-size:clamp(.67rem,1.3vw,.86rem);font-weight:600;line-height:1.9;padding:.35rem .2rem">
+          <div><span class="en">1. Description is the trigger — make it specific.</span><span class="bn">১. বিবরণই ট্রিগার — নির্দিষ্ট করো।</span></div>
+          <div><span class="en">2. Body loads only on invoke — keep it focused.</span><span class="bn">২. বডি শুধু ইনভোকেশনে লোড হয় — মনোযোগী রাখো।</span></div>
+          <div><span class="en">3. One skill, one job — never a Swiss army knife.</span><span class="bn">৩. এক স্কিল, এক কাজ — কখনো সুইস আর্মি ছুরি নয়।</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="char-summary frag">
+      <span class="en">Next → <strong>Episode 2:</strong> Context Engineering — Writing the Rulebook.<br>Mouneeta learns how to write a CLAUDE.md that makes every session aware of everything it needs — without ever being told.</span>
+      <span class="bn b">পরবর্তী → <strong>এপিসোড ২:</strong> কনটেক্সট ইঞ্জিনিয়ারিং — রুলবুক লেখা।<br>মৌনিতা শেখে কীভাবে এমন CLAUDE.md লিখতে হয় যা প্রতিটি সেশনকে দরকারের সব কিছু সম্পর্কে সচেতন করে — কখনো না বলেই।</span>
+    </div>
+  </div>
+</section>
+
+</main><!-- /deck -->
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<div class="hint">← → to navigate · space to advance</div>
+<script src="../../assets/deck.js"></script>
+<script data-goatcounter="https://jiteshsureka.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

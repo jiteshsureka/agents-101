@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Season 1 — Parallel Development with Agents · agents-101</title>
-<meta name="description" content="Season 1 covers parallel agent development: multiple sessions, parallel subagents, Claude workflows, and enterprise-grade async AI-assisted development.">
+<title>Season 2 — The Apprentice's Workshop · agents-101</title>
+<meta name="description" content="Season 2 teaches Claude your craft: Skills, Context Engineering, MCP & tools, and rolling skills out across your team — concept plus live builds.">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -65,7 +65,7 @@ body {
   box-shadow: var(--shadow-lg);
 }
 .season-hero::after {
-  content: "S1";
+  content: "S2";
   position: absolute; right: -1.5rem; bottom: -2rem;
   font-family: 'Fraunces', serif; font-weight: 700; font-size: 10rem;
   color: rgba(255,255,255,.05); line-height: 1; pointer-events: none;
@@ -80,12 +80,16 @@ body {
 .season-hero h1 {
   font-family: 'Fraunces', serif; font-weight: 700;
   font-size: clamp(2rem, 6vw, 3.8rem); line-height: 1.05;
-  letter-spacing: -.02em; color: #fff; margin-bottom: .8rem;
+  letter-spacing: -.02em; color: #fff; margin-bottom: .5rem;
 }
 .season-hero h1 .accent { color: var(--amber); }
+.season-hero .hero-tagline {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(1.3rem, 3vw, 2rem); color: var(--amber); margin-bottom: .8rem;
+}
 .season-hero p {
   font-size: clamp(.95rem, 2vw, 1.15rem); line-height: 1.6;
-  opacity: .88; max-width: 600px;
+  opacity: .88; max-width: 620px;
 }
 .season-meta {
   display: flex; flex-wrap: wrap; gap: .7rem; margin-top: 1.4rem;
@@ -97,32 +101,6 @@ body {
   border: 1.5px solid rgba(255,255,255,.25); border-radius: 999px;
   padding: .15em .85em;
 }
-
-/* ---- topics ---- */
-.topics-label {
-  font-family: 'Caveat', cursive; font-weight: 700;
-  font-size: clamp(1.1rem, 2.2vw, 1.5rem); letter-spacing: .06em;
-  color: rgba(17,23,44,.5); margin-bottom: .8rem;
-  align-self: flex-start; width: min(96vw, 1000px);
-}
-.topics {
-  display: grid; gap: clamp(.9rem, 2vw, 1.4rem);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
-  width: min(96vw, 1000px); margin-bottom: clamp(2rem,5vw,3rem);
-}
-.topic-card {
-  background: var(--paper); border: 2px solid var(--navy); border-radius: 18px;
-  padding: clamp(1rem, 2.2vw, 1.5rem); box-shadow: var(--shadow-sm);
-}
-.topic-card .topic-num {
-  font-family: 'Caveat', cursive; font-weight: 700;
-  font-size: 1.05rem; color: var(--amber); margin-bottom: .35rem;
-}
-.topic-card h3 {
-  font-family: 'Fraunces', serif; font-weight: 700;
-  font-size: clamp(1rem, 2vw, 1.28rem); letter-spacing: -.01em; margin-bottom: .3rem;
-}
-.topic-card p { font-size: clamp(.82rem, 1.7vw, .96rem); line-height: 1.5; color: rgba(17,23,44,.72); }
 
 /* ---- episodes grid ---- */
 .ep-label {
@@ -156,7 +134,7 @@ body {
 }
 .ep-card h2 {
   font-family: 'Fraunces', serif; font-weight: 700;
-  font-size: clamp(1.1rem, 2.2vw, 1.5rem); letter-spacing: -.01em; margin-bottom: .4rem;
+  font-size: clamp(1.1rem, 2.2vw, 1.45rem); letter-spacing: -.01em; margin-bottom: .4rem;
 }
 .ep-card p { font-size: clamp(.88rem, 1.8vw, 1rem); line-height: 1.5; color: rgba(17,23,44,.78); flex: 1; }
 .ep-meta { margin-top: .9rem; display: flex; align-items: center; gap: .6rem; }
@@ -166,29 +144,9 @@ body {
   border-radius: 999px; padding: .05em .7em;
 }
 .ep-go { margin-left: auto; font-family: 'Caveat', cursive; font-weight: 700; font-size: 1.15rem; color: var(--accent, var(--amber)); }
-.ep-card-link { text-decoration: none; display: contents; }
 a.ep-card { text-decoration: none; transition: transform .18s, box-shadow .18s; }
 a.ep-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-lg); }
 a.ep-card:focus-visible { outline: 3px solid var(--sky); outline-offset: 3px; }
-
-/* ---- coming soon banner ---- */
-.coming-soon-banner {
-  width: min(96vw, 1000px); background: var(--paper);
-  border: 2px dashed var(--navy); border-radius: 20px;
-  padding: clamp(1.4rem,3.5vw,2.2rem); text-align: center;
-  box-shadow: var(--shadow-sm); margin-bottom: clamp(2rem,5vw,3rem);
-}
-.coming-soon-banner h3 {
-  font-family: 'Fraunces', serif; font-weight: 700;
-  font-size: clamp(1.2rem, 2.6vw, 1.7rem); margin-bottom: .5rem;
-}
-.coming-soon-banner p { font-size: clamp(.9rem, 1.9vw, 1.05rem); color: rgba(17,23,44,.7); line-height: 1.5; }
-.coming-soon-banner .watch-badge {
-  display: inline-block; margin-top: 1rem;
-  font-family: 'Caveat', cursive; font-weight: 700; font-size: 1.1rem;
-  background: var(--amber); color: var(--navy); border: 2px solid var(--navy);
-  border-radius: 999px; padding: .2em 1.2em; box-shadow: var(--shadow-sm);
-}
 
 /* ---- footer ---- */
 footer.site {
@@ -205,22 +163,22 @@ footer.site a:hover { text-decoration: underline; }
 
 <div class="topbar">
   <a class="back" href="../">← Seasons</a>
-  <span class="breadcrumb"><a href="../../">agents-101</a> / <a href="../">Seasons</a> / Season 1</span>
+  <span class="breadcrumb"><a href="../../">agents-101</a> / <a href="../">Seasons</a> / Season 2</span>
 </div>
 
 <div class="page">
 
   <!-- Season Hero -->
   <div class="season-hero">
-    <span class="season-tag">SEASON 1</span>
-    <h1>Parallel Development <span class="accent">with Agents.</span></h1>
-    <p>How to run multiple agents simultaneously — across sessions, within a session, and across complex workflows — to multiply your team's throughput without multiplying chaos.</p>
+    <span class="season-tag">SEASON 2</span>
+    <h1>The Apprentice's <span class="accent">Workshop.</span></h1>
+    <p class="hero-tagline">Teaching Claude your craft.</p>
+    <p>Claude arrives as a brilliant but generic apprentice. Hand it a rulebook (context), teach it lessons (skills), give it tools (MCP), and train a whole guild (your team) — until it works like a master who knows your shop. Every episode: the concept, then a live build you can copy.</p>
     <div class="season-meta">
-      <span class="badge" style="background:rgba(46,175,125,.22);border-color:rgba(46,175,125,.5)">✓ Season Complete</span>
-      <span class="badge">🤖 Multi-Agent</span>
-      <span class="badge">⚡ Parallel Sessions</span>
-      <span class="badge">🔄 Claude Workflows</span>
-      <span class="badge">🏢 Enterprise Scale</span>
+      <span class="badge">📖 Skills</span>
+      <span class="badge">🧭 Context</span>
+      <span class="badge">🔌 MCP &amp; Tools</span>
+      <span class="badge">🏛️ Team Scale</span>
     </div>
   </div>
 
@@ -228,90 +186,93 @@ footer.site a:hover { text-decoration: underline; }
   <p class="ep-label">EPISODES</p>
 
   <div class="episodes">
-    <!-- No episodes yet — coming soon cards -->
-    <a class="ep-card" href="ep-1-why-parallel.html" style="--accent: #4992C1">
+
+    <a class="ep-card" href="ep-1-skills-101.html" style="--accent: #4992C1">
       <span class="ep-num">Ep 1</span>
-      <h2>Why Parallel? The Throughput Argument</h2>
-      <p>The mental model for parallel agent development — why sequential is the wrong default, and how to think in concurrent workstreams.</p>
+      <h2>Skills 101 — The Apprentice Arrives</h2>
+      <p>What a Skill actually is — the <code>SKILL.md</code> file, frontmatter, progressive disclosure, and how Claude decides when to invoke one. We dissect this repo's own <code>new-episode</code> skill.</p>
       <div class="ep-meta">
-        <span class="ep-chip">18 slides</span>
+        <span class="ep-chip">Live build</span>
         <span class="ep-go">Watch now →</span>
       </div>
     </a>
 
-    <a class="ep-card" href="ep-2-multiple-sessions-basics.html" style="--accent: #FBAF32">
+    <a class="ep-card" href="ep-2-context-engineering.html" style="--accent: #FBAF32">
       <span class="ep-num">Ep 2</span>
-      <h2>Multiple Sessions — The Basics</h2>
-      <p>How to structure work for parallel Claude Code sessions: worktrees, focused prompts, rotation cadence, and PR-per-session strategy.</p>
+      <h2>Context Engineering — Writing the Rulebook</h2>
+      <p>The <code>CLAUDE.md</code> hierarchy, memory files, project vs user instructions, and what to put where. We author a context rulebook for a sample project from scratch.</p>
       <div class="ep-meta">
-        <span class="ep-chip">22 slides</span>
+        <span class="ep-chip">Live build</span>
         <span class="ep-go">Watch now →</span>
       </div>
     </a>
 
-    <a class="ep-card" href="ep-3-spawning-subagents.html" style="--accent: #1A9ED7">
+    <a class="ep-card" href="ep-3-building-a-skill.html" style="--accent: #1A9ED7">
       <span class="ep-num">Ep 3</span>
-      <h2>Spawning Subagents — Inside One Session</h2>
-      <p>The Agent tool deep-dive: fan-out patterns, passing context, collecting results, and avoiding runaway subagent cost spirals.</p>
+      <h2>Building a Skill — The First Lesson</h2>
+      <p>Authoring anatomy — naming, descriptions that trigger correctly, and scoping. We build a brand-new skill end to end.</p>
       <div class="ep-meta">
-        <span class="ep-chip">22 slides</span>
+        <span class="ep-chip">Live build</span>
         <span class="ep-go">Watch now →</span>
       </div>
     </a>
 
-    <a class="ep-card" href="ep-4-cross-session-coordination.html" style="--accent: #6C5CE7">
+    <a class="ep-card" href="ep-4-progressive-disclosure.html" style="--accent: #6C5CE7">
       <span class="ep-num">Ep 4</span>
-      <h2>Cross-Session Coordination</h2>
-      <p>Patterns for agents in different sessions that need to share state — worktrees, shared memory files, and merge orchestration.</p>
+      <h2>Progressive Disclosure — Tools of the Trade</h2>
+      <p>Skill patterns — bundled scripts, reference files, multi-file skills, and the token economics of loading only what's needed. We refactor a fat skill into a lean one.</p>
       <div class="ep-meta">
-        <span class="ep-chip">20 slides</span>
+        <span class="ep-chip">Live build</span>
         <span class="ep-go">Watch now →</span>
       </div>
     </a>
 
-    <a class="ep-card" href="ep-5-claude-workflows.html" style="--accent: #2EAF7D">
+    <a class="ep-card" href="ep-5-mcp-and-tools.html" style="--accent: #2EAF7D">
       <span class="ep-num">Ep 5</span>
-      <h2>Claude Workflows &amp; Scheduled Agents</h2>
-      <p>Building always-on engineering automation: scheduled agents, hooks pipelines, and multi-step workflow definitions.</p>
+      <h2>MCP &amp; Tools — Reaching Beyond</h2>
+      <p>Connecting skills to the outside world — MCP servers, tool gating, and when to wrap an API as a tool. We wire a skill to a live MCP server.</p>
       <div class="ep-meta">
-        <span class="ep-chip">20 slides</span>
+        <span class="ep-chip">Live build</span>
         <span class="ep-go">Watch now →</span>
       </div>
     </a>
 
-    <a class="ep-card" href="ep-6-enterprise-safety.html" style="--accent: #E0483A">
+    <a class="ep-card" href="ep-6-skills-team-scale.html" style="--accent: #E0483A">
       <span class="ep-num">Ep 6</span>
-      <h2>Enterprise Safety &amp; Cost Controls</h2>
-      <p>Permissions, approval gates, spend guardrails, and observability for teams running agents at scale across multiple projects.</p>
+      <h2>Skills at Team Scale — Training the Guild</h2>
+      <p>Sharing, versioning, plugins, the marketplace, and shared org conventions. We package and distribute a skill across a team.</p>
       <div class="ep-meta">
-        <span class="ep-chip">18 slides</span>
+        <span class="ep-chip">Live build</span>
         <span class="ep-go">Watch now →</span>
       </div>
     </a>
 
-    <a class="ep-card" href="ep-bonus-agent-swarms.html" style="--accent: #FF6B35">
-      <span class="ep-num" style="font-size:1.1rem;">Bonus</span>
-      <h2>Agent Swarms</h2>
-      <p>Agent Teams with mailbox + task board, dynamic workflows spawning hundreds of parallel subagents, the GAN pattern, and cost controls at swarm scale.</p>
+    <a class="ep-card" href="ep-7-skills-in-practice.html" style="--accent: #FF6B35">
+      <span class="ep-num">Ep 7</span>
+      <h2>Skills in Practice — Master at Work</h2>
+      <p>Everything applied to real nop-station nopCommerce and daily dev workflows. We build a production skill the team will actually use.</p>
       <div class="ep-meta">
-        <span class="ep-chip">18 slides</span>
+        <span class="ep-chip">Live build</span>
+        <span class="ep-go">Watch now →</span>
+      </div>
+    </a>
+
+    <a class="ep-card" href="ep-bonus-autonomous-workshop.html" style="--accent: #8B5CF6">
+      <span class="ep-num" style="font-size:1.1rem;">Bonus</span>
+      <h2>Skills + Subagents + Hooks — The Autonomous Workshop</h2>
+      <p>Composing it all into hands-off workflows — skills calling subagents, hooks enforcing the rules. A self-running pipeline from the season's pieces.</p>
+      <div class="ep-meta">
+        <span class="ep-chip">Live build</span>
         <span class="ep-go">Watch now →</span>
       </div>
     </a>
 
   </div>
 
-  <!-- Next season teaser -->
-  <a class="coming-soon-banner" href="../season-2/" style="display:block;text-decoration:none;color:inherit;border-color:#6C5CE7;transition:transform .15s,box-shadow .15s" onmouseover="this.style.transform='translateY(-3px)';this.style.boxShadow='var(--shadow-md)'" onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow-sm)'">
-    <h3>Next → Season 2: The Apprentice's Workshop</h3>
-    <p>Teaching Claude your craft — Skills, Context Engineering, MCP &amp; tools, and rolling it all out across your team.</p>
-    <span class="watch-badge" style="background:#6C5CE7;color:#fff;border-color:#6C5CE7">Start Season 2 →</span>
-  </a>
-
   <footer class="site">
-    agents-101 · Season 1 ·
-    <a href="../">Seasons</a> ·
+    agents-101 · Season 2 ·
     <a href="../../">Home</a> ·
+    <a href="../">Seasons</a> ·
     <a href="https://github.com/jiteshsureka/agents-101">GitHub</a> ·
     <a href="https://www.nop-station.com">nop-station</a>
   </footer>

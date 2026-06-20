@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S2·E7 — Skills in Practice: Master at Work · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+.pain-chip {
+  display: inline-flex; align-items: center; gap: .45rem;
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.85rem, 1.8vw, 1.15rem);
+  background: var(--paper); border: 2.5px solid #FF6B35;
+  color: #FF6B35; border-radius: 14px;
+  padding: .3em .85em; box-shadow: 0 2px 8px rgba(255,107,53,.15);
+}
+.pain-grid {
+  display: flex; flex-wrap: wrap; gap: .7rem;
+  justify-content: center; max-width: min(92vw, 820px);
+}
+.code-block {
+  text-align: left; font-family: 'Courier New', Courier, monospace;
+  font-size: clamp(.62rem, 1.3vw, .82rem);
+  background: var(--navy); color: #e8f0fe;
+  border-radius: 14px; padding: clamp(.7rem, 2vw, 1.2rem) clamp(.9rem, 2.2vw, 1.5rem);
+  line-height: 1.7; max-width: min(90vw, 820px); width: 100%;
+  box-shadow: 0 4px 18px rgba(17,23,44,.18);
+  border: 2px solid rgba(255,255,255,.08);
+  overflow-x: auto; white-space: pre;
+}
+.code-block .c-comment { color: #7ec8a4; }
+.code-block .c-key    { color: #79b8ff; }
+.code-block .c-str    { color: #f1c40f; }
+.code-block .c-accent { color: #FF6B35; font-weight: 700; }
+.flow-step {
+  display: flex; align-items: center; gap: .5rem;
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.8rem, 1.7vw, 1.1rem);
+  background: var(--paper); border: 2px solid var(--navy);
+  border-radius: 12px; padding: .32em .9em;
+  box-shadow: 0 2px 6px rgba(17,23,44,.08);
+}
+.flow-step.accent { border-color: #FF6B35; color: #FF6B35; }
+.flow-step.green  { border-color: var(--green); color: var(--green); }
+.flow-row {
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: .4rem; justify-content: center;
+  max-width: min(92vw, 900px);
+}
+.flow-arr {
+  font-family: 'Caveat', cursive; font-size: 1.3rem; opacity: .55;
+}
+.before-after-grid {
+  display: flex; gap: clamp(.7rem, 2vw, 1.4rem);
+  flex-wrap: wrap; justify-content: center; width: 100%;
+}
+.ba-panel {
+  background: var(--paper); border: 2.5px solid var(--navy);
+  border-radius: 18px; padding: clamp(.6rem, 1.6vw, 1rem) clamp(.8rem, 2vw, 1.3rem);
+  min-width: clamp(155px, 22vw, 260px); flex: 1;
+  box-shadow: 0 3px 12px rgba(17,23,44,.09);
+}
+.ba-panel.good { border-color: var(--green); }
+.ba-panel .ba-label {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.82rem, 1.6vw, 1rem);
+  padding: .22em .7em; border-radius: 8px;
+  display: inline-block; margin-bottom: .5rem;
+  background: var(--navy); color: #fff;
+}
+.ba-panel.good .ba-label { background: var(--green); }
+.ba-row {
+  font-size: clamp(.62rem, 1.25vw, .82rem); font-weight: 600;
+  line-height: 1.95; padding: .1rem 0;
+}
+.gotcha-list {
+  list-style: none; display: flex; flex-direction: column;
+  gap: .5rem; max-width: min(88vw, 680px); width: 100%;
+}
+.gotcha-list li {
+  display: flex; align-items: flex-start; gap: .6rem;
+  font-size: clamp(.72rem, 1.45vw, .92rem); font-weight: 600;
+  padding: .45em .9em; border-radius: 12px;
+  background: rgba(255,107,53,.07); border: 2px solid #FF6B35;
+  line-height: 1.55;
+}
+.gotcha-list li .gi { font-size: 1.1em; flex-shrink: 0; margin-top: .05em; }
+</style>
+</head>
+<body data-ep-label="S2·E7 · Skills in Practice" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ============ SLIDE 1: TITLE ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:#FF6B35;color:#fff"><span class="en">SEASON 2 · EPISODE 7</span><span class="bn">সিজন ২ · এপিসোড ৭</span></div>
+    <h1 class="auto" style="color:#fff;font-size:clamp(2.4rem,9.5vw,5.8rem);line-height:.9">
+      <span class="en">SKILLS IN <span style="color:#FF6B35">PRACTICE</span></span>
+      <span class="bn" style="color:#fff">স্কিলস <span style="color:#FF6B35">প্র্যাকটিসে</span></span>
+    </h1>
+    <p class="auto" style="color:rgba(255,255,255,.6);font-family:'Caveat',cursive;font-weight:700;font-size:clamp(1rem,2.3vw,1.5rem);letter-spacing:.06em"><span class="en">MASTER AT WORK</span><span class="bn">মাস্টার কাজে</span></p>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,720px)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">RIFAT · SENIOR ENGINEER, NOP-STATION</span>
+        <span class="en">"We've learned Skills, CLAUDE.md tuning, and MCP tools separately. Today we wire them together on real nopCommerce work — and measure what actually changes."</span>
+        <span class="bn">"আমরা আলাদাভাবে Skills, CLAUDE.md টিউনিং, এবং MCP টুলস শিখেছি। আজকে আমরা সেগুলো আসল nopCommerce কাজে একসাথে যুক্ত করব — এবং পরিবর্তনটা মাপব।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2: HOOK — EVERYTHING COMES TOGETHER ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#FF6B35;color:#fff"><span class="en">THE SEASON SO FAR</span><span class="bn">এই সিজনে এখন পর্যন্ত</span></div>
+    <h2 class="auto"><span class="en">All the Pieces. Now Combine Them.</span><span class="bn">সব টুকরো। এবার একত্রিত করো।</span></h2>
+    <div class="row frag" style="margin-top:.5rem;align-items:stretch;gap:.9rem">
+      <div class="mini-panel pop" style="border-color:var(--blue)">
+        <div class="strip" style="background:var(--blue)"><span class="en">SKILLS</span><span class="bn">স্কিলস</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)"><span class="en">Reusable prompts your team runs like slash commands — consistent, typed, repeatable.</span><span class="bn">পুনর্ব্যবহারযোগ্য প্রম্পট যা টিম স্ল্যাশ কমান্ডের মতো চালায় — সামঞ্জস্যপূর্ণ, টাইপড, পুনরাবৃত্তিযোগ্য।</span></div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)"><span class="en">CONTEXT</span><span class="bn">কনটেক্সট</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)"><span class="en">A tuned CLAUDE.md gives every session shared knowledge of your stack, conventions, and guardrails.</span><span class="bn">টিউন করা CLAUDE.md প্রতিটি সেশনকে স্ট্যাক, কনভেনশন, এবং গার্ডরেলের শেয়ার্ড জ্ঞান দেয়।</span></div>
+      </div>
+      <div class="mini-panel pop" style="border-color:#FF6B35">
+        <div class="strip" style="background:#FF6B35"><span class="en">MCP TOOLS</span><span class="bn">MCP টুলস</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)"><span class="en">Live data from Jira, GitHub, and your CI pipeline — Claude acts on real tickets, not toy examples.</span><span class="bn">Jira, GitHub, এবং CI পাইপলাইন থেকে লাইভ ডেটা — Claude আসল টিকেটে কাজ করে, কাল্পনিক উদাহরণে নয়।</span></div>
+      </div>
+    </div>
+    <div class="caption frag amber"><span class="en">Individually useful. Together — a production workflow Rafid's team runs every day at nop-station.</span><span class="bn">আলাদাভাবে দরকারী। একসাথে — একটি প্রোডাকশন ওয়ার্কফ্লো যা রাফিদের টিম nop-station-এ প্রতিদিন চালায়।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3: REAL PAINS AT NOP-STATION ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--navy);color:#fff"><span class="en">THE REAL PAINS</span><span class="bn">আসল সমস্যাগুলো</span></div>
+    <h2 class="auto"><span class="en">What Slows the Team Down Every Sprint</span><span class="bn">প্রতি স্প্রিন্টে টিমকে যা ধীর করে</span></h2>
+    <div class="pain-grid frag">
+      <div class="pain-chip">🏗️ <span class="en">Plugin scaffolding</span><span class="bn">প্লাগইন স্ক্যাফোল্ডিং</span></div>
+      <div class="pain-chip">📝 <span class="en">Release notes</span><span class="bn">রিলিজ নোটস</span></div>
+      <div class="pain-chip">🔀 <span class="en">Migration checks</span><span class="bn">মাইগ্রেশন চেক</span></div>
+      <div class="pain-chip">🔍 <span class="en">PR review</span><span class="bn">PR রিভিউ</span></div>
+      <div class="pain-chip">🎫 <span class="en">Ticket triage</span><span class="bn">টিকেট ট্রিয়াজ</span></div>
+    </div>
+    <div class="row frag" style="margin-top:.6rem;align-items:flex-start;gap:.9rem">
+      <div class="mini-panel pop">
+        <svg class="char" style="margin:.3rem 0"><use href="#ch-dev"/></svg>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="who c-blue">HABIB</span>
+          <span class="en">"Every new plugin I start from scratch. I always forget the RouteProvider interface signature."</span>
+          <span class="bn">"প্রতিটি নতুন প্লাগইনে আমি স্ক্র্যাচ থেকে শুরু করি। RouteProvider ইন্টারফেস সিগনেচার আমি সবসময় ভুলে যাই।"</span>
+        </div>
+      </div>
+      <div class="mini-panel pop">
+        <svg class="char" style="margin:.3rem 0"><use href="#ch-agent"/></svg>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="who c-sky">SHAZZAD</span>
+          <span class="en">"Migration review before every deploy takes 40 minutes of manual scanning. There has to be a better way."</span>
+          <span class="bn">"প্রতিটি ডিপ্লয়ের আগে মাইগ্রেশন রিভিউতে ৪০ মিনিট ম্যানুয়াল স্ক্যান লাগে। একটা ভালো উপায় থাকতে হবে।"</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Each pain is a candidate for a skill. One skill per repeated workflow. Five pains → five skill files.</span><span class="bn">প্রতিটি সমস্যা একটি স্কিলের প্রার্থী। প্রতিটি পুনরাবৃত্ত ওয়ার্কফ্লোর জন্য একটি স্কিল। পাঁচটি সমস্যা → পাঁচটি স্কিল ফাইল।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: THE PLAN ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">THE PLAN</span><span class="bn">পরিকল্পনা</span></div>
+    <h2 class="auto"><span class="en">Map Pains → Skills → Tools → CLAUDE.md</span><span class="bn">সমস্যা → স্কিল → টুলস → CLAUDE.md</span></h2>
+    <div class="row frag" style="margin-top:.5rem;align-items:stretch;gap:.9rem;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel pop" style="min-width:clamp(130px,18vw,210px)">
+        <div class="strip"><span class="en">PAIN → SKILL</span><span class="bn">সমস্যা → স্কিল</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.82rem)">
+          <span class="en">plugin-scaffold<br>pr-summary<br>migration-check<br>release-notes<br>ticket-triage</span>
+          <span class="bn b">plugin-scaffold<br>pr-summary<br>migration-check<br>release-notes<br>ticket-triage</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="min-width:clamp(130px,18vw,210px);border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)"><span class="en">CONTEXT</span><span class="bn">কনটেক্সট</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.82rem)">
+          <span class="en">Tuned CLAUDE.md<br>— ASP.NET Core<br>— EF Core patterns<br>— Plugin conventions<br>— DO NOTs</span>
+          <span class="bn b">টিউন করা CLAUDE.md<br>— ASP.NET Core<br>— EF Core প্যাটার্ন<br>— প্লাগইন কনভেনশন<br>— নিষেধাজ্ঞা</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="min-width:clamp(130px,18vw,210px);border-color:#FF6B35">
+        <div class="strip" style="background:#FF6B35"><span class="en">MCP BRIDGE</span><span class="bn">MCP সেতু</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.82rem)">
+          <span class="en">Jira MCP tool<br>— read tickets<br>— update status<br>— link PRs<br>— add comments</span>
+          <span class="bn b">Jira MCP টুল<br>— টিকেট পড়া<br>— স্ট্যাটাস আপডেট<br>— PR লিংক করা<br>— কমেন্ট যোগ করা</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">The three pillars lock together: Context ensures Claude knows the codebase; Skills drive repeatable tasks; MCP connects to live data.</span><span class="bn">তিনটি স্তম্ভ একসাথে লক হয়: Context নিশ্চিত করে Claude কোডবেস জানে; Skills পুনরাবৃত্ত কাজ চালায়; MCP লাইভ ডেটার সাথে সংযুক্ত করে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5: LIVE BUILD 1 — SKILL.md ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#FF6B35;color:#fff"><span class="en">LIVE BUILD 1 · SKILL.md</span><span class="bn">লাইভ বিল্ড ১ · SKILL.md</span></div>
+    <h2 class="auto"><span class="en">Writing the plugin-scaffold Skill</span><span class="bn">plugin-scaffold স্কিল লেখা</span></h2>
+    <div class="code-block frag">
+<span class="c-comment"># .claude/skills/plugin-scaffold/SKILL.md</span>
+<span class="c-key">## Trigger</span>
+<span class="c-str">/plugin-scaffold</span>
+
+<span class="c-key">## Args</span>
+<span class="c-str">$PLUGIN_NAME</span>   <span class="c-comment"># e.g. NopStation.Plugin.Payments.StripeConnect</span>
+<span class="c-str">$AUTHOR</span>        <span class="c-comment"># e.g. nop-station</span>
+<span class="c-str">$VERSION</span>       <span class="c-comment"># e.g. 4.80.0</span>
+
+<span class="c-key">## Task</span>
+Generate a valid nopCommerce plugin folder structure at
+<span class="c-str">src/Plugins/$PLUGIN_NAME/</span> containing:
+
+1. <span class="c-accent">Description.txt</span>  — SystemName, FriendlyName, Author, Version, SupportedVersions
+2. <span class="c-accent">$PLUGIN_NAME.csproj</span>  — targets net8.0, refs Nop.Core + Nop.Services
+3. <span class="c-accent">Plugin.cs</span>  — class implementing <span class="c-str">BasePlugin, IPlugin</span>
+   · InstallAsync / UninstallAsync with localisation resource cleanup
+4. <span class="c-accent">Infrastructure/RouteProvider.cs</span>  — implements <span class="c-str">IRouteProvider</span>
+   · Order = 1, empty RegisterRoutes body
+5. <span class="c-accent">Controllers/</span>  — placeholder controller inheriting BasePluginController
+
+<span class="c-key">## Constraints</span>
+- Use <span class="c-str">NopCommerce 4.80</span> API surface only
+- Async/await throughout; NO synchronous DB calls
+- Follow naming in CLAUDE.md section "Plugin conventions"
+- Do NOT generate migration files — those come from /migration-check
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: LIVE BUILD 1 — GENERATED STRUCTURE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#FF6B35;color:#fff"><span class="en">LIVE BUILD 1 · OUTPUT</span><span class="bn">লাইভ বিল্ড ১ · আউটপুট</span></div>
+    <h2 class="auto"><span class="en">What /plugin-scaffold Generates</span><span class="bn">/plugin-scaffold কী তৈরি করে</span></h2>
+    <div class="code-block frag">
+<span class="c-comment"># Running: /plugin-scaffold NopStation.Plugin.Payments.StripeConnect nop-station 4.80.0</span>
+
+src/Plugins/NopStation.Plugin.Payments.StripeConnect/
+├── <span class="c-accent">Description.txt</span>
+│     SystemName: NopStation.Plugin.Payments.StripeConnect
+│     FriendlyName: Stripe Connect
+│     Author: nop-station
+│     Version: 1.0.0
+│     SupportedVersions: 4.80
+├── <span class="c-accent">NopStation.Plugin.Payments.StripeConnect.csproj</span>
+│     &lt;TargetFramework&gt;net8.0&lt;/TargetFramework&gt;
+│     &lt;PackageReference Include="Nop.Core" /&gt;
+│     &lt;PackageReference Include="Nop.Services" /&gt;
+├── <span class="c-accent">Plugin.cs</span>
+│     public class StripeConnectPlugin : BasePlugin, IPaymentMethod
+│     { ... InstallAsync() ... UninstallAsync() ... }
+├── Infrastructure/
+│   └── <span class="c-accent">RouteProvider.cs</span>
+│         public class RouteProvider : IRouteProvider
+│         { public int Priority =&gt; 1; ... }
+└── Controllers/
+    └── <span class="c-accent">StripeConnectController.cs</span>
+          [AutoValidateAntiforgeryToken]
+          public class StripeConnectController : BasePluginController { }
+    </div>
+    <div class="caption frag"><span class="en">Consistent every time. No missed interfaces. No wrong namespace. Under 10 seconds from /plugin-scaffold to compilable skeleton.</span><span class="bn">প্রতিবার সামঞ্জস্যপূর্ণ। কোনো মিস করা ইন্টারফেস নেই। ভুল নেমস্পেস নেই। /plugin-scaffold থেকে কম্পাইলযোগ্য স্কেলিটন পর্যন্ত ১০ সেকেন্ডের কম।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: LIVE BUILD 2 — CLAUDE.md ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">LIVE BUILD 2 · CLAUDE.md</span><span class="bn">লাইভ বিল্ড ২ · CLAUDE.md</span></div>
+    <h2 class="auto"><span class="en">Tuning Context for the nopCommerce Codebase</span><span class="bn">nopCommerce কোডবেসের জন্য Context টিউনিং</span></h2>
+    <div class="code-block frag">
+<span class="c-comment"># CLAUDE.md — nop-station nopCommerce projects</span>
+
+<span class="c-key">## Stack</span>
+- ASP.NET Core 8  · Razor Pages + MVC areas
+- Entity Framework Core 8  · Code-first migrations
+- Nop.Core / Nop.Services / Nop.Web.Framework
+- xUnit + Moq for tests  · GitHub Actions CI
+
+<span class="c-key">## Build &amp; test</span>
+<span class="c-str">dotnet build src/NopStation.sln</span>
+<span class="c-str">dotnet test src/Tests/ --logger trx</span>
+
+<span class="c-key">## Plugin conventions</span>
+- SystemName format: <span class="c-accent">NopStation.Plugin.{Area}.{Name}</span>
+- Always implement <span class="c-str">BasePlugin</span>; area-specific interface second
+- DB access via <span class="c-str">IRepository&lt;T&gt;</span> — NEVER use DbContext directly
+- Service classes go in <span class="c-str">Services/</span>; keep controllers thin
+- Localization via <span class="c-str">ILocalizationService</span> — no hardcoded strings
+
+<span class="c-key">## DO NOT</span>
+- Synchronous IO — always async/await
+- Raw SQL strings — use LINQ or IRepository
+- Skip InstallAsync resource registration
+- Modify core Nop.* source files
+- Add &lt;Nullable&gt;disable&lt;/Nullable&gt; to .csproj
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8: DAILY FLOW — THE LOOP ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">DAILY FLOW</span><span class="bn">দৈনিক ফ্লো</span></div>
+    <h2 class="auto"><span class="en">One Ticket, Start to PR — Fully Skill-Driven</span><span class="bn">একটি টিকেট, শুরু থেকে PR — সম্পূর্ণ স্কিল-চালিত</span></h2>
+    <div class="flow-row frag">
+      <div class="flow-step accent">🎫 <span class="en">Jira MCP: fetch ticket</span><span class="bn">Jira MCP: টিকেট আনো</span></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-step"><span class="en">git checkout -b feature/NP-{id}</span><span class="bn">নতুন ব্র্যাঞ্চ তৈরি</span></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-step accent">🏗️ <span class="en">/plugin-scaffold</span><span class="bn">/plugin-scaffold</span></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-step"><span class="en">Implement feature</span><span class="bn">ফিচার ইমপ্লিমেন্ট</span></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-step accent">🔀 <span class="en">/migration-check</span><span class="bn">/migration-check</span></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-step green">📋 <span class="en">/pr-summary</span><span class="bn">/pr-summary</span></div>
+      <div class="flow-arr">→</div>
+      <div class="flow-step green">✅ <span class="en">Open PR + update Jira</span><span class="bn">PR খোলো + Jira আপডেট</span></div>
+    </div>
+    <div class="caption frag amber"><span class="en">No ad-hoc prompts. No forgotten steps. Every engineer on the team runs this same loop — with the same quality bar.</span><span class="bn">কোনো তাৎক্ষণিক প্রম্পট নেই। কোনো ভুলে যাওয়া ধাপ নেই। টিমের প্রতিটি ইঞ্জিনিয়ার এই একই লুপ চালায় — একই মান নিয়ে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9: FLOW WALK-THROUGH ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">WALK-THROUGH</span><span class="bn">ওয়াক-থ্রু</span></div>
+    <h2 class="auto"><span class="en">Rafid, Mouneeta &amp; Ankan Run the Loop</span><span class="bn">রাফিদ, মৌনিতা ও অঙ্কন লুপ চালায়</span></h2>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">RIFAT</span>
+        <span class="en">"Morning standup done. I ask Claude: <em>/jira-fetch NP-4421</em>. It reads the ticket, finds the acceptance criteria, opens the branch."</span>
+        <span class="bn">"সকালের স্ট্যান্ডআপ শেষ। আমি Claude-কে বলি: <em>/jira-fetch NP-4421</em>। এটি টিকেট পড়ে, গ্রহণযোগ্যতার মানদণ্ড খুঁজে পায়, ব্র্যাঞ্চ খোলে।"</span>
+      </div>
+    </div>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">HABIB</span>
+        <span class="en">"I run <em>/plugin-scaffold</em> — 12 files generated in 8 seconds. I jump straight to the business logic. No more copy-paste from last month's plugin."</span>
+        <span class="bn">"আমি <em>/plugin-scaffold</em> চালাই — ৮ সেকেন্ডে ১২টি ফাইল তৈরি। আমি সরাসরি বিজনেস লজিকে যাই। গত মাসের প্লাগইন থেকে কপি-পেস্ট আর নয়।"</span>
+      </div>
+    </div>
+    <div class="panel frag pop">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who" style="color:#FF6B35">SHAZZAD</span>
+        <span class="en">"Before pushing I run <em>/migration-check</em>. It flags a missing index on OrderItems — caught before it hit staging. Then <em>/pr-summary</em> writes the description."</span>
+        <span class="bn">"পুশ করার আগে আমি <em>/migration-check</em> চালাই। এটি OrderItems-এ একটি মিসিং ইন্ডেক্স ফ্ল্যাগ করে — স্টেজিংয়ে যাওয়ার আগেই ধরা পড়ে। তারপর <em>/pr-summary</em> বিবরণ লেখে।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: BEFORE / AFTER PAYOFF ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">THE PAYOFF</span><span class="bn">পুরস্কার</span></div>
+    <h2 class="auto"><span class="en">Before &amp; After — Measured</span><span class="bn">আগে ও পরে — পরিমাপ করা</span></h2>
+    <div class="before-after-grid frag">
+      <div class="ba-panel">
+        <div class="ba-label"><span class="en">BEFORE</span><span class="bn">আগে</span></div>
+        <div class="ba-row"><span class="en">⏱ Plugin skeleton: ~35 min manual</span><span class="bn">⏱ প্লাগইন স্কেলিটন: ~৩৫ মিনিট ম্যানুয়াল</span></div>
+        <div class="ba-row"><span class="en">🐛 Interface missed ~30% of the time</span><span class="bn">🐛 ইন্টারফেস মিস ~৩০% সময়</span></div>
+        <div class="ba-row"><span class="en">📝 PR desc: blank or "misc fixes"</span><span class="bn">📝 PR বিবরণ: ফাঁকা বা "misc fixes"</span></div>
+        <div class="ba-row"><span class="en">🔀 Migration review: 40 min/deploy</span><span class="bn">🔀 মাইগ্রেশন রিভিউ: ৪০ মিনিট/ডিপ্লয়</span></div>
+        <div class="ba-row"><span class="en">🎫 Jira update: often forgotten</span><span class="bn">🎫 Jira আপডেট: প্রায়ই ভুলে যাওয়া</span></div>
+      </div>
+      <div class="ba-panel good">
+        <div class="ba-label"><span class="en">AFTER</span><span class="bn">পরে</span></div>
+        <div class="ba-row" style="color:var(--green)"><span class="en">⚡ Plugin skeleton: &lt;10 sec via skill</span><span class="bn">⚡ প্লাগইন স্কেলিটন: &lt;১০ সেকেন্ড স্কিলে</span></div>
+        <div class="ba-row" style="color:var(--green)"><span class="en">✅ 0 missed interfaces — enforced</span><span class="bn">✅ ০ মিস করা ইন্টারফেস — এনফোর্সড</span></div>
+        <div class="ba-row" style="color:var(--green)"><span class="en">📄 PR desc: auto-generated, thorough</span><span class="bn">📄 PR বিবরণ: স্বয়ংক্রিয়, বিস্তারিত</span></div>
+        <div class="ba-row" style="color:var(--green)"><span class="en">🔍 Migration check: ~3 min automated</span><span class="bn">🔍 মাইগ্রেশন চেক: ~৩ মিনিট স্বয়ংক্রিয়</span></div>
+        <div class="ba-row" style="color:var(--green)"><span class="en">🎫 Jira: updated automatically via MCP</span><span class="bn">🎫 Jira: MCP-এ স্বয়ংক্রিয়ভাবে আপডেট</span></div>
+      </div>
+    </div>
+    <div class="caption frag amber"><span class="en">Consistency doesn't just save time — it eliminates a whole class of review comments about missing boilerplate.</span><span class="bn">সামঞ্জস্যতা শুধু সময় বাঁচায় না — এটি মিসিং বয়লারপ্লেট সম্পর্কে পর্যালোচনা মন্তব্যের পুরো শ্রেণি নির্মূল করে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11: ROLLOUT PLAN ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">ROLLOUT</span><span class="bn">রোলআউট</span></div>
+    <h2 class="auto"><span class="en">Getting the Team onto the Skills Suite</span><span class="bn">টিমকে স্কিলস স্যুটে আনা</span></h2>
+    <div class="row frag" style="margin-top:.5rem;align-items:stretch;gap:.9rem">
+      <div class="mini-panel pop">
+        <div class="strip" style="background:var(--sky)"><span class="en">STEP 1 · COMMIT</span><span class="bn">ধাপ ১ · কমিট</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">Commit all skill files and CLAUDE.md to <code>main</code>. Skills live in <code>.claude/skills/</code> — versioned with the codebase, reviewed in PRs like any other code.</span>
+          <span class="bn">সব স্কিল ফাইল এবং CLAUDE.md <code>main</code>-এ কমিট করুন। স্কিলগুলো <code>.claude/skills/</code>-এ থাকে — কোডবেসের সাথে ভার্সনড, PR-এ অন্য যেকোনো কোডের মতো রিভিউ করা হয়।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">STEP 2 · DOCUMENT</span><span class="bn">ধাপ ২ · ডকুমেন্ট</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">Add each skill to <code>skills/index.html</code>. A new engineer should know what's available within 60 seconds of joining the repo.</span>
+          <span class="bn">প্রতিটি স্কিল <code>skills/index.html</code>-এ যোগ করুন। একজন নতুন ইঞ্জিনিয়ার রিপোতে যোগ দেওয়ার ৬০ সেকেন্ডের মধ্যে কী আছে তা জানতে পারবেন।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop">
+        <div class="strip" style="background:var(--green)"><span class="en">STEP 3 · ENFORCE</span><span class="bn">ধাপ ৩ · এনফোর্স</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">Add a PR checklist item: "Did you run /migration-check and /pr-summary?" Link the skill index in the PR template — make the right thing the easy thing.</span>
+          <span class="bn">PR চেকলিস্ট আইটেম যোগ করুন: "/migration-check এবং /pr-summary চালিয়েছেন?" PR টেমপ্লেটে স্কিল ইন্ডেক্স লিংক করুন — সঠিক কাজটিকে সহজ করুন।</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,700px)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">RIFAT</span>
+        <span class="en">"We treat skills like we treat shared utilities. You wouldn't re-implement a sort algorithm — don't re-prompt a plugin scaffold either."</span>
+        <span class="bn">"আমরা স্কিলগুলোকে শেয়ার্ড ইউটিলিটির মতো ব্যবহার করি। আপনি সর্ট অ্যালগরিদম পুনরায় ইমপ্লিমেন্ট করবেন না — প্লাগইন স্ক্যাফোল্ড পুনরায় প্রম্পট করবেন না।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12: KEEPING SKILLS CURRENT ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">MAINTENANCE</span><span class="bn">রক্ষণাবেক্ষণ</span></div>
+    <h2 class="auto"><span class="en">Skills Age. Keep Them Fresh.</span><span class="bn">স্কিলস পুরনো হয়। তাজা রাখো।</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:stretch;gap:.8rem;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel pop" style="min-width:clamp(140px,20vw,230px)">
+        <div class="strip" style="background:var(--sky)"><span class="en">TRIGGER</span><span class="bn">ট্রিগার</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.82rem)">
+          <span class="en">nopCommerce version bump? IPlugin interface change? New EF Core migration API?<br><br>→ <strong>Open a "skills audit" ticket</strong> alongside the framework upgrade PR.</span>
+          <span class="bn">nopCommerce ভার্সন বাম্প? IPlugin ইন্টারফেস পরিবর্তন? নতুন EF Core মাইগ্রেশন API?<br><br>→ <strong>ফ্রেমওয়ার্ক আপগ্রেড PR-এর পাশে "skills audit" টিকেট খুলুন।</strong></span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="min-width:clamp(140px,20vw,230px)">
+        <div class="strip" style="background:var(--blue)"><span class="en">REVIEW CADENCE</span><span class="bn">রিভিউ ক্যাডেন্স</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.82rem)">
+          <span class="en">Monthly: run each skill against a test project. If the output no longer compiles or passes review — the skill needs updating, not the reviewer's time.</span>
+          <span class="bn">মাসিক: প্রতিটি স্কিল একটি টেস্ট প্রজেক্টে চালান। আউটপুট আর কম্পাইল না হলে বা রিভিউ পাস না করলে — স্কিল আপডেট করতে হবে, রিভিউয়ারের সময় নয়।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="min-width:clamp(140px,20vw,230px)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">OWNERSHIP</span><span class="bn">মালিকানা</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.25vw,.82rem)">
+          <span class="en">Assign each skill a primary owner in skills/index.html. PRs that change a plugin convention must also update the corresponding skill — enforced via CODEOWNERS.</span>
+          <span class="bn">skills/index.html-এ প্রতিটি স্কিলে একজন প্রাথমিক মালিক নির্ধারণ করুন। প্লাগইন কনভেনশন পরিবর্তন করা PR-কে অবশ্যই সংশ্লিষ্ট স্কিল আপডেট করতে হবে — CODEOWNERS দ্বারা এনফোর্সড।</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13: GOTCHAS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#FF6B35;color:#fff"><span class="en">GOTCHAS</span><span class="bn">সতর্কতা</span></div>
+    <h2 class="auto"><span class="en">Three Ways to Shoot Yourself</span><span class="bn">নিজেকে ক্ষতি করার তিনটি উপায়</span></h2>
+    <ul class="gotcha-list">
+      <li class="frag pop">
+        <span class="gi">⚡</span>
+        <div>
+          <strong><span class="en">Over-automating judgment calls</span><span class="bn">বিচার-নির্ভর সিদ্ধান্তকে অতিরিক্ত স্বয়ংক্রিয় করা</span></strong><br>
+          <span class="en">Some decisions — "is this API breaking?" — need a senior eye, not a skill. Skills work for repeatable structure, not nuanced judgment.</span>
+          <span class="bn">কিছু সিদ্ধান্ত — "এটা কি API ভাঙছে?" — একজন সিনিয়রের চোখ দরকার, স্কিল নয়। স্কিলগুলো পুনরাবৃত্ত কাঠামোর জন্য কাজ করে, সূক্ষ্ম বিচারের জন্য নয়।</span>
+        </div>
+      </li>
+      <li class="frag pop">
+        <span class="gi">📢</span>
+        <div>
+          <strong><span class="en">Skills that encode bad patterns</span><span class="bn">খারাপ প্যাটার্ন এনকোড করা স্কিলস</span></strong><br>
+          <span class="en">If your old code does synchronous DB calls, a scaffold skill will too — and generate that mistake at scale. Fix the pattern first, then codify it.</span>
+          <span class="bn">পুরানো কোড যদি সিঙ্ক্রোনাস DB কল করে, স্ক্যাফোল্ড স্কিলও তাই করবে — এবং সেই ভুলটি স্কেলে তৈরি করবে। আগে প্যাটার্ন ঠিক করুন, তারপর কোডিফাই করুন।</span>
+        </div>
+      </li>
+      <li class="frag pop">
+        <span class="gi">🔄</span>
+        <div>
+          <strong><span class="en">Stale skills on framework upgrade</span><span class="bn">ফ্রেমওয়ার্ক আপগ্রেডে পুরনো স্কিলস</span></strong><br>
+          <span class="en">nopCommerce 4.80 → 4.90 changed several plugin interfaces. If your skill still references old APIs, you'll get code that looks right but fails the build.</span>
+          <span class="bn">nopCommerce 4.80 → 4.90 বেশ কয়েকটি প্লাগইন ইন্টারফেস পরিবর্তন করেছে। স্কিল এখনও পুরানো API রেফার করলে, কোড ঠিক দেখাবে কিন্তু বিল্ড ব্যর্থ হবে।</span>
+        </div>
+      </li>
+    </ul>
+    <div class="caption frag amber"><span class="en">Skills scale what they encode — good patterns or bad. The quality of your team's habits is now the quality of your code output.</span><span class="bn">স্কিলগুলো যা এনকোড করে তা স্কেল করে — ভালো প্যাটার্ন বা খারাপ। এখন আপনার টিমের অভ্যাসের মান হলো আপনার কোড আউটপুটের মান।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14: THE MCP MOMENT ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#FF6B35;color:#fff"><span class="en">MCP IN ACTION</span><span class="bn">MCP কর্মে</span></div>
+    <h2 class="auto"><span class="en">Jira MCP — What It Changes</span><span class="bn">Jira MCP — এটি কী বদলায়</span></h2>
+    <div class="code-block frag">
+<span class="c-comment"># Without MCP — you paste context manually</span>
+You: "Here is NP-4421 acceptance criteria: [paste 200 words from Jira]
+     Implement the StripeConnect webhook handler described above."
+
+<span class="c-comment"># With Jira MCP — Claude reads the ticket itself</span>
+You: <span class="c-accent">/jira-fetch NP-4421</span>
+
+Claude: <span class="c-str">Fetched NP-4421 "StripeConnect Webhook Handler"
+  — Priority: High  · Sprint: 24  · Story points: 5
+  — Acceptance criteria: [3 items extracted]
+  — Linked issues: NP-4418 (depends on), NP-4399 (blocks)
+Ready. Running /plugin-scaffold NopStation.Plugin.Payments.StripeConnect...</span>
+    </div>
+    <div class="row frag" style="margin-top:.6rem;align-items:stretch;gap:.9rem">
+      <div class="mini-panel pop" style="border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">GAINED</span><span class="bn">অর্জিত</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.3vw,.83rem)">
+          <span class="en">No context drift. Claude reads the <em>actual</em> acceptance criteria, not your summary of it. Linked tickets surface automatically.</span>
+          <span class="bn">কোনো কনটেক্সট ড্রিফট নেই। Claude <em>আসল</em> গ্রহণযোগ্যতার মানদণ্ড পড়ে, আপনার সারসংক্ষেপ নয়। লিংক করা টিকেট স্বয়ংক্রিয়ভাবে ওঠে।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">ALSO GAINED</span><span class="bn">আরও অর্জিত</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.3vw,.83rem)">
+          <span class="en">After the PR is opened, Claude can comment on the Jira ticket and move it to "In Review" — the human touches Jira zero times.</span>
+          <span class="bn">PR খোলার পরে, Claude Jira টিকেটে মন্তব্য করতে পারে এবং "In Review"-তে সরাতে পারে — মানুষটি Jira শূন্যবার স্পর্শ করে।</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 15: MIGRATION-CHECK DEEP DIVE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--navy);color:#fff"><span class="en">SKILL DETAIL</span><span class="bn">স্কিল বিস্তারিত</span></div>
+    <h2 class="auto"><span class="en">What /migration-check Actually Does</span><span class="bn">/migration-check আসলে কী করে</span></h2>
+    <div class="code-block frag">
+<span class="c-comment"># /migration-check output — NP-4421 StripeConnect</span>
+
+<span class="c-accent">Scanning: src/Plugins/NopStation.Plugin.Payments.StripeConnect/Migrations/</span>
+
+<span class="c-key">✅ Migration naming</span>: <span class="c-str">20240618_AddStripeConnectWebhookTable.cs</span>  — OK
+<span class="c-key">✅ Up/Down symmetry</span>: both directions defined           — OK
+<span class="c-key">✅ No raw SQL strings</span>                                  — OK
+
+<span class="c-accent">⚠ WARNING  Missing index</span>:
+   Table: <span class="c-str">NopStationStripeWebhookEvent</span>
+   Column: <span class="c-str">ExternalEventId</span>  (queried in WebhookService.cs:L87)
+   Suggest: <span class="c-str">migrationBuilder.CreateIndex("IX_StripeWebhook_ExternalEventId", ...)</span>
+
+<span class="c-key">❌ Blocking</span>: Column <span class="c-str">ProcessedAtUtc</span> NOT NULL with no default —
+   will fail on existing rows during apply.
+   Fix: add <span class="c-str">.HasDefaultValueSql("GETUTCDATE()")</span>
+
+<span class="c-comment">2 issues found. Fix before pushing to staging.</span>
+    </div>
+    <div class="caption frag"><span class="en">Three minutes of automated scanning prevents a staging rollback and the scramble of an emergency hotfix.</span><span class="bn">তিন মিনিটের স্বয়ংক্রিয় স্ক্যানিং একটি স্টেজিং রোলব্যাক এবং জরুরি হটফিক্সের তাড়াহুড়ো প্রতিরোধ করে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 16: TEAM SCORECARD ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">SPRINT SCORECARD</span><span class="bn">স্প্রিন্ট স্কোরকার্ড</span></div>
+    <h2 class="auto"><span class="en">nop-station — 4 Weeks with the Skills Suite</span><span class="bn">nop-station — স্কিলস স্যুটের সাথে ৪ সপ্তাহ</span></h2>
+    <div class="before-after-grid frag">
+      <div class="ba-panel">
+        <div class="ba-label"><span class="en">WEEK 1 (manual)</span><span class="bn">সপ্তাহ ১ (ম্যানুয়াল)</span></div>
+        <div class="ba-row"><span class="en">Tickets closed: <strong>9</strong></span><span class="bn">টিকেট বন্ধ: <strong>৯</strong></span></div>
+        <div class="ba-row"><span class="en">Staging rollbacks: <strong>2</strong></span><span class="bn">স্টেজিং রোলব্যাক: <strong>২</strong></span></div>
+        <div class="ba-row"><span class="en">Review nits (boilerplate): <strong>14</strong></span><span class="bn">রিভিউ নিটস (বয়লারপ্লেট): <strong>১৪</strong></span></div>
+        <div class="ba-row"><span class="en">Jira updates missed: <strong>6</strong></span><span class="bn">Jira আপডেট মিস: <strong>৬</strong></span></div>
+        <div class="ba-row"><span class="en">Avg time ticket → PR: <strong>3.1 days</strong></span><span class="bn">গড় সময় টিকেট → PR: <strong>৩.১ দিন</strong></span></div>
+      </div>
+      <div class="ba-panel good">
+        <div class="ba-label"><span class="en">WEEK 4 (skills suite)</span><span class="bn">সপ্তাহ ৪ (স্কিলস স্যুট)</span></div>
+        <div class="ba-row" style="color:var(--green)"><span class="en">Tickets closed: <strong>16 (+78%)</strong></span><span class="bn">টিকেট বন্ধ: <strong>১৬ (+৭৮%)</strong></span></div>
+        <div class="ba-row" style="color:var(--green)"><span class="en">Staging rollbacks: <strong>0</strong></span><span class="bn">স্টেজিং রোলব্যাক: <strong>০</strong></span></div>
+        <div class="ba-row" style="color:var(--green)"><span class="en">Review nits (boilerplate): <strong>1</strong></span><span class="bn">রিভিউ নিটস (বয়লারপ্লেট): <strong>১</strong></span></div>
+        <div class="ba-row" style="color:var(--green)"><span class="en">Jira updates missed: <strong>0</strong></span><span class="bn">Jira আপডেট মিস: <strong>০</strong></span></div>
+        <div class="ba-row" style="color:var(--green)"><span class="en">Avg time ticket → PR: <strong>1.4 days</strong></span><span class="bn">গড় সময় টিকেট → PR: <strong>১.৪ দিন</strong></span></div>
+      </div>
+    </div>
+    <div class="caption frag amber"><span class="en">The biggest win wasn't throughput — it was zero staging rollbacks. Consistent tooling prevents whole categories of mistakes.</span><span class="bn">সবচেয়ে বড় জয় থ্রুপুট ছিল না — শূন্য স্টেজিং রোলব্যাক ছিল। সামঞ্জস্যপূর্ণ টুলিং ভুলের পুরো বিভাগ প্রতিরোধ করে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 17: WHEN SKILLS AREN'T ENOUGH ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--navy);color:#fff"><span class="en">THE CEILING</span><span class="bn">সীমা</span></div>
+    <h2 class="auto"><span class="en">What Skills Still Can't Replace</span><span class="bn">স্কিলস এখনও কী প্রতিস্থাপন করতে পারে না</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:stretch;gap:.9rem">
+      <div class="mini-panel pop" style="border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">JUDGMENT</span><span class="bn">বিচার</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.3vw,.83rem)">
+          <span class="en">"Is this architecture right for a high-traffic payment flow?" — Skills provide structure, not design wisdom.</span>
+          <span class="bn">"এই আর্কিটেকচার কি হাই-ট্রাফিক পেমেন্ট ফ্লোর জন্য ঠিক?" — স্কিলগুলো কাঠামো দেয়, ডিজাইন জ্ঞান নয়।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">NOVEL PROBLEMS</span><span class="bn">নতুন সমস্যা</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.3vw,.85rem)">
+          <span class="en">A one-off data migration with complex business rules — no skill template covers it. This is where senior engineers still earn their keep.</span>
+          <span class="bn">জটিল বিজনেস নিয়মসহ একটি এক-বারের ডেটা মাইগ্রেশন — কোনো স্কিল টেমপ্লেট এটি কভার করে না। এখানেই সিনিয়র ইঞ্জিনিয়াররা এখনও তাদের মূল্য প্রমাণ করেন।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">TEAM DYNAMICS</span><span class="bn">টিম ডায়নামিক্স</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.3vw,.83rem)">
+          <span class="en">A blocking disagreement on a product direction. Code reviews that catch conceptual problems. Culture, trust, and human collaboration remain human.</span>
+          <span class="bn">একটি পণ্যের দিক নিয়ে অবরোধকারী মতবিরোধ। ধারণাগত সমস্যা ধরা পড়া কোড রিভিউ। সংস্কৃতি, বিশ্বাস, এবং মানবিক সহযোগিতা মানবিকই থাকে।</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="max-width:min(88vw,700px)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who" style="color:#FF6B35">SHAZZAD</span>
+        <span class="en">"The skills suite freed 40% of my week. I spend that time on the problems that actually need thinking — architecture, tricky edge cases, customer conversations."</span>
+        <span class="bn">"স্কিলস স্যুট আমার সপ্তাহের ৪০% মুক্ত করেছে। সেই সময় আমি সমস্যাগুলোতে ব্যয় করি যেগুলোর আসলে চিন্তার প্রয়োজন — আর্কিটেকচার, জটিল এজ কেস, কাস্টমার কনভার্সেশন।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 18: WRAP-UP ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#FF6B35;color:#fff"><span class="en">WRAP UP</span><span class="bn">সারসংক্ষেপ</span></div>
+    <h2 class="auto"><span class="en">Skills in Practice — What You Now Own</span><span class="bn">স্কিলস প্র্যাকটিসে — এখন তোমার কাছে কী আছে</span></h2>
+    <div class="row frag" style="margin-top:.4rem;flex-wrap:wrap;justify-content:center">
+      <span class="tag" style="border-color:#FF6B35;color:#FF6B35"><span class="en">SCAFFOLD</span><span class="bn">স্ক্যাফোল্ড</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">TUNED CONTEXT</span><span class="bn">টিউনড কনটেক্সট</span></span>
+      <span class="tag" style="border-color:var(--blue)"><span class="en">MCP FLOW</span><span class="bn">MCP ফ্লো</span></span>
+      <span class="tag" style="border-color:var(--green)"><span class="en">MEASURED</span><span class="bn">পরিমাপ করা</span></span>
+    </div>
+    <div class="caption frag"><span class="en">Skills encode your team's best patterns and run them at the speed of a slash command. CLAUDE.md ensures every session starts with shared knowledge. MCP connects Claude to live data so humans touch routine plumbing zero times.</span><span class="bn">স্কিলগুলো আপনার টিমের সেরা প্যাটার্ন এনকোড করে এবং একটি স্ল্যাশ কমান্ডের গতিতে চালায়। CLAUDE.md নিশ্চিত করে প্রতিটি সেশন শেয়ার্ড জ্ঞান দিয়ে শুরু হয়। MCP Claude-কে লাইভ ডেটার সাথে সংযুক্ত করে তাই মানুষ রুটিন প্লাম্বিং শূন্যবার স্পর্শ করে।</span></div>
+    <div class="char-summary frag">
+      <span class="en">Next → <strong>Bonus Episode:</strong> Skills + Subagents + Hooks: The Autonomous Workshop.<br>When the skills run themselves — and how to keep humans in control.</span>
+      <span class="bn b">পরবর্তী → <strong>বোনাস এপিসোড:</strong> স্কিলস + সাবএজেন্টস + হুকস: অটোনোমাস ওয়ার্কশপ।<br>যখন স্কিলগুলো নিজেই চলে — এবং মানুষকে নিয়ন্ত্রণে রাখার উপায়।</span>
+    </div>
+  </div>
+</section>
+
+</main><!-- /deck -->
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<div class="hint">← → to navigate · space to advance</div>
+<script src="../../assets/deck.js"></script>
+<script data-goatcounter="https://jiteshsureka.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

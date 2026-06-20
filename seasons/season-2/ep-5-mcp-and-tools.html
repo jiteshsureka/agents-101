@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S2·E5 — MCP &amp; Tools: Reaching Beyond · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+.accent { color: #2EAF7D; }
+.bg-accent { background: #2EAF7D; }
+.border-accent { border-color: #2EAF7D; }
+
+.tool-grid {
+  display: flex; flex-wrap: wrap; gap: .7rem;
+  justify-content: center; max-width: min(90vw, 820px);
+}
+.tool-card {
+  background: var(--paper); border: 2.5px solid var(--navy);
+  border-radius: 16px; padding: clamp(.5rem,1.4vw,.9rem) clamp(.8rem,2vw,1.3rem);
+  text-align: center; min-width: clamp(120px,17vw,180px);
+  box-shadow: var(--shadow-sm);
+}
+.tool-card .t-icon { font-size: clamp(1.4rem,3vw,2rem); margin-bottom: .25rem; }
+.tool-card .t-name {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.85rem,1.8vw,1.2rem); display: block;
+}
+.tool-card .t-desc {
+  font-size: clamp(.58rem,1.1vw,.75rem); font-weight: 600;
+  color: rgba(17,23,44,.6); line-height: 1.5;
+}
+
+.mcp-loop {
+  display: flex; align-items: center; gap: .5rem;
+  flex-wrap: wrap; justify-content: center;
+  max-width: min(92vw, 880px);
+}
+.mcp-node {
+  background: var(--paper); border: 2.5px solid var(--navy);
+  border-radius: 14px; padding: .45em .9em;
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.82rem,1.8vw,1.2rem);
+  text-align: center; box-shadow: var(--shadow-sm);
+}
+.mcp-arr { font-size: 1.4rem; opacity: .55; font-family: 'Caveat', cursive; }
+
+.code-block {
+  background: #0d1117; color: #e6edf3;
+  border-radius: 14px; padding: clamp(.7rem,1.8vw,1.1rem) clamp(.9rem,2.2vw,1.4rem);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: clamp(.62rem,1.3vw,.84rem); line-height: 1.7;
+  text-align: left; max-width: min(90vw, 780px);
+  border: 2px solid rgba(255,255,255,.1);
+  box-shadow: var(--shadow-md); overflow-x: auto;
+  white-space: pre;
+}
+.code-block .kw  { color: #ff7b72; }
+.code-block .str { color: #a5d6ff; }
+.code-block .cmt { color: #8b949e; font-style: italic; }
+.code-block .fn  { color: #d2a8ff; }
+.code-block .num { color: #79c0ff; }
+
+.warn-list {
+  list-style: none; display: flex; flex-direction: column;
+  gap: .5rem; max-width: min(88vw, 680px); width: 100%;
+}
+.warn-list li {
+  background: var(--paper); border: 2px solid var(--navy);
+  border-radius: 12px; padding: .38em .85em;
+  font-weight: 600; font-size: clamp(.78rem,1.6vw,1rem);
+  display: flex; align-items: flex-start; gap: .5rem;
+  box-shadow: var(--shadow-sm); line-height: 1.55;
+}
+.warn-list li.danger { border-color: #e0483a; background: rgba(224,72,58,.06); }
+.warn-list li .wi { font-size: 1.1em; flex-shrink: 0; margin-top: .05em; }
+
+.eco-grid {
+  display: flex; flex-wrap: wrap; gap: .8rem;
+  justify-content: center; max-width: min(90vw, 820px);
+}
+.eco-card {
+  background: var(--paper); border: 2.5px solid var(--navy);
+  border-radius: 16px; padding: .6rem 1rem;
+  min-width: clamp(140px,19vw,200px); text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.eco-card .eco-lang {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.9rem,1.9vw,1.3rem);
+}
+.eco-card .eco-detail {
+  font-size: clamp(.58rem,1.1vw,.75rem); font-weight: 600;
+  color: rgba(17,23,44,.6); line-height: 1.55; margin-top: .2rem;
+}
+</style>
+</head>
+<body data-ep-label="S2·E5 · MCP &amp; Tools" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ============ SLIDE 1: TITLE ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:#2EAF7D;color:#fff"><span class="en">SEASON 2 · EPISODE 5</span><span class="bn">সিজন ২ · এপিসোড ৫</span></div>
+    <h1 class="auto" style="color:#fff;font-size:clamp(2.6rem,10vw,6rem);line-height:.9">
+      <span class="en">MCP <span style="color:#2EAF7D">&amp;</span> TOOLS</span>
+      <span class="bn" style="color:#fff">MCP <span style="color:#2EAF7D">&amp;</span> টুলস</span>
+    </h1>
+    <p class="auto" style="color:rgba(255,255,255,.65);font-family:'Caveat',cursive;font-weight:700;font-size:clamp(1rem,2.4vw,1.5rem);letter-spacing:.06em">
+      <span class="en">REACHING BEYOND THE CODEBASE</span>
+      <span class="bn">কোডবেসের বাইরে পৌঁছানো</span>
+    </p>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,700px)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">HABIB · BACKEND ENGINEER, NOP-STATION</span>
+        <span class="en">"My skill needs to pull open Jira tickets for the sprint report — but Claude only has access to files. I can't copy-paste the board every morning just to make this work."</span>
+        <span class="bn">"আমার স্কিলটার Jira থেকে ওপেন টিকেট দরকার স্প্রিন্ট রিপোর্টের জন্য — কিন্তু Claude শুধু ফাইলেই অ্যাক্সেস পায়। প্রতিদিন সকালে বোর্ড কপি-পেস্ট করা সম্ভব না।"</span>
+      </div>
+    </div>
+    <div class="caption frag" style="color:rgba(255,255,255,.55)">
+      <span class="en">This episode: tools, MCP, security gating, and a live sprint-report build.</span>
+      <span class="bn">এই এপিসোডে: টুলস, MCP, সিকিউরিটি গেটিং, এবং একটা লাইভ স্প্রিন্ট-রিপোর্ট বিল্ড।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2: WHAT ARE TOOLS? ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">FOUNDATION</span><span class="bn">ভিত্তি</span></div>
+    <h2 class="auto"><span class="en">Tools = What Claude Can <em>Do</em></span><span class="bn">টুলস = Claude যা করতে পারে</span></h2>
+    <div class="tool-grid frag">
+      <div class="tool-card">
+        <div class="t-icon">📁</div>
+        <span class="t-name"><span class="en">Read / Write Files</span><span class="bn">ফাইল পড়া/লেখা</span></span>
+        <div class="t-desc"><span class="en">Read, edit, create files in the project tree</span><span class="bn">প্রজেক্টের ফাইল পড়া, এডিট, তৈরি করা</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="t-icon">💻</div>
+        <span class="t-name"><span class="en">Bash / Shell</span><span class="bn">ব্যাশ / শেল</span></span>
+        <div class="t-desc"><span class="en">Run terminal commands, scripts, tests</span><span class="bn">টার্মিনাল কমান্ড, স্ক্রিপ্ট, টেস্ট রান করা</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="t-icon">🌐</div>
+        <span class="t-name"><span class="en">Web Fetch</span><span class="bn">ওয়েব ফেচ</span></span>
+        <div class="t-desc"><span class="en">Retrieve pages, download docs</span><span class="bn">পেজ রিট্রিভ করা, ডক ডাউনলোড করা</span></div>
+      </div>
+      <div class="tool-card">
+        <div class="t-icon">🔍</div>
+        <span class="t-name"><span class="en">Grep / Search</span><span class="bn">গ্রেপ / সার্চ</span></span>
+        <div class="t-desc"><span class="en">Find patterns in the codebase</span><span class="bn">কোডবেসে প্যাটার্ন খোঁজা</span></div>
+      </div>
+      <div class="tool-card" style="border-color:#2EAF7D">
+        <div class="t-icon">🔌</div>
+        <span class="t-name" style="color:#2EAF7D"><span class="en">MCP Tools</span><span class="bn">MCP টুলস</span></span>
+        <div class="t-desc"><span class="en">External systems — Jira, Slack, GitHub…</span><span class="bn">বাইরের সিস্টেম — Jira, Slack, GitHub…</span></div>
+      </div>
+    </div>
+    <div class="caption frag">
+      <span class="en"><strong>Skills are procedures that orchestrate tools.</strong> The skill says <em>what</em> to do; a tool call is the step that actually <em>does</em> it.</span>
+      <span class="bn"><strong>স্কিলগুলো হলো প্রসিজার যা টুলগুলোকে অর্কেস্ট্রেট করে।</strong> স্কিল বলে <em>কী</em> করতে হবে; টুল কল সেটা আসলে <em>করে</em>।</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3: THE GAP ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">THE GAP</span><span class="bn">সীমাবদ্ধতা</span></div>
+    <h2 class="auto"><span class="en">Files &amp; Shell Aren't Enough</span><span class="bn">ফাইল আর শেল যথেষ্ট নয়</span></h2>
+    <div class="row" style="margin-top:.5rem;align-items:stretch">
+      <div class="mini-panel frag pop" style="border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">CAN'T DO (BUILT-IN)</span><span class="bn">পারে না (বিল্ট-ইন)</span></div>
+        <ul style="list-style:none;margin:.45rem 0;text-align:left;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.9;padding:0 .15rem">
+          <li><span class="en">✗ Query Jira for open tickets</span><span class="bn">✗ Jira থেকে টিকেট আনা</span></li>
+          <li><span class="en">✗ Post to a Slack channel</span><span class="bn">✗ Slack চ্যানেলে পোস্ট করা</span></li>
+          <li><span class="en">✗ Read a GitHub PR's review comments</span><span class="bn">✗ GitHub PR-এর রিভিউ কমেন্ট পড়া</span></li>
+          <li><span class="en">✗ Query a live database</span><span class="bn">✗ লাইভ ডেটাবেস কোয়েরি করা</span></li>
+          <li><span class="en">✗ Call a proprietary internal API</span><span class="bn">✗ প্রোপ্রাইটারি ইন্টার্নাল API কল করা</span></li>
+        </ul>
+      </div>
+      <div class="mini-panel frag pop" style="border-color:#2EAF7D">
+        <div class="strip" style="background:#2EAF7D"><span class="en">CAN DO (WITH MCP)</span><span class="bn">পারে (MCP দিয়ে)</span></div>
+        <ul style="list-style:none;margin:.45rem 0;text-align:left;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.9;padding:0 .15rem">
+          <li><span class="en">✓ Fetch Jira sprint board, create tickets</span><span class="bn">✓ Jira স্প্রিন্ট বোর্ড ফেচ, টিকেট তৈরি</span></li>
+          <li><span class="en">✓ Send or read Slack messages</span><span class="bn">✓ Slack মেসেজ পাঠানো বা পড়া</span></li>
+          <li><span class="en">✓ Open PRs, read CI status on GitHub</span><span class="bn">✓ GitHub-এ PR খোলা, CI স্ট্যাটাস পড়া</span></li>
+          <li><span class="en">✓ Execute SQL on a connected DB</span><span class="bn">✓ সংযুক্ত DB-তে SQL চালানো</span></li>
+          <li><span class="en">✓ Any API you wrap as an MCP server</span><span class="bn">✓ যেকোনো API যা MCP সার্ভার হিসেবে র‍্যাপ করা</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">MCP is the bridge that turns Claude from a file-and-shell worker into a system-aware agent.</span><span class="bn">MCP হলো সেই সেতু যা Claude-কে ফাইল-এন্ড-শেল ওয়ার্কার থেকে সিস্টেম-অ্যাওয়্যার এজেন্টে পরিণত করে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: ENTER MCP ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:#2EAF7D;color:#fff"><span class="en">ENTER MCP</span><span class="bn">MCP আসছে</span></div>
+    <h2 class="auto" style="color:#fff"><span class="en">Model Context Protocol</span><span class="bn">মডেল কনটেক্সট প্রোটোকল</span></h2>
+    <div class="bigq auto frag" style="color:#fff;font-size:clamp(1rem,2.6vw,1.6rem);max-width:min(85vw,700px);font-family:'Work Sans',sans-serif;font-weight:600;line-height:1.55">
+      <span class="en">An <span style="color:#2EAF7D">open standard</span> for connecting AI models to external tools, data sources, and APIs — so Claude can call them the same way it calls any built-in tool.</span>
+      <span class="bn">একটি <span style="color:#2EAF7D">ওপেন স্ট্যান্ডার্ড</span> যা AI মডেলকে বাইরের টুল, ডেটা সোর্স এবং API-এর সাথে সংযুক্ত করে — যাতে Claude সেগুলোকে বিল্ট-ইন টুলের মতোই কল করতে পারে।</span>
+    </div>
+    <div class="row frag" style="margin-top:.8rem;gap:.8rem;flex-wrap:wrap;justify-content:center">
+      <span class="tag" style="border-color:#2EAF7D;color:#fff;background:rgba(46,175,125,.2)"><span class="en">OPEN STANDARD</span><span class="bn">ওপেন স্ট্যান্ডার্ড</span></span>
+      <span class="tag" style="border-color:var(--amber);color:#fff;background:rgba(251,175,50,.18)"><span class="en">DISCOVERABLE TOOLS</span><span class="bn">আবিষ্কারযোগ্য টুলস</span></span>
+      <span class="tag" style="border-color:var(--sky);color:#fff;background:rgba(26,158,215,.18)"><span class="en">ANY EXTERNAL SYSTEM</span><span class="bn">যেকোনো বাইরের সিস্টেম</span></span>
+      <span class="tag" style="border-color:var(--blue);color:#fff;background:rgba(73,146,193,.18)"><span class="en">SECURE + GATED</span><span class="bn">নিরাপদ + গেটেড</span></span>
+    </div>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);margin-top:.5rem">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">AGENT · HABIB'S SESSION</span>
+        <span class="en">"I can see a tool called <code>mcp__jira__get_sprint_issues</code>. Let me call it with the current sprint ID."</span>
+        <span class="bn">"আমি একটা টুল দেখতে পাচ্ছি <code>mcp__jira__get_sprint_issues</code>। বর্তমান স্প্রিন্ট ID দিয়ে কল করি।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5: HOW MCP WORKS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">HOW IT WORKS</span><span class="bn">কীভাবে কাজ করে</span></div>
+    <h2 class="auto"><span class="en">The MCP Request Loop</span><span class="bn">MCP রিকোয়েস্ট লুপ</span></h2>
+    <div class="mcp-loop frag">
+      <div class="mcp-node" style="border-color:#2EAF7D">
+        <span class="en">MCP Server<br><span style="font-size:.75em;font-weight:400;font-family:'Work Sans',sans-serif">exposes tools</span></span>
+        <span class="bn">MCP সার্ভার<br><span style="font-size:.75em;font-weight:400;font-family:'Work Sans',sans-serif">টুল এক্সপোজ করে</span></span>
+      </div>
+      <div class="mcp-arr">→</div>
+      <div class="mcp-node" style="border-color:var(--blue)">
+        <span class="en">Claude<br><span style="font-size:.75em;font-weight:400;font-family:'Work Sans',sans-serif">discovers them</span></span>
+        <span class="bn">Claude<br><span style="font-size:.75em;font-weight:400;font-family:'Work Sans',sans-serif">আবিষ্কার করে</span></span>
+      </div>
+      <div class="mcp-arr">→</div>
+      <div class="mcp-node" style="border-color:var(--amber)">
+        <span class="en">Claude<br><span style="font-size:.75em;font-weight:400;font-family:'Work Sans',sans-serif">calls a tool</span></span>
+        <span class="bn">Claude<br><span style="font-size:.75em;font-weight:400;font-family:'Work Sans',sans-serif">টুল কল করে</span></span>
+      </div>
+      <div class="mcp-arr">→</div>
+      <div class="mcp-node" style="border-color:var(--sky)">
+        <span class="en">Server<br><span style="font-size:.75em;font-weight:400;font-family:'Work Sans',sans-serif">returns data</span></span>
+        <span class="bn">সার্ভার<br><span style="font-size:.75em;font-weight:400;font-family:'Work Sans',sans-serif">ডেটা ফেরত দেয়</span></span>
+      </div>
+      <div class="mcp-arr">→</div>
+      <div class="mcp-node" style="border-color:#2EAF7D">
+        <span class="en">Claude uses<br><span style="font-size:.75em;font-weight:400;font-family:'Work Sans',sans-serif">the result</span></span>
+        <span class="bn">Claude<br><span style="font-size:.75em;font-weight:400;font-family:'Work Sans',sans-serif">ফলাফল ব্যবহার করে</span></span>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">The MCP server runs as a separate process. Claude communicates with it over a local socket or stdio — no internet roundtrip required for local servers.</span><span class="bn">MCP সার্ভার একটি আলাদা প্রসেস হিসেবে চলে। Claude লোকাল সকেট বা stdio দিয়ে সেটার সাথে যোগাযোগ করে — লোকাল সার্ভারের জন্য কোনো ইন্টারনেট রাউন্ডট্রিপ লাগে না।</span></div>
+    <div class="caption frag amber"><span class="en">Tool names follow the convention: <code>mcp__&lt;server-name&gt;__&lt;tool-name&gt;</code></span><span class="bn">টুলের নাম কনভেনশন: <code>mcp__&lt;সার্ভার-নাম&gt;__&lt;টুল-নাম&gt;</code></span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: CONFIGURING AN MCP SERVER ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#2EAF7D;color:#fff"><span class="en">CONFIGURATION</span><span class="bn">কনফিগারেশন</span></div>
+    <h2 class="auto"><span class="en">Registering an MCP Server</span><span class="bn">MCP সার্ভার রেজিস্ট্রেশন</span></h2>
+    <div class="panel frag pop">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">RIFAT · SENIOR ENGINEER</span>
+        <span class="en">"Add it to <code>.claude/settings.json</code> under <code>mcpServers</code>. Claude picks it up automatically on next launch."</span>
+        <span class="bn">"<code>.claude/settings.json</code>-এ <code>mcpServers</code>-এর নিচে যোগ করো। পরের লঞ্চে Claude এটা স্বয়ংক্রিয়ভাবে তুলে নেবে।"</span>
+      </div>
+    </div>
+    <div class="code-block frag" style="margin-top:.5rem">
+<span class="cmt">// .claude/settings.json</span>
+{
+  <span class="str">"mcpServers"</span>: {
+    <span class="str">"jira"</span>: {
+      <span class="str">"command"</span>: <span class="str">"npx"</span>,
+      <span class="str">"args"</span>: [<span class="str">"-y"</span>, <span class="str">"@nop-station/mcp-jira"</span>],
+      <span class="str">"env"</span>: {
+        <span class="str">"JIRA_BASE_URL"</span>: <span class="str">"https://nop-station.atlassian.net"</span>,
+        <span class="str">"JIRA_TOKEN"</span>:    <span class="str">"&lt;YOUR_JIRA_API_TOKEN&gt;"</span>,
+        <span class="str">"JIRA_EMAIL"</span>:    <span class="str">"habib@nop-station.com"</span>
+      }
+    }
+  }
+}</div>
+    <div class="caption frag"><span class="en">Once registered, Claude discovers all tools the server exposes. They appear in the tool list as <code>mcp__jira__*</code>. Secrets go in <code>env</code> — never hardcoded in the skill body.</span><span class="bn">একবার রেজিস্টার করলে Claude সার্ভারের সব টুল আবিষ্কার করে। সেগুলো টুল লিস্টে <code>mcp__jira__*</code> হিসেবে দেখায়। সিক্রেট <code>env</code>-এ যায় — স্কিল বডিতে হার্ডকোড করা নয়।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: WHEN TO WRAP AN API ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">DECISION POINT</span><span class="bn">সিদ্ধান্তের বিন্দু</span></div>
+    <h2 class="auto"><span class="en">When to Wrap an API as an MCP Tool</span><span class="bn">কখন API-কে MCP টুল হিসেবে র‍্যাপ করবেন</span></h2>
+    <div class="row" style="margin-top:.5rem;align-items:stretch">
+      <div class="mini-panel frag pop" style="border-color:#2EAF7D">
+        <div class="strip" style="background:#2EAF7D"><span class="en">WRAP IT WHEN…</span><span class="bn">র‍্যাপ করো যখন…</span></div>
+        <ul style="list-style:none;margin:.45rem 0;text-align:left;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.9;padding:0 .15rem">
+          <li><span class="en">✓ You need it more than once a week</span><span class="bn">✓ সপ্তাহে একবারের বেশি দরকার</span></li>
+          <li><span class="en">✓ It's a live system (not a static doc)</span><span class="bn">✓ এটা লাইভ সিস্টেম (স্ট্যাটিক ডক নয়)</span></li>
+          <li><span class="en">✓ Multiple team members will use it</span><span class="bn">✓ একাধিক টিম সদস্য ব্যবহার করবে</span></li>
+          <li><span class="en">✓ You want to compose it inside skills</span><span class="bn">✓ স্কিলের ভেতরে কম্পোজ করতে চাও</span></li>
+        </ul>
+      </div>
+      <div class="mini-panel frag pop" style="border-color:var(--blue)">
+        <div class="strip" style="background:var(--blue)"><span class="en">SKIP IT WHEN…</span><span class="bn">এড়িয়ে যাও যখন…</span></div>
+        <ul style="list-style:none;margin:.45rem 0;text-align:left;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.9;padding:0 .15rem">
+          <li><span class="en">✗ One-off fetch you'll never repeat</span><span class="bn">✗ একবারের ফেচ, আর কখনো নয়</span></li>
+          <li><span class="en">✗ Public URL Claude can just WebFetch</span><span class="bn">✗ পাবলিক URL Claude সরাসরি WebFetch করতে পারে</span></li>
+          <li><span class="en">✗ Data fits in a file you can commit</span><span class="bn">✗ ডেটা একটা ফাইলে ধরে যায় যা কমিট করা যায়</span></li>
+          <li><span class="en">✗ No auth needed, no rate limits</span><span class="bn">✗ কোনো অথ নেই, রেট লিমিট নেই</span></li>
+        </ul>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Rule of thumb: if you'd reach for a real API client in code, you should probably wrap it as an MCP tool.</span><span class="bn">সহজ নিয়ম: কোডে যদি রিয়েল API ক্লায়েন্ট ব্যবহার করতেন, সম্ভবত MCP টুল হিসেবে র‍্যাপ করা উচিত।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8: SKILLS + MCP TOGETHER ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">COMPOSITION</span><span class="bn">কম্পোজিশন</span></div>
+    <h2 class="auto"><span class="en">Skills Orchestrate MCP Tools</span><span class="bn">স্কিলস MCP টুলস অর্কেস্ট্রেট করে</span></h2>
+    <div class="caption frag"><span class="en">A skill's body is plain instructions. It can reference MCP tool names directly — Claude will call them at runtime.</span><span class="bn">একটা স্কিলের বডি সরল নির্দেশনা। এটা সরাসরি MCP টুলের নাম রেফার করতে পারে — Claude রানটাইমে সেগুলো কল করবে।</span></div>
+    <div class="code-block frag" style="margin-top:.4rem">
+<span class="cmt">## skill: sprint-status</span>
+<span class="cmt">## Fetches live sprint data and posts a summary to Slack.</span>
+
+<span class="num">1.</span> Use <span class="fn">mcp__jira__get_sprint_issues</span> with project=NOPST
+   and sprint=active to fetch all open tickets.
+
+<span class="num">2.</span> Group tickets by status: To Do / In Progress / Done.
+
+<span class="num">3.</span> Format a standup summary:
+   - Count per status, list blockers (tickets with label=blocked).
+   - Mention the top 3 In-Progress tickets with assignee.
+
+<span class="num">4.</span> Use <span class="fn">mcp__slack__send_message</span> channel=#dev-standup
+   to post the formatted summary.
+
+<span class="num">5.</span> Reply to the user with a confirmation + ticket count.</div>
+    <div class="caption frag amber"><span class="en">The skill body never hardcodes data — it commands Claude to <em>fetch it live</em> at run time. This is what makes skills dynamic, not static.</span><span class="bn">স্কিল বডি কখনো ডেটা হার্ডকোড করে না — এটা Claude-কে <em>লাইভে ফেচ করতে</em> নির্দেশ দেয়। এটাই স্কিলকে ডায়নামিক করে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9: TOOL GATING & PERMISSIONS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">SECURITY</span><span class="bn">সিকিউরিটি</span></div>
+    <h2 class="auto"><span class="en">Tool Gating &amp; Permissions</span><span class="bn">টুল গেটিং এবং পারমিশন</span></h2>
+    <div class="row" style="margin-top:.5rem;align-items:flex-start">
+      <div class="mini-panel frag pop" style="max-width:clamp(200px,36vw,360px)">
+        <div class="strip" style="background:var(--navy)"><span class="en">ALLOW / DENY LISTS</span><span class="bn">অ্যালাউ / ডিনাই লিস্ট</span></div>
+        <div class="code-block" style="font-size:clamp(.55rem,1.1vw,.75rem);margin-top:.5rem">
+<span class="cmt">// settings.json</span>
+{
+  <span class="str">"permissions"</span>: {
+    <span class="str">"allow"</span>: [
+      <span class="str">"mcp__jira__get_sprint_issues"</span>,
+      <span class="str">"mcp__jira__get_issue"</span>,
+      <span class="str">"mcp__slack__send_message"</span>
+    ],
+    <span class="str">"deny"</span>: [
+      <span class="str">"mcp__jira__delete_issue"</span>,
+      <span class="str">"mcp__jira__transition_issue"</span>
+    ]
+  }
+}</div>
+      </div>
+      <div class="mini-panel frag pop" style="max-width:clamp(200px,36vw,360px)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">APPROVAL GATES</span><span class="bn">অ্যাপ্রুভাল গেট</span></div>
+        <div class="bubble" style="margin-top:.5rem;font-size:clamp(.65rem,1.35vw,.88rem)">
+          <span class="en">Some tool calls require human sign-off before Claude proceeds. Claude surfaces a confirmation prompt — no action taken until you type <strong>yes</strong>.</span>
+          <span class="bn">কিছু টুল কলের জন্য Claude এগোনোর আগে মানুষের অনুমোদন দরকার। Claude একটি কনফার্মেশন প্রম্পট দেখায় — আপনি <strong>yes</strong> না লেখা পর্যন্ত কোনো কাজ হয় না।</span>
+        </div>
+        <div class="bubble" style="margin-top:.4rem;font-size:clamp(.62rem,1.25vw,.82rem);background:rgba(251,175,50,.1);border-color:var(--amber)">
+          <span class="en">💡 Callback to S1·E6: the same enterprise safety controls — budget limits, allow-lists, audit logs — apply to MCP tools too.</span>
+          <span class="bn">💡 S1·E6-এর কথা মনে করুন: একই এন্টারপ্রাইজ সেফটি কন্ট্রোল — বাজেট লিমিট, অ্যালাউ-লিস্ট, অডিট লগ — MCP টুলেও প্রযোজ্য।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Principle: grant the minimum tool surface your skill actually needs. A sprint-report skill never needs to delete tickets.</span><span class="bn">নীতি: স্কিলের আসলে যা দরকার তার ন্যূনতম টুল সারফেস দাও। স্প্রিন্ট-রিপোর্ট স্কিলের কখনো টিকেট ডিলিট করার দরকার নেই।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: ECOSYSTEM ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">ECOSYSTEM</span><span class="bn">ইকোসিস্টেম</span></div>
+    <h2 class="auto"><span class="en">TypeScript, Python &amp; the Community</span><span class="bn">TypeScript, Python এবং কমিউনিটি</span></h2>
+    <div class="eco-grid frag">
+      <div class="eco-card" style="border-color:#3178c6">
+        <div class="eco-lang" style="color:#3178c6">TypeScript</div>
+        <div class="eco-detail"><span class="en">Official SDK<br>@modelcontextprotocol/sdk<br>Best for Node.js APIs</span><span class="bn">অফিশিয়াল SDK<br>Node.js API-এর জন্য সেরা</span></div>
+      </div>
+      <div class="eco-card" style="border-color:#3572a5">
+        <div class="eco-lang" style="color:#3572a5">Python</div>
+        <div class="eco-detail"><span class="en">Official SDK<br>mcp (PyPI package)<br>Best for data / ML tools</span><span class="bn">অফিশিয়াল SDK<br>ডেটা / ML টুলের জন্য সেরা</span></div>
+      </div>
+      <div class="eco-card" style="border-color:#2EAF7D">
+        <div class="eco-lang" style="color:#2EAF7D"><span class="en">Official Servers</span><span class="bn">অফিশিয়াল সার্ভার</span></div>
+        <div class="eco-detail"><span class="en">GitHub, Slack, PostgreSQL, Filesystem, Fetch, Puppeteer…</span><span class="bn">GitHub, Slack, PostgreSQL, Filesystem, Fetch, Puppeteer…</span></div>
+      </div>
+      <div class="eco-card" style="border-color:var(--amber)">
+        <div class="eco-lang" style="color:var(--amber)"><span class="en">Community Servers</span><span class="bn">কমিউনিটি সার্ভার</span></div>
+        <div class="eco-detail"><span class="en">Jira, Linear, Notion, Figma, Supabase, AWS and many more</span><span class="bn">Jira, Linear, Notion, Figma, Supabase, AWS এবং আরও অনেক</span></div>
+      </div>
+      <div class="eco-card" style="border-color:var(--navy)">
+        <div class="eco-lang"><span class="en">Build Your Own</span><span class="bn">নিজে তৈরি করো</span></div>
+        <div class="eco-detail"><span class="en">Wrap any in-house REST API in &lt; 50 lines. The SDK handles the protocol.</span><span class="bn">যেকোনো ইন-হাউস REST API ৫০ লাইনের কমে র‍্যাপ করো।</span></div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">The registry at <strong>github.com/modelcontextprotocol/servers</strong> lists official and community-verified servers. Vet before installing — see Slide 13.</span><span class="bn"><strong>github.com/modelcontextprotocol/servers</strong>-এ অফিশিয়াল ও কমিউনিটি-ভেরিফাইড সার্ভারের তালিকা আছে। ইনস্টলের আগে যাচাই করুন — স্লাইড ১৩ দেখুন।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11: LIVE BUILD — OVERVIEW ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:#2EAF7D;color:#fff"><span class="en">LIVE BUILD</span><span class="bn">লাইভ বিল্ড</span></div>
+    <h2 class="auto" style="color:#fff"><span class="en">Sprint Report Skill — Plan</span><span class="bn">স্প্রিন্ট রিপোর্ট স্কিল — পরিকল্পনা</span></h2>
+    <div class="row frag" style="margin-top:.5rem;gap:.9rem;align-items:stretch;flex-wrap:wrap;justify-content:center">
+      <div class="mini-panel" style="background:rgba(255,255,255,.06);border-color:#2EAF7D;min-width:clamp(140px,22vw,210px)">
+        <div class="strip" style="background:#2EAF7D"><span class="en">STEP 1</span><span class="bn">ধাপ ১</span></div>
+        <div class="bubble" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);color:#fff;font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">Register the Jira MCP server in <code>settings.json</code></span>
+          <span class="bn"><code>settings.json</code>-এ Jira MCP সার্ভার রেজিস্টার করো</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="background:rgba(255,255,255,.06);border-color:var(--amber);min-width:clamp(140px,22vw,210px)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">STEP 2</span><span class="bn">ধাপ ২</span></div>
+        <div class="bubble" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);color:#fff;font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">Write the skill body that calls <code>mcp__jira__get_sprint_issues</code></span>
+          <span class="bn">স্কিল বডি লিখো যা <code>mcp__jira__get_sprint_issues</code> কল করে</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="background:rgba(255,255,255,.06);border-color:var(--sky);min-width:clamp(140px,22vw,210px)">
+        <div class="strip" style="background:var(--sky)"><span class="en">STEP 3</span><span class="bn">ধাপ ৩</span></div>
+        <div class="bubble" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2);color:#fff;font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">Run <code>/sprint-report</code> — Claude fetches live data &amp; outputs summary</span>
+          <span class="bn"><code>/sprint-report</code> চালাও — Claude লাইভ ডেটা ফেচ করে সারসংক্ষেপ দেয়</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.2)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">HABIB</span>
+        <span class="en">"Ankan — we're building this right now. Jira MCP is already installed. Let's wire the skill."</span>
+        <span class="bn">"অঙ্কন — এটা এখনই বানাচ্ছি। Jira MCP ইতিমধ্যে ইনস্টল আছে। স্কিলটা ওয়্যার করি।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12: LIVE BUILD — CONFIG + SKILL ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#2EAF7D;color:#fff"><span class="en">LIVE BUILD — CODE</span><span class="bn">লাইভ বিল্ড — কোড</span></div>
+    <h2 class="auto"><span class="en">Config &amp; Skill Body</span><span class="bn">কনফিগ এবং স্কিল বডি</span></h2>
+    <div class="row" style="margin-top:.4rem;align-items:flex-start;gap:.8rem;flex-wrap:wrap;justify-content:center">
+      <div style="flex:1;min-width:min(90vw,300px);max-width:min(90vw,400px)">
+        <div class="kicker" style="font-size:.75rem;margin-bottom:.35rem;background:var(--navy);color:#fff;border-radius:8px;padding:.2em .65em;display:inline-block"><span class="en">.claude/settings.json (excerpt)</span><span class="bn">.claude/settings.json (অংশ)</span></div>
+        <div class="code-block">
+{
+  <span class="str">"mcpServers"</span>: {
+    <span class="str">"jira"</span>: {
+      <span class="str">"command"</span>: <span class="str">"npx"</span>,
+      <span class="str">"args"</span>: [
+        <span class="str">"-y"</span>,
+        <span class="str">"@nop-station/mcp-jira"</span>
+      ],
+      <span class="str">"env"</span>: {
+        <span class="str">"JIRA_BASE_URL"</span>:
+          <span class="str">"https://nop-station.atlassian.net"</span>,
+        <span class="str">"JIRA_TOKEN"</span>:
+          <span class="str">"&lt;YOUR_JIRA_API_TOKEN&gt;"</span>,
+        <span class="str">"JIRA_EMAIL"</span>:
+          <span class="str">"habib@nop-station.com"</span>
+      }
+    }
+  },
+  <span class="str">"permissions"</span>: {
+    <span class="str">"allow"</span>: [
+      <span class="str">"mcp__jira__get_sprint_issues"</span>,
+      <span class="str">"mcp__jira__get_issue"</span>
+    ]
+  }
+}</div>
+      </div>
+      <div style="flex:1;min-width:min(90vw,300px);max-width:min(90vw,420px)">
+        <div class="kicker" style="font-size:.75rem;margin-bottom:.35rem;background:#2EAF7D;color:#fff;border-radius:8px;padding:.2em .65em;display:inline-block"><span class="en">.claude/skills/sprint-report/prompt.md</span><span class="bn">.claude/skills/sprint-report/prompt.md</span></div>
+        <div class="code-block">
+<span class="cmt">## Sprint Report Skill</span>
+<span class="cmt">## Generates a standup summary from live Jira data.</span>
+
+<span class="cmt"># Steps</span>
+
+<span class="num">1.</span> Call <span class="fn">mcp__jira__get_sprint_issues</span>
+   with project=<span class="str">"NOPST"</span>, sprint=<span class="str">"active"</span>.
+
+<span class="num">2.</span> Group issues by status field:
+   - To Do / In Progress / Done / Blocked
+
+<span class="num">3.</span> Build the standup summary:
+   <span class="str">**Sprint Summary — {today}**</span>
+   ✅ Done ({n}): &lt;titles&gt;
+   🔄 In Progress ({n}): &lt;titles + assignee&gt;
+   🚧 Blocked ({n}): &lt;titles + blocker label&gt;
+   📋 To Do ({n}): &lt;titles&gt;
+
+<span class="num">4.</span> If &gt;<span class="num">0</span> blocked tickets, add a
+   <span class="str">"⚠️ Action needed"</span> section with details.
+
+<span class="num">5.</span> Output the summary in Markdown.
+   Ask user if they want to post to Slack.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13: LIVE OUTPUT DEMO ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#2EAF7D;color:#fff"><span class="en">LIVE OUTPUT</span><span class="bn">লাইভ আউটপুট</span></div>
+    <h2 class="auto"><span class="en">Running <code>/sprint-report</code></span><span class="bn"><code>/sprint-report</code> চালানো</span></h2>
+    <div class="code-block frag" style="font-size:clamp(.62rem,1.3vw,.82rem);color:#e6edf3">
+<span class="cmt">$ /sprint-report</span>
+<span class="kw">→ Calling mcp__jira__get_sprint_issues (project=NOPST, sprint=active)...</span>
+<span class="kw">→ Retrieved 18 issues.</span>
+
+<span class="str">**Sprint Summary — 2026-06-20 (Sprint 41 · nop-station)**</span>
+
+✅ Done (6): Payment gateway refactor, Auth token refresh fix,
+   Dashboard load perf, Email validation, DB index tuning, Unit tests OrderSvc
+
+🔄 In Progress (7): Product search API · Mouneeta
+   Shipping calculator · Rafid
+   Admin panel filters · Ankan
+   ... (4 more)
+
+🚧 Blocked (2): Inventory sync — waiting on vendor API docs (Mouneeta)
+   PDF invoice — design handoff pending (Rafid)
+
+📋 To Do (3): Returns flow, Multi-currency support, Rate limiter
+
+<span class="num">⚠️ Action needed:</span>
+   NOPST-412 (Inventory sync) blocked &gt; 3 days. Assign a resolver.
+
+<span class="cmt">Post this to #dev-standup? [yes/no]</span></div>
+    <div class="caption frag amber"><span class="en">No copy-paste from Jira. No manual updates. One slash command — live data, structured output, ready to share.</span><span class="bn">Jira থেকে কপি-পেস্ট নেই। ম্যানুয়াল আপডেট নেই। একটা স্ল্যাশ কমান্ড — লাইভ ডেটা, স্ট্রাকচার্ড আউটপুট, শেয়ারের জন্য প্রস্তুত।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14: GOTCHAS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">GOTCHAS</span><span class="bn">সতর্কতা</span></div>
+    <h2 class="auto"><span class="en">MCP Pitfalls to Avoid</span><span class="bn">MCP-এর ভুলগুলো এড়ানো</span></h2>
+    <ul class="warn-list">
+      <li class="danger frag pop">
+        <span class="wi">🔑</span>
+        <div>
+          <strong><span class="en">Secrets in the skill body</span><span class="bn">স্কিল বডিতে সিক্রেট</span></strong><br>
+          <span class="en">Never write API tokens or passwords in <code>prompt.md</code>. Use <code>env</code> in <code>settings.json</code> — and never commit <code>settings.json</code> with real values to git.</span>
+          <span class="bn"><code>prompt.md</code>-তে কখনো API টোকেন বা পাসওয়ার্ড লিখবেন না। <code>settings.json</code>-এ <code>env</code> ব্যবহার করুন — এবং সত্যিকার মান দিয়ে <code>settings.json</code> কখনো git-এ কমিট করবেন না।</span>
+        </div>
+      </li>
+      <li class="danger frag pop">
+        <span class="wi">🌐</span>
+        <div>
+          <strong><span class="en">Over-broad tool permissions</span><span class="bn">অতিরিক্ত টুল পারমিশন</span></strong><br>
+          <span class="en">Allowing <code>mcp__jira__*</code> gives Claude write access to every Jira action. Be explicit: allow only the tools the skill actually calls.</span>
+          <span class="bn"><code>mcp__jira__*</code> অ্যালাউ করলে Claude সব Jira অ্যাকশনে রাইট অ্যাক্সেস পায়। স্পষ্ট হোন: শুধু স্কিল যা কল করে সে টুলগুলোই অ্যালাউ করুন।</span>
+        </div>
+      </li>
+      <li class="danger frag pop">
+        <span class="wi">📦</span>
+        <div>
+          <strong><span class="en">Unverified third-party MCP servers</span><span class="bn">যাচাইবিহীন থার্ড-পার্টি MCP সার্ভার</span></strong><br>
+          <span class="en">A malicious MCP server can exfiltrate data or execute destructive actions. Only install servers from trusted sources; review the source before running.</span>
+          <span class="bn">একটি দুর্ভাবনামূলক MCP সার্ভার ডেটা চুরি করতে বা ক্ষতিকর কাজ চালাতে পারে। শুধুমাত্র বিশ্বস্ত সোর্স থেকে সার্ভার ইনস্টল করুন; চালানোর আগে সোর্স রিভিউ করুন।</span>
+        </div>
+      </li>
+      <li class="frag pop" style="border-color:var(--amber)">
+        <span class="wi">⏱️</span>
+        <div>
+          <strong><span class="en">No rate-limit awareness</span><span class="bn">রেট-লিমিট সচেতনতার অভাব</span></strong><br>
+          <span class="en">Claude won't automatically throttle tool calls. A looping skill can hit Jira's rate limit in seconds. Add retry logic or a delay step in the skill body.</span>
+          <span class="bn">Claude স্বয়ংক্রিয়ভাবে টুল কল থ্রটল করবে না। লুপিং স্কিল সেকেন্ডে Jira-র রেট লিমিটে পৌঁছাতে পারে। স্কিল বডিতে রিট্রি লজিক বা ডিলে স্টেপ যোগ করুন।</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ SLIDE 15: SHAZZAD'S QUESTION ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">TEAM DISCUSSION</span><span class="bn">টিম আলোচনা</span></div>
+    <h2 class="auto"><span class="en">A Good Question from Ankan</span><span class="bn">অঙ্কনের একটা ভালো প্রশ্ন</span></h2>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">SHAZZAD · FRONTEND ENGINEER</span>
+        <span class="en">"If the MCP server crashes mid-run, does Claude know? Or does the skill just hang silently?"</span>
+        <span class="bn">"MCP সার্ভার রান করতে করতে ক্র্যাশ করলে Claude কি জানতে পারে? নাকি স্কিল চুপচাপ আটকে থাকে?"</span>
+      </div>
+    </div>
+    <div class="panel frag pop">
+      <svg class="char"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">RIFAT</span>
+        <span class="en">"Claude gets a tool error back and will try to recover — it'll tell you the tool failed. Build your skill with a fallback step: 'If the MCP tool errors, report the raw error and stop.' That makes failures visible."</span>
+        <span class="bn">"Claude একটা টুল এরর ফেরত পায় এবং রিকভারি করার চেষ্টা করে — এটা আপনাকে বলবে টুলটা ফেল করেছে। স্কিলে একটা ফলব্যাক স্টেপ বানান: 'MCP টুল এরর করলে, রাউ এরর রিপোর্ট করো এবং থামো।' এটা ব্যর্থতা দৃশ্যমান করে।"</span>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Design your skills to fail loudly, not silently. An explicit error step is better than a stalled session.</span><span class="bn">স্কিলগুলো শোরগোলে ব্যর্থ হওয়ার জন্য ডিজাইন করুন, নীরবে নয়। একটি স্পষ্ট এরর স্টেপ স্থবির সেশনের চেয়ে ভালো।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 16: BUILD YOUR OWN MCP SERVER ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">ADVANCED</span><span class="bn">অ্যাডভান্সড</span></div>
+    <h2 class="auto"><span class="en">Building Your Own MCP Server</span><span class="bn">নিজের MCP সার্ভার তৈরি করা</span></h2>
+    <div class="caption frag"><span class="en">If no community server covers your in-house API, build one in TypeScript with the official SDK — it takes less than 50 lines for a basic read-only tool.</span><span class="bn">যদি কোনো কমিউনিটি সার্ভার আপনার ইন-হাউস API কভার না করে, অফিশিয়াল SDK দিয়ে TypeScript-এ একটা তৈরি করুন — বেসিক রিড-অনলি টুলের জন্য ৫০ লাইনের কম লাগে।</span></div>
+    <div class="code-block frag" style="margin-top:.4rem">
+<span class="cmt">// my-api-mcp/index.ts  (TypeScript, official SDK)</span>
+<span class="kw">import</span> { <span class="fn">McpServer</span> } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/server/mcp.js"</span>;
+<span class="kw">import</span> { <span class="fn">StdioServerTransport</span> } <span class="kw">from</span> <span class="str">"@modelcontextprotocol/sdk/server/stdio.js"</span>;
+<span class="kw">import</span> { z } <span class="kw">from</span> <span class="str">"zod"</span>;
+
+<span class="kw">const</span> server = <span class="kw">new</span> <span class="fn">McpServer</span>({ name: <span class="str">"my-api"</span>, version: <span class="str">"1.0.0"</span> });
+
+server.<span class="fn">tool</span>(
+  <span class="str">"get_open_orders"</span>,
+  { limit: z.number().<span class="fn">default</span>(<span class="num">20</span>) },
+  <span class="kw">async</span> ({ limit }) => {
+    <span class="kw">const</span> data = <span class="kw">await</span> <span class="fn">fetchOrders</span>({ status: <span class="str">"open"</span>, limit });
+    <span class="kw">return</span> { content: [{ type: <span class="str">"text"</span>, text: JSON.<span class="fn">stringify</span>(data) }] };
+  }
+);
+
+<span class="kw">const</span> transport = <span class="kw">new</span> <span class="fn">StdioServerTransport</span>();
+<span class="kw">await</span> server.<span class="fn">connect</span>(transport);</div>
+    <div class="caption frag"><span class="en">Register it in <code>settings.json</code> just like any other server. Your entire team can then call <code>mcp__my-api__get_open_orders</code> from any skill.</span><span class="bn"><code>settings.json</code>-এ অন্য সার্ভারের মতোই রেজিস্টার করুন। তারপর পুরো টিম যেকোনো স্কিল থেকে <code>mcp__my-api__get_open_orders</code> কল করতে পারবে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 17: MENTAL MODEL ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">MENTAL MODEL</span><span class="bn">মানসিক মডেল</span></div>
+    <h2 class="auto"><span class="en">How It All Fits Together</span><span class="bn">সব একসাথে কীভাবে খাপ খায়</span></h2>
+    <div class="mcp-loop frag" style="flex-direction:column;gap:.6rem;max-width:min(88vw,600px)">
+      <div class="mcp-node" style="border-color:var(--navy);width:100%;text-align:center">
+        <span class="en"><strong>Skill</strong> — the "what to do" procedure</span>
+        <span class="bn"><strong>স্কিল</strong> — "কী করতে হবে"-এর প্রসিজার</span>
+      </div>
+      <div class="mcp-arr" style="transform:rotate(90deg);align-self:center">→</div>
+      <div class="mcp-node" style="border-color:var(--blue);width:100%;text-align:center">
+        <span class="en"><strong>Claude (agent)</strong> — reads the skill, plans tool calls</span>
+        <span class="bn"><strong>Claude (এজেন্ট)</strong> — স্কিল পড়ে, টুল কল পরিকল্পনা করে</span>
+      </div>
+      <div class="mcp-arr" style="transform:rotate(90deg);align-self:center">→</div>
+      <div class="mcp-node" style="border-color:#2EAF7D;width:100%;text-align:center">
+        <span class="en"><strong>MCP Tool</strong> — executes against real system, returns data</span>
+        <span class="bn"><strong>MCP টুল</strong> — রিয়েল সিস্টেমে চালু হয়, ডেটা ফেরত দেয়</span>
+      </div>
+      <div class="mcp-arr" style="transform:rotate(90deg);align-self:center">→</div>
+      <div class="mcp-node" style="border-color:var(--amber);width:100%;text-align:center">
+        <span class="en"><strong>Output</strong> — structured result, posted / returned to user</span>
+        <span class="bn"><strong>আউটপুট</strong> — স্ট্রাকচার্ড ফলাফল, পোস্ট / ব্যবহারকারীকে ফেরত</span>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Skills define the shape. Claude executes it. MCP tools reach out. The result comes back — clean, structured, actionable.</span><span class="bn">স্কিলস আকৃতি নির্ধারণ করে। Claude সেটা চালায়। MCP টুলস বাইরে পৌঁছায়। ফলাফল ফিরে আসে — পরিষ্কার, স্ট্রাকচার্ড, কার্যকর।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 18: WRAP UP ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto"><span class="en">WRAP UP</span><span class="bn">সারসংক্ষেপ</span></div>
+    <h2 class="auto"><span class="en">MCP &amp; Tools — What You Now Know</span><span class="bn">MCP এবং টুলস — এখন তুমি যা জানো</span></h2>
+    <div class="row frag" style="margin-top:.4rem;flex-wrap:wrap">
+      <span class="tag" style="border-color:#2EAF7D"><span class="en">TOOLS · BUILT-IN vs MCP</span><span class="bn">টুলস · বিল্ট-ইন বনাম MCP</span></span>
+      <span class="tag" style="border-color:var(--blue)"><span class="en">MCP · OPEN STANDARD</span><span class="bn">MCP · ওপেন স্ট্যান্ডার্ড</span></span>
+      <span class="tag" style="border-color:var(--amber)"><span class="en">GATING · LEAST PRIVILEGE</span><span class="bn">গেটিং · ন্যূনতম সুবিধা</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">LIVE DATA · IN SKILLS</span><span class="bn">লাইভ ডেটা · স্কিলের ভেতরে</span></span>
+    </div>
+    <div class="row frag" style="margin-top:.5rem;align-items:flex-start;gap:.8rem">
+      <div class="mini-panel" style="max-width:clamp(200px,35vw,340px)">
+        <div class="strip" style="background:#2EAF7D"><span class="en">3 RULES TO LIVE BY</span><span class="bn">৩টি নিয়ম</span></div>
+        <ul style="list-style:none;margin:.4rem 0;text-align:left;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.9;padding:0 .1rem">
+          <li><span class="en">1. Secrets stay in <code>env</code>, never in skill body</span><span class="bn">১. সিক্রেট <code>env</code>-এ থাকে, স্কিল বডিতে নয়</span></li>
+          <li><span class="en">2. Allow only the tools the skill actually calls</span><span class="bn">২. স্কিল যা কল করে শুধু সে টুলগুলো অ্যালাউ করো</span></li>
+          <li><span class="en">3. Vet third-party MCP servers before installing</span><span class="bn">৩. ইনস্টলের আগে থার্ড-পার্টি MCP সার্ভার যাচাই করো</span></li>
+        </ul>
+      </div>
+      <div class="mini-panel frag pop" style="max-width:clamp(200px,35vw,340px);border-color:#2EAF7D">
+        <div class="strip" style="background:var(--sky)"><span class="en">HABIB'S WIN</span><span class="bn">মৌনিতাের জয়</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.35vw,.88rem)">
+          <span class="en">"The sprint-report skill now runs in 8 seconds. Before: 12 minutes of manual Jira browsing every morning."</span>
+          <span class="bn">"স্প্রিন্ট-রিপোর্ট স্কিল এখন ৮ সেকেন্ডে চলে। আগে: প্রতিদিন সকালে ১২ মিনিট ম্যানুয়াল Jira ব্রাউজিং।"</span>
+        </div>
+      </div>
+    </div>
+    <div class="char-summary frag">
+      <span class="en">Next → <strong>Episode 6:</strong> Skills at Team Scale — Training the Guild.<br>Onboarding new engineers, skill libraries, shared conventions, and keeping quality high as the team grows.</span>
+      <span class="bn b">পরবর্তী → <strong>এপিসোড ৬:</strong> টিম স্কেলে স্কিলস — গিল্ড প্রশিক্ষণ।<br>নতুন ইঞ্জিনিয়ার অনবোর্ডিং, স্কিল লাইব্রেরি, শেয়ার্ড কনভেনশন এবং টিম বাড়ার সাথে মান বজায় রাখা।</span>
+    </div>
+  </div>
+</section>
+
+</main><!-- /deck -->
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<div class="hint">← → to navigate · space to advance</div>
+<script src="../../assets/deck.js"></script>
+<script data-goatcounter="https://jiteshsureka.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

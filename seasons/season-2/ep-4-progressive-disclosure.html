@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S2·E4 — Progressive Disclosure — Tools of the Trade · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+/* Episode-specific helpers — do NOT edit storybook.css */
+.accent { color: #6C5CE7; }
+.bg-accent { background: #6C5CE7; }
+.border-accent { border-color: #6C5CE7; }
+
+.tier-row {
+  display: flex; flex-direction: column; gap: .55rem;
+  width: 100%; max-width: min(90vw, 760px);
+}
+.tier-item {
+  display: flex; align-items: flex-start; gap: .75rem;
+  background: var(--paper); border: 2px solid var(--navy);
+  border-radius: 14px; padding: .55rem 1rem;
+  box-shadow: var(--shadow-sm);
+}
+.tier-item.t1 { border-color: #6C5CE7; }
+.tier-item.t2 { border-color: var(--sky); }
+.tier-item.t3 { border-color: var(--green); }
+.tier-badge {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.75rem,1.5vw,1rem); min-width: 58px;
+  text-align: center; border-radius: 8px; padding: .1em .4em;
+  flex-shrink: 0; align-self: center;
+}
+.tier-badge.t1 { background: #6C5CE7; color: #fff; }
+.tier-badge.t2 { background: var(--sky); color: #fff; }
+.tier-badge.t3 { background: var(--green); color: #fff; }
+.tier-info { display: flex; flex-direction: column; gap: .15rem; }
+.tier-title {
+  font-family: 'Work Sans', sans-serif; font-weight: 700;
+  font-size: clamp(.8rem,1.6vw,1rem);
+}
+.tier-detail {
+  font-family: 'Work Sans', sans-serif; font-weight: 500;
+  font-size: clamp(.65rem,1.3vw,.82rem); opacity: .7;
+}
+
+.code-block {
+  background: var(--navy); color: #e8eaf2;
+  border-radius: 14px; padding: 1rem 1.2rem;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: clamp(.65rem,1.35vw,.88rem);
+  line-height: 1.65; text-align: left;
+  max-width: min(90vw, 820px); width: 100%;
+  box-shadow: var(--shadow-md);
+  white-space: pre;
+}
+.code-comment { color: #6C5CE7; }
+.code-hi      { color: var(--amber); }
+.code-green   { color: #55efc4; }
+.code-dim     { opacity: .45; }
+
+.token-panel {
+  display: flex; flex-direction: column; gap: .35rem;
+  width: 100%; max-width: min(90vw, 560px);
+}
+.token-bar-wrap { display: flex; align-items: center; gap: .6rem; }
+.token-label {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.72rem,1.4vw,.95rem); min-width: 80px; text-align: right;
+}
+.token-bar {
+  height: clamp(22px,3.5vh,34px); border-radius: 9px;
+  border: 2px solid var(--navy); display: flex; align-items: center;
+  padding: 0 .6rem; font-weight: 700;
+  font-size: clamp(.6rem,1.2vw,.8rem); font-family: 'Caveat', cursive;
+}
+.token-bar.fat  { width: 100%; background: rgba(224,72,58,.2); border-color: var(--red); }
+.token-bar.lean { width: 30%; background: rgba(46,175,125,.2); border-color: var(--green); }
+.token-bar.ondemand { width: 12%; background: rgba(108,92,231,.15); border-color: #6C5CE7; }
+
+.file-tree {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: clamp(.7rem,1.4vw,.9rem);
+  text-align: left; line-height: 2;
+  color: var(--navy);
+}
+.file-tree .dir  { color: #6C5CE7; font-weight: 700; }
+.file-tree .file { color: var(--sky); }
+.file-tree .note { color: rgba(17,23,44,.45); font-style: italic; font-size: .9em; }
+</style>
+</head>
+<body data-ep-label="S2·E4 · Progressive Disclosure" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ============ SLIDE 1: TITLE ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">SEASON 2 · EPISODE 4</span><span class="bn">সিজন ২ · এপিসোড ৪</span></div>
+    <h1 class="auto" style="color:#fff;font-size:clamp(2.2rem,9vw,5.8rem);line-height:.9">
+      <span class="en">PROGRESSIVE<br><span style="color:#6C5CE7">DISCLOSURE</span></span>
+      <span class="bn">প্রগ্রেসিভ<br><span style="color:#6C5CE7">ডিসক্লোজার</span></span>
+    </h1>
+    <p class="auto" style="color:rgba(255,255,255,.62);font-family:'Caveat',cursive;font-weight:700;font-size:clamp(1rem,2.3vw,1.45rem);letter-spacing:.06em">
+      <span class="en">TOOLS OF THE TRADE — SKILL STRUCTURE &amp; TOKEN ECONOMICS</span>
+      <span class="bn">ট্রেডের সরঞ্জাম — স্কিল স্ট্রাকচার ও টোকেন ইকোনমিক্স</span>
+    </p>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,700px)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">RIFAT · SENIOR ENGINEER, NOP-STATION</span>
+        <span class="en">"My skill just hit 800 lines. And I realized: every single session now loads all of that — whether the skill is even used or not."</span>
+        <span class="bn">"আমার স্কিল এখন ৮০০ লাইনে পৌঁছে গেছে। আর বুঝলাম — প্রতিটি সেশনে সব লোড হচ্ছে, স্কিলটা ব্যবহার হোক বা না হোক।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2: THE HOOK ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">THE PROBLEM</span><span class="bn">সমস্যা</span></div>
+    <h2 class="auto"><span class="en">Rafid's Skill Grew Uncontrolled</span><span class="bn">রাফিদের স্কিল অনিয়ন্ত্রিতভাবে বেড়েছে</span></h2>
+    <div class="row" style="margin-top:.4rem;align-items:stretch">
+      <div class="mini-panel frag pop" style="border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">6 MONTHS AGO</span><span class="bn">৬ মাস আগে</span></div>
+        <div style="font-family:'Fraunces',serif;font-size:clamp(2rem,8vw,4.5rem);font-weight:700;color:var(--navy);margin:.4rem 0;line-height:1">
+          60<span style="font-size:.4em;font-family:'Work Sans',sans-serif;opacity:.55"> <span class="en">lines</span><span class="bn">লাইন</span></span>
+        </div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)"><span class="en">Lean, fast, purposeful</span><span class="bn">পাতলা, দ্রুত, উদ্দেশ্যমূলক</span></div>
+      </div>
+      <div class="mini-panel frag pop" style="border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">TODAY</span><span class="bn">আজ</span></div>
+        <div style="font-family:'Fraunces',serif;font-size:clamp(2rem,8vw,4.5rem);font-weight:700;color:var(--red);margin:.4rem 0;line-height:1">
+          800<span style="font-size:.4em;font-family:'Work Sans',sans-serif;opacity:.55"> <span class="en">lines</span><span class="bn">লাইন</span></span>
+        </div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)"><span class="en">Checklists, templates, API tables — all inlined</span><span class="bn">চেকলিস্ট, টেমপ্লেট, API টেবিল — সব ইনলাইন</span></div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.5rem">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">HABIB · BACKEND ENGINEER</span>
+        <span class="en">"Every morning my system prompt loads 800 lines of that skill body — even on sessions where I never invoke it. That's token waste, every single time."</span>
+        <span class="bn">"প্রতিদিন সকালে আমার সিস্টেম প্রম্পটে ৮০০ লাইনের সেই স্কিল বডি লোড হচ্ছে — এমনকি যেসব সেশনে কখনো ইনভোক করি না সেগুলোতেও। প্রতিবার টোকেন নষ্ট।"</span>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">The root issue: no discipline around <em>when</em> content is loaded. Everything is always loaded. That's the anti-pattern.</span><span class="bn">মূল সমস্যা: কনটেন্ট <em>কখন</em> লোড হবে তা নিয়ে কোনো নিয়মকানুন নেই। সবকিছু সবসময় লোড হয়। এটাই অ্যান্টি-প্যাটার্ন।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3: THE PRINCIPLE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">THE PRINCIPLE</span><span class="bn">নীতি</span></div>
+    <h2 class="auto"><span class="en">Progressive Disclosure</span><span class="bn">প্রগ্রেসিভ ডিসক্লোজার</span></h2>
+    <div class="bigq auto" style="font-size:clamp(1.4rem,5.5vw,3.2rem);max-width:min(90vw,820px)">
+      <span class="en">Load the least possible up front.<br>Reveal more <span style="color:#6C5CE7">only when needed</span>.</span>
+      <span class="bn">শুরুতে যত কম সম্ভব লোড করো।<br><span style="color:#6C5CE7">প্রয়োজনে</span> আরও দেখাও।</span>
+    </div>
+    <div class="caption frag amber"><span class="en">This is a UX principle borrowed for AI skill design: don't show the whole manual the moment someone walks in the door. Give them the handle; they'll ask for the manual when they need it.</span><span class="bn">এটি UI/UX থেকে ধার করা নীতি, এখন AI স্কিল ডিজাইনে প্রয়োগ: কেউ দরজায় ঢোকামাত্র পুরো ম্যানুয়াল দেখিয়ো না। হ্যান্ডেল দাও; প্রয়োজনে তারা ম্যানুয়াল চাইবে।</span></div>
+    <div class="loop frag" style="margin-top:.5rem">
+      <div class="node"><span class="en">Always loaded</span><span class="bn">সবসময় লোড</span></div>
+      <div class="arr">→</div>
+      <div class="node"><span class="en">On invoke</span><span class="bn">ইনভোকে</span></div>
+      <div class="arr">→</div>
+      <div class="node"><span class="en">On demand</span><span class="bn">চাহিদায়</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: THE THREE TIERS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">ARCHITECTURE</span><span class="bn">আর্কিটেকচার</span></div>
+    <h2 class="auto"><span class="en">The Three Tiers</span><span class="bn">তিনটি স্তর</span></h2>
+    <div class="tier-row frag">
+      <div class="tier-item t1">
+        <div class="tier-badge t1">T1</div>
+        <div class="tier-info">
+          <div class="tier-title"><span class="en">Frontmatter — <strong>ALWAYS loaded</strong></span><span class="bn">ফ্রন্টম্যাটার — <strong>সবসময় লোড</strong></span></div>
+          <div class="tier-detail"><span class="en">name, description, trigger conditions — a few lines at most. Every session pays this cost.</span><span class="bn">name, description, trigger conditions — সর্বোচ্চ কয়েক লাইন। প্রতিটি সেশনেই এই খরচ দিতে হয়।</span></div>
+        </div>
+      </div>
+      <div class="tier-item t2">
+        <div class="tier-badge t2">T2</div>
+        <div class="tier-info">
+          <div class="tier-title"><span class="en">SKILL.md body — loaded <strong>ON INVOKE</strong></span><span class="bn">SKILL.md বডি — <strong>ইনভোকে</strong> লোড</span></div>
+          <div class="tier-detail"><span class="en">Instructions, examples, workflow steps. Only paid when the skill is actually called.</span><span class="bn">নির্দেশনা, উদাহরণ, ওয়ার্কফ্লো স্টেপ। স্কিল আসলে ডাকা হলে তবেই খরচ।</span></div>
+        </div>
+      </div>
+      <div class="tier-item t3">
+        <div class="tier-badge t3">T3</div>
+        <div class="tier-info">
+          <div class="tier-title"><span class="en">Reference files &amp; scripts — loaded <strong>ON DEMAND</strong></span><span class="bn">রেফারেন্স ফাইল ও স্ক্রিপ্ট — <strong>চাহিদায়</strong> লোড</span></div>
+          <div class="tier-detail"><span class="en">Large checklists, API tables, templates, bundled scripts. Zero token cost unless actually read or run.</span><span class="bn">বড় চেকলিস্ট, API টেবিল, টেমপ্লেট, বান্ডেলড স্ক্রিপ্ট। না পড়া/না চালানো পর্যন্ত শূন্য টোকেন খরচ।</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Design rule: keep T1 as tiny as possible — those tokens are paid on <em>every single session</em> regardless of whether the skill fires.</span><span class="bn">ডিজাইন নিয়ম: T1 যতটা সম্ভব ছোট রাখো — এই টোকেনগুলো <em>প্রতিটি সেশনে</em> দিতে হয়, স্কিল চালু হোক বা না হোক।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5: WHY IT MATTERS — TOKEN ECONOMICS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">TOKEN ECONOMICS</span><span class="bn">টোকেন ইকোনমিক্স</span></div>
+    <h2 class="auto"><span class="en">Why Tier Design Matters</span><span class="bn">কেন স্তর ডিজাইন গুরুত্বপূর্ণ</span></h2>
+    <div class="row" style="margin-top:.4rem;align-items:flex-start;gap:1.1rem">
+      <div class="mini-panel frag pop" style="border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">FAT SKILL (BEFORE)</span><span class="bn">মোটা স্কিল (আগে)</span></div>
+        <div class="token-panel" style="margin:.5rem 0">
+          <div class="token-bar-wrap">
+            <div class="token-label"><span class="en">T1 (always)</span><span class="bn">T1 (সবসময়)</span></div>
+            <div class="token-bar fat" style="width:100%"><span class="en">~6 000 tok/session</span><span class="bn">~৬০০০ tok/সেশন</span></div>
+          </div>
+        </div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)"><span class="en">800-line body inlined into T1 — always loaded, regardless of use.</span><span class="bn">৮০০ লাইনের বডি T1-এ ইনলাইন — সবসময় লোড, ব্যবহার হোক না হোক।</span></div>
+      </div>
+      <div class="mini-panel frag pop" style="border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">LEAN SKILL (AFTER)</span><span class="bn">পাতলা স্কিল (পরে)</span></div>
+        <div class="token-panel" style="margin:.5rem 0">
+          <div class="token-bar-wrap">
+            <div class="token-label"><span class="en">T1 (always)</span><span class="bn">T1 (সবসময়)</span></div>
+            <div class="token-bar" style="width:30%;background:rgba(108,92,231,.15);border-color:#6C5CE7"><span class="en">~180 tok</span><span class="bn">~১৮০ tok</span></div>
+          </div>
+          <div class="token-bar-wrap">
+            <div class="token-label"><span class="en">T2 (invoke)</span><span class="bn">T2 (ইনভোক)</span></div>
+            <div class="token-bar lean" style="width:55%"><span class="en">~800 tok</span><span class="bn">~৮০০ tok</span></div>
+          </div>
+          <div class="token-bar-wrap">
+            <div class="token-label"><span class="en">T3 (demand)</span><span class="bn">T3 (চাহিদায়)</span></div>
+            <div class="token-bar" style="width:12%;background:rgba(46,175,125,.15);border-color:var(--green)"><span class="en">0</span><span class="bn">০</span></div>
+          </div>
+        </div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)"><span class="en">Router body stays short; heavy refs only load when actually needed.</span><span class="bn">রাউটার বডি ছোট থাকে; ভারী রেফ শুধু দরকারে লোড হয়।</span></div>
+      </div>
+    </div>
+    <div class="caption frag amber"><span class="en">A team with 10 engineers running 3 sessions each = 30 contexts per day. Fat T1 vs lean T1 is a 33× token-cost difference on always-loaded tokens alone.</span><span class="bn">১০ ইঞ্জিনিয়ারের টিম, প্রতিজন ৩টি সেশন = দৈনিক ৩০টি কনটেক্সট। মোটা T1 বনাম পাতলা T1 — শুধু always-loaded টোকেনে ৩৩× খরচের পার্থক্য।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: BUNDLED SCRIPTS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">TIER 3 — PART A</span><span class="bn">স্তর ৩ — অংশ A</span></div>
+    <h2 class="auto"><span class="en">Bundled Scripts — Keep Logic Out of the Body</span><span class="bn">বান্ডেলড স্ক্রিপ্ট — লজিক বডিতে রাখো না</span></h2>
+    <div class="caption frag"><span class="en">A skill can ship a Python or Bash script alongside its SKILL.md. Instead of inlining 150 lines of validation logic, the body simply says: "run scripts/validate.py".</span><span class="bn">একটি স্কিল তার SKILL.md-এর পাশে Python বা Bash স্ক্রিপ্ট পাঠাতে পারে। ১৫০ লাইনের ভ্যালিডেশন লজিক ইনলাইন করার বদলে বডি শুধু বলে: "scripts/validate.py চালাও"।</span></div>
+    <div class="panel frag pop" style="margin-top:.3rem">
+      <svg class="char"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">AGENT</span>
+        <span class="en">"I see the SKILL.md says: <em>run scripts/run.py with the collected params</em>. Let me execute that now."<br><span style="opacity:.5;font-size:.88em">← The script body never sits in the context window unless the agent reads the file.</span></span>
+        <span class="bn">"দেখছি SKILL.md বলছে: <em>কালেক্ট করা প্যারাম দিয়ে scripts/run.py চালাও</em>। এখন এটি চালাই।"<br><span style="opacity:.5;font-size:.88em">← স্ক্রিপ্টের বডি কনটেক্সট উইন্ডোতে থাকে না যতক্ষণ না এজেন্ট ফাইলটি পড়ে।</span></span>
+      </div>
+    </div>
+    <div class="row frag" style="margin-top:.4rem">
+      <span class="tag" style="border-color:#6C5CE7"><span class="en">scripts/validate.py</span><span class="bn">scripts/validate.py</span></span>
+      <span class="tag" style="border-color:#6C5CE7"><span class="en">scripts/run.py</span><span class="bn">scripts/run.py</span></span>
+      <span class="tag" style="border-color:#6C5CE7"><span class="en">scripts/generate.sh</span><span class="bn">scripts/generate.sh</span></span>
+    </div>
+    <div class="caption frag"><span class="en">The script executes when needed — the body only carries the instruction to run it. No wasted tokens on code that sits dormant.</span><span class="bn">স্ক্রিপ্ট দরকার হলে চলে — বডিতে শুধু সেটি চালানোর নির্দেশ থাকে। নিষ্ক্রিয় কোডে কোনো টোকেন নষ্ট হয় না।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: REFERENCE FILES ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">TIER 3 — PART B</span><span class="bn">স্তর ৩ — অংশ B</span></div>
+    <h2 class="auto"><span class="en">Reference Files — Move Heavy Docs Out</span><span class="bn">রেফারেন্স ফাইল — ভারী ডকস বাইরে সরাও</span></h2>
+    <div class="caption frag"><span class="en">Large checklists, API field tables, big templates — move them into <code style="font-family:monospace;background:rgba(108,92,231,.12);padding:.1em .3em;border-radius:4px">references/</code>. SKILL.md just points to them with a single line.</span><span class="bn">বড় চেকলিস্ট, API ফিল্ড টেবিল, বড় টেমপ্লেট — <code style="font-family:monospace;background:rgba(108,92,231,.12);padding:.1em .3em;border-radius:4px">references/</code>-এ সরাও। SKILL.md শুধু একটি লাইনে তাদের দিকে নির্দেশ করে।</span></div>
+    <div class="code-block frag" style="margin-top:.4rem"><span class="code-comment"># In SKILL.md — pointing to a reference, NOT inlining it</span>
+
+<span class="code-hi">## When you need the full API field list:</span>
+Read references/api-fields.md
+
+<span class="code-hi">## When you need the release checklist:</span>
+Read references/release-checklist.md
+
+<span class="code-comment"># The files are NOT in the context window until the agent reads them.</span></div>
+    <div class="panel frag pop" style="margin-top:.4rem">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">HABIB</span>
+        <span class="en">"So the reference file costs zero tokens until I actually need it. If that session never touches the API field list — I paid nothing for it."</span>
+        <span class="bn">"তাহলে রেফারেন্স ফাইল শূন্য টোকেন খরচ করে যতক্ষণ আমার আসলে দরকার না হয়। যে সেশনে API ফিল্ড লিস্ট দরকারই হয় না — সেখানে কিছুই দিতে হয়নি।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8: MULTI-FILE LAYOUT ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">FOLDER STRUCTURE</span><span class="bn">ফোল্ডার কাঠামো</span></div>
+    <h2 class="auto"><span class="en">The Three-Tier Layout</span><span class="bn">তিন-স্তরের কাঠামো</span></h2>
+    <div class="code-block frag" style="margin:0 auto">
+<span class="code-green">.claude/skills/</span>
+<span class="dir">└── my-skill/</span>
+    <span class="code-hi">├── SKILL.md</span>          <span class="code-comment">← T1 frontmatter + T2 router body</span>
+    <span class="code-hi">├── scripts/</span>
+    <span class="code-hi">│   ├── run.py</span>        <span class="code-comment">← T3 bundled logic (never auto-loaded)</span>
+    <span class="code-hi">│   └── validate.sh</span>   <span class="code-comment">← T3 bash helper</span>
+    <span class="code-hi">└── references/</span>
+        <span class="code-hi">├── api-fields.md</span>  <span class="code-comment">← T3 heavy reference (read on demand)</span>
+        <span class="code-hi">├── checklist.md</span>   <span class="code-comment">← T3 release checklist</span>
+        <span class="code-hi">└── template.md</span>    <span class="code-comment">← T3 output template</span>
+    </div>
+    <div class="caption frag"><span class="en">SKILL.md stays short — it is the <strong>router</strong>. Everything heavy lives in <code style="font-family:monospace">scripts/</code> or <code style="font-family:monospace">references/</code> and is pulled in only when the agent actually needs it.</span><span class="bn">SKILL.md ছোট থাকে — এটি <strong>রাউটার</strong>। ভারী সবকিছু <code style="font-family:monospace">scripts/</code> বা <code style="font-family:monospace">references/</code>-এ থাকে এবং এজেন্টের আসলে প্রয়োজন হলে তবেই টানা হয়।</span></div>
+    <div class="row frag" style="margin-top:.3rem">
+      <span class="tag" style="border-color:#6C5CE7"><span class="en">SKILL.md = ROUTER</span><span class="bn">SKILL.md = রাউটার</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">scripts/ = EXECUTORS</span><span class="bn">scripts/ = এক্সিকিউটর</span></span>
+      <span class="tag" style="border-color:var(--green)"><span class="en">references/ = ON-DEMAND DOCS</span><span class="bn">references/ = চাহিদা-অনুযায়ী ডকস</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9: TOKEN ECONOMICS — BEFORE/AFTER ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">THE NUMBERS</span><span class="bn">সংখ্যা</span></div>
+    <h2 class="auto"><span class="en">Before vs After — Token Breakdown</span><span class="bn">আগে বনাম পরে — টোকেন বিশ্লেষণ</span></h2>
+    <div class="row" style="margin-top:.4rem;align-items:flex-start;gap:1.1rem">
+      <div class="mini-panel frag pop" style="border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">BEFORE — FAT BODY</span><span class="bn">আগে — মোটা বডি</span></div>
+        <div style="text-align:left;width:100%;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.9;padding:.3rem .1rem">
+          <span class="en">T1 (always):   <strong style="color:var(--red)">~6 000 tokens</strong><br>T2 (invoke):   <em>already in T1</em><br>T3 (demand):   0<br><br>Sessions/day: 30<br><strong style="color:var(--red)">Always-on cost: 180 000 tok/day</strong></span>
+          <span class="bn">T1 (সবসময়): <strong style="color:var(--red)">~৬০০০ টোকেন</strong><br>T2 (ইনভোক): <em>ইতিমধ্যে T1-এ</em><br>T3 (চাহিদায়): ০<br><br>সেশন/দিন: ৩০<br><strong style="color:var(--red)">সবসময়-চালু খরচ: ১,৮০,০০০ tok/দিন</strong></span>
+        </div>
+      </div>
+      <div class="mini-panel frag pop" style="border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">AFTER — LEAN ROUTER</span><span class="bn">পরে — পাতলা রাউটার</span></div>
+        <div style="text-align:left;width:100%;font-size:clamp(.65rem,1.35vw,.88rem);font-weight:600;line-height:1.9;padding:.3rem .1rem">
+          <span class="en">T1 (always):   <strong style="color:var(--green)">~180 tokens</strong><br>T2 (invoke):   ~800 tokens<br>T3 (demand):   0 unless read<br><br>Sessions/day: 30<br><strong style="color:var(--green)">Always-on cost: 5 400 tok/day</strong></span>
+          <span class="bn">T1 (সবসময়): <strong style="color:var(--green)">~১৮০ টোকেন</strong><br>T2 (ইনভোক): ~৮০০ টোকেন<br>T3 (চাহিদায়): ০ (না পড়লে)<br><br>সেশন/দিন: ৩০<br><strong style="color:var(--green)">সবসময়-চালু খরচ: ৫৪০০ tok/দিন</strong></span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag amber"><span class="en">~33× reduction in always-on token cost — just from moving content to the right tier. Same capability, dramatically lower overhead.</span><span class="bn">~৩৩× হ্রাস সবসময়-চালু টোকেন খরচে — শুধু কনটেন্ট সঠিক স্তরে সরিয়ে। একই সক্ষমতা, নাটকীয়ভাবে কম ওভারহেড।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: LIVE BUILD — THE FAT SKILL ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">LIVE BUILD · STEP 1</span><span class="bn">লাইভ বিল্ড · ধাপ ১</span></div>
+    <h2 class="auto"><span class="en">The Fat Skill — Before Refactor</span><span class="bn">মোটা স্কিল — রিফ্যাক্টরের আগে</span></h2>
+    <div class="code-block frag">
+<span class="code-dim">--- SKILL.md (BEFORE — 800 lines, all inlined) ---</span>
+
+<span class="code-comment"># deploy-check</span>
+description: Run pre-deployment checks for nop-station services
+
+<span class="code-hi">## Steps</span>
+1. Confirm service name and target environment
+2. Run the validation logic:
+   <span class="code-dim">... 150 lines of Python validation logic inlined here ...</span>
+3. Cross-check against the release checklist:
+   <span class="code-dim">... 200-line checklist inlined here ...</span>
+4. Verify all API field constraints:
+   <span class="code-dim">... 90-row API field table inlined here ...</span>
+5. Generate report using the output template:
+   <span class="code-dim">... 80-line Markdown template inlined here ...</span>
+<span class="code-dim">... 280 more lines of accumulated cruft ...</span>
+    </div>
+    <div class="caption frag"><span class="en">Every session that mentions any deployment topic now loads all 800 lines — even if all you asked was "what port does the staging server use?"</span><span class="bn">যেকোনো ডিপ্লয়মেন্ট বিষয় উল্লেখ হলেই প্রতিটি সেশন এখন সব ৮০০ লাইন লোড করে — এমনকি যদি শুধু জিজ্ঞেস করো "স্টেজিং সার্ভারের পোর্ট কত?"</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11: LIVE BUILD — THE EXTRACTION ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">LIVE BUILD · STEP 2</span><span class="bn">লাইভ বিল্ড · ধাপ ২</span></div>
+    <h2 class="auto"><span class="en">Extract the Heavy Parts</span><span class="bn">ভারী অংশ আলাদা করো</span></h2>
+    <div class="row" style="margin-top:.3rem;align-items:flex-start;gap:.9rem">
+      <div class="mini-panel frag pop" style="border-color:#6C5CE7;width:clamp(185px,32vw,340px)">
+        <div class="strip" style="background:#6C5CE7"><span class="en">MOVE TO scripts/run.py</span><span class="bn">scripts/run.py-তে সরাও</span></div>
+        <div class="code-block" style="font-size:clamp(.55rem,1.1vw,.72rem);padding:.6rem .8rem;border-radius:10px;margin-top:.4rem">
+<span class="code-comment"># scripts/run.py</span>
+import sys, json
+
+def run_checks(service, env):
+    <span class="code-comment"># ... 150 lines of</span>
+    <span class="code-comment"># validation logic ...</span>
+    return results
+
+if __name__ == "__main__":
+    data = json.loads(sys.argv[1])
+    print(run_checks(
+        data["service"],
+        data["env"]
+    ))</div>
+      </div>
+      <div class="mini-panel frag pop" style="border-color:var(--green);width:clamp(185px,32vw,340px)">
+        <div class="strip" style="background:var(--green)"><span class="en">MOVE TO references/</span><span class="bn">references/-এ সরাও</span></div>
+        <div style="font-size:clamp(.65rem,1.3vw,.84rem);font-weight:600;line-height:2;text-align:left;padding:.3rem .1rem">
+          <span class="en">• references/release-checklist.md<br>  ← the 200-line checklist<br>• references/api-fields.md<br>  ← the 90-row field table<br>• references/report-template.md<br>  ← the 80-line output template</span>
+          <span class="bn">• references/release-checklist.md<br>  ← ২০০ লাইনের চেকলিস্ট<br>• references/api-fields.md<br>  ← ৯০ সারির ফিল্ড টেবিল<br>• references/report-template.md<br>  ← ৮০ লাইনের আউটপুট টেমপ্লেট</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">T3 content is now in separate files. None of it enters the context window until explicitly read or executed.</span><span class="bn">T3 কনটেন্ট এখন আলাদা ফাইলে। এর কিছুই কনটেক্সট উইন্ডোতে প্রবেশ করে না যতক্ষণ না স্পষ্টভাবে পড়া বা চালানো হয়।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12: LIVE BUILD — SLIM SKILL.MD ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">LIVE BUILD · STEP 3</span><span class="bn">লাইভ বিল্ড · ধাপ ৩</span></div>
+    <h2 class="auto"><span class="en">The Lean SKILL.md — After Refactor</span><span class="bn">পাতলা SKILL.md — রিফ্যাক্টরের পরে</span></h2>
+    <div class="code-block frag">
+<span class="code-dim">--- SKILL.md (AFTER — 28 lines, router only) ---</span>
+
+<span class="code-comment"># deploy-check</span>
+description: Run pre-deployment checks for nop-station services
+
+<span class="code-hi">## Steps</span>
+1. Ask: service name and target environment (staging/prod)
+
+2. Run validation:
+   <span class="code-green">Execute scripts/run.py with {"service": &lt;name&gt;, "env": &lt;env&gt;}</span>
+
+3. Cross-check checklist:
+   <span class="code-green">Read references/release-checklist.md — apply each item</span>
+
+4. Verify API fields if needed:
+   <span class="code-green">Read references/api-fields.md — check constraints for service</span>
+
+5. Generate report:
+   <span class="code-green">Read references/report-template.md — fill in results</span>
+    </div>
+    <div class="row frag" style="margin-top:.4rem">
+      <div class="mini-panel pop" style="border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">BEFORE</span><span class="bn">আগে</span></div>
+        <div style="font-family:'Fraunces',serif;font-size:clamp(1.4rem,4vw,2.5rem);font-weight:700;color:var(--red)">800 <span style="font-size:.45em;color:rgba(17,23,44,.55);font-family:'Work Sans',sans-serif"><span class="en">lines</span><span class="bn">লাইন</span></span></div>
+      </div>
+      <div style="font-family:'Fraunces',serif;font-size:clamp(1.5rem,4vw,2.8rem);opacity:.3;align-self:center">→</div>
+      <div class="mini-panel pop" style="border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">AFTER</span><span class="bn">পরে</span></div>
+        <div style="font-family:'Fraunces',serif;font-size:clamp(1.4rem,4vw,2.5rem);font-weight:700;color:var(--green)">28 <span style="font-size:.45em;color:rgba(17,23,44,.55);font-family:'Work Sans',sans-serif"><span class="en">lines</span><span class="bn">লাইন</span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13: SHAZZAD'S QUESTION ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">TEAM DISCUSSION</span><span class="bn">টিম আলোচনা</span></div>
+    <h2 class="auto"><span class="en">Ankan Asks a Sharp Question</span><span class="bn">অঙ্কন একটি তীক্ষ্ণ প্রশ্ন করে</span></h2>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">SHAZZAD · FULLSTACK ENGINEER</span>
+        <span class="en">"What if the agent forgets to read the reference file? Or skips running the script? The instructions point to them — but what enforces it?"</span>
+        <span class="bn">"যদি এজেন্ট রেফারেন্স ফাইল পড়তে ভুলে যায়? বা স্ক্রিপ্ট চালানো বাদ দেয়? নির্দেশনা তাদের দিকে নির্দেশ করছে — কিন্তু কে নিশ্চিত করবে?"</span>
+      </div>
+    </div>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-amber">RIFAT</span>
+        <span class="en">"Good point. Two answers: (1) make the step wording unambiguous — say 'You MUST read references/checklist.md before generating the report.' (2) test it. Run the skill with a new session and watch what the agent does."</span>
+        <span class="bn">"ভালো পয়েন্ট। দুটি উত্তর: (১) ধাপের ভাষা সুস্পষ্ট করো — বলো 'রিপোর্ট তৈরির আগে references/checklist.md পড়তেই হবে।' (২) পরীক্ষা করো। নতুন সেশনে স্কিল চালাও এবং দেখো এজেন্ট কী করে।"</span>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">The skill is a contract. Explicit imperative language ("You MUST", "Before generating") leaves no room for the agent to skip a required step.</span><span class="bn">স্কিল একটি চুক্তি। স্পষ্ট আদেশমূলক ভাষা ("অবশ্যই করতে হবে", "তৈরির আগে") এজেন্টকে প্রয়োজনীয় ধাপ এড়ানোর সুযোগ দেয় না।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14: GOTCHAS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WATCH OUT</span><span class="bn">সাবধান</span></div>
+    <h2 class="auto"><span class="en">Four Gotchas to Avoid</span><span class="bn">চারটি ভুল এড়াও</span></h2>
+    <div class="row" style="margin-top:.4rem;flex-wrap:wrap;gap:.6rem;justify-content:center">
+      <div class="mini-panel frag pop" style="border-color:var(--amber);width:clamp(170px,28vw,290px)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)">
+          <span class="en">INLINE EVERYTHING</span><span class="bn">সব ইনলাইন করা</span>
+        </div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem)">
+          <span class="en">The habit that created the 800-line problem in the first place. Every "it's easier to paste it here" becomes permanent token tax.</span>
+          <span class="bn">যে অভ্যাসটি শুরুতে ৮০০ লাইনের সমস্যা তৈরি করেছিল। প্রতিটি "এখানে পেস্ট করা সহজ" স্থায়ী টোকেন কর হয়ে যায়।</span>
+        </div>
+      </div>
+      <div class="mini-panel frag pop" style="border-color:var(--amber);width:clamp(170px,28vw,290px)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)">
+          <span class="en">FORGET THE POINTER</span><span class="bn">পয়েন্টার ভুলে যাওয়া</span>
+        </div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem)">
+          <span class="en">Moving a file to references/ without updating SKILL.md to mention it. The agent never knows to read it.</span>
+          <span class="bn">SKILL.md আপডেট না করে ফাইল references/-এ সরানো। এজেন্ট কখনো জানে না সেটি পড়তে হবে।</span>
+        </div>
+      </div>
+      <div class="mini-panel frag pop" style="border-color:var(--amber);width:clamp(170px,28vw,290px)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)">
+          <span class="en">UNDOCUMENTED SCRIPTS</span><span class="bn">অডকুমেন্টেড স্ক্রিপ্ট</span>
+        </div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem)">
+          <span class="en">Shipping scripts/run.py with no usage note in SKILL.md. The agent doesn't know what args it takes or when to call it.</span>
+          <span class="bn">SKILL.md-এ usage নোট ছাড়া scripts/run.py পাঠানো। এজেন্ট জানে না কী আর্গুমেন্ট লাগে বা কখন ডাকতে হয়।</span>
+        </div>
+      </div>
+      <div class="mini-panel frag pop" style="border-color:var(--amber);width:clamp(170px,28vw,290px)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)">
+          <span class="en">DUPLICATE ACROSS TIERS</span><span class="bn">স্তরে স্তরে ডুপ্লিকেট</span>
+        </div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.84rem)">
+          <span class="en">Summarizing a reference file in SKILL.md <em>and</em> keeping the full file. You pay twice — and they drift out of sync.</span>
+          <span class="bn">SKILL.md-এ রেফারেন্স ফাইলের সারসংক্ষেপ রাখা <em>এবং</em> পুরো ফাইলও রাখা। দুবার দিতে হয় — এবং তারা sync থেকে বেরিয়ে যায়।</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 15: QUICK DIAGNOSTIC ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">QUICK DIAGNOSTIC</span><span class="bn">দ্রুত ডায়াগনস্টিক</span></div>
+    <h2 class="auto"><span class="en">Is My Skill Over-Loaded?</span><span class="bn">আমার স্কিল কি অতিরিক্ত লোড?</span></h2>
+    <div class="tier-row frag">
+      <div class="tier-item">
+        <div class="tier-badge t1">✓ OK</div>
+        <div class="tier-info">
+          <div class="tier-title"><span class="en">SKILL.md body is under 50 lines</span><span class="bn">SKILL.md বডি ৫০ লাইনের কম</span></div>
+          <div class="tier-detail"><span class="en">It reads like a router, not an encyclopedia.</span><span class="bn">এটি এনসাইক্লোপিডিয়ার মতো নয়, রাউটারের মতো পড়ায়।</span></div>
+        </div>
+      </div>
+      <div class="tier-item" style="border-color:var(--amber)">
+        <div class="tier-badge" style="background:var(--amber);color:var(--navy)">⚠ CHECK</div>
+        <div class="tier-info">
+          <div class="tier-title"><span class="en">SKILL.md is 50–150 lines</span><span class="bn">SKILL.md ৫০–১৫০ লাইন</span></div>
+          <div class="tier-detail"><span class="en">Look for any block ≥10 lines that could move to references/.</span><span class="bn">≥১০ লাইনের যেকোনো ব্লক খোঁজো যা references/-এ যেতে পারে।</span></div>
+        </div>
+      </div>
+      <div class="tier-item" style="border-color:var(--red)">
+        <div class="tier-badge" style="background:var(--red);color:#fff">✗ REFACTOR</div>
+        <div class="tier-info">
+          <div class="tier-title"><span class="en">SKILL.md is over 150 lines</span><span class="bn">SKILL.md ১৫০ লাইনের বেশি</span></div>
+          <div class="tier-detail"><span class="en">Almost certainly hiding large checklists, templates, or logic that belongs in T3.</span><span class="bn">প্রায় নিশ্চিতভাবে বড় চেকলিস্ট, টেমপ্লেট, বা লজিক লুকিয়ে আছে যা T3-এ থাকা উচিত।</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.4rem">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">HABIB</span>
+        <span class="en">"I ran this check on all our skills. Six were over 150 lines. After extraction, the heaviest one went from 620 to 34 lines."</span>
+        <span class="bn">"আমাদের সব স্কিলে এই চেক চালালাম। ছয়টা ১৫০ লাইনের বেশি ছিল। extraction-এর পর সবচেয়ে ভারীটা ৬২০ থেকে ৩৪ লাইনে নেমে এল।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 16: RECAP PRINCIPLES ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#6C5CE7;color:#fff"><span class="en">RECAP</span><span class="bn">পুনরাবৃত্তি</span></div>
+    <h2 class="auto"><span class="en">The Rules of Progressive Disclosure</span><span class="bn">প্রগ্রেসিভ ডিসক্লোজারের নিয়ম</span></h2>
+    <div class="tier-row frag">
+      <div class="tier-item t1">
+        <div class="tier-badge t1">1</div>
+        <div class="tier-info">
+          <div class="tier-title"><span class="en">T1 frontmatter must be tiny — it is paid on every session.</span><span class="bn">T1 ফ্রন্টম্যাটার অবশ্যই ছোট — প্রতিটি সেশনে এটি পরিশোধ করতে হয়।</span></div>
+        </div>
+      </div>
+      <div class="tier-item t2">
+        <div class="tier-badge t2">2</div>
+        <div class="tier-info">
+          <div class="tier-title"><span class="en">T2 body is the router — instructions and pointers, not content.</span><span class="bn">T2 বডি হলো রাউটার — নির্দেশনা ও পয়েন্টার, কনটেন্ট নয়।</span></div>
+        </div>
+      </div>
+      <div class="tier-item t3">
+        <div class="tier-badge t3">3</div>
+        <div class="tier-info">
+          <div class="tier-title"><span class="en">T3 is free until used — put everything heavy here.</span><span class="bn">T3 ব্যবহারের আগে বিনামূল্যে — সব ভারী জিনিস এখানে রাখো।</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="row frag" style="margin-top:.5rem">
+      <span class="tag" style="border-color:#6C5CE7"><span class="en">THREE TIERS</span><span class="bn">তিনটি স্তর</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">BUNDLED SCRIPTS</span><span class="bn">বান্ডেলড স্ক্রিপ্ট</span></span>
+      <span class="tag" style="border-color:var(--green)"><span class="en">REFERENCE FILES</span><span class="bn">রেফারেন্স ফাইল</span></span>
+      <span class="tag"><span class="en">LEAN BODY</span><span class="bn">পাতলা বডি</span></span>
+    </div>
+    <div class="char-summary frag">
+      <span class="en">Next → <strong>Episode 5: MCP &amp; Tools</strong> — Reaching Beyond the Skill Layer.<br>When your agent needs to call external APIs, query databases, or run cloud commands — MCP is how you wire that up cleanly.</span>
+      <span class="bn b">পরবর্তী → <strong>এপিসোড ৫: MCP ও টুলস</strong> — স্কিল লেয়ারের বাইরে পৌঁছানো।<br>যখন তোমার এজেন্টকে বাহ্যিক API কল করতে, ডেটাবেজ কোয়েরি দিতে, বা ক্লাউড কমান্ড চালাতে হয় — MCP হলো সেটি পরিষ্কারভাবে সংযুক্ত করার উপায়।</span>
+    </div>
+  </div>
+</section>
+
+</main><!-- /deck -->
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<div class="hint">← → to navigate · space to advance</div>
+<script src="../../assets/deck.js"></script>
+<script data-goatcounter="https://jiteshsureka.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S2·E2 — Context Engineering · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+.hierarchy-stack {
+  display: flex; flex-direction: column-reverse; gap: .45rem;
+  width: 100%; max-width: min(90vw, 720px); align-items: stretch;
+}
+.hier-level {
+  background: var(--paper); border: 2.5px solid var(--navy);
+  border-radius: 14px; padding: .42em 1em;
+  display: flex; align-items: center; gap: .75rem;
+  box-shadow: var(--shadow-sm);
+  font-family: 'Work Sans', sans-serif; font-weight: 600;
+  font-size: clamp(.72rem, 1.5vw, .95rem);
+}
+.hier-level .hl-label {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.85rem, 1.7vw, 1.1rem); min-width: 170px;
+}
+.hier-level .hl-path {
+  font-family: monospace; font-size: clamp(.6rem, 1.2vw, .78rem);
+  opacity: .6; flex: 1;
+}
+.hier-level.l-managed { border-color: #9b59b6; background: rgba(155,89,182,.07); }
+.hier-level.l-user    { border-color: var(--blue); background: rgba(73,146,193,.07); }
+.hier-level.l-project { border-color: var(--amber); background: rgba(251,175,50,.09); }
+.hier-level.l-subdir  { border-color: var(--green); background: rgba(46,175,125,.08); }
+.hier-badge {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.72rem, 1.4vw, .9rem);
+  padding: .18em .7em; border-radius: 9px; white-space: nowrap;
+}
+
+.claude-pre {
+  text-align: left; font-family: monospace;
+  font-size: clamp(.62rem, 1.3vw, .83rem);
+  max-width: min(92vw, 760px); width: 100%;
+  background: var(--navy); color: #e8f0fe;
+  border-radius: 14px; padding: 1rem 1.3rem;
+  box-shadow: var(--shadow-md); line-height: 1.75;
+  white-space: pre; overflow-x: auto;
+}
+.claude-pre .c-comment { color: rgba(255,255,255,.35); }
+.claude-pre .c-head    { color: var(--amber); font-weight: 700; }
+.claude-pre .c-key     { color: #7ec8e3; }
+.claude-pre .c-val     { color: #b5e48c; }
+
+.mem-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(.5rem,1.5vw,1.1rem); width: 100%; max-width: min(90vw,700px);
+}
+.mem-card {
+  background: var(--paper); border: 2.5px solid var(--navy);
+  border-radius: 16px; padding: clamp(.6rem,1.5vw,1rem);
+  box-shadow: var(--shadow-sm);
+}
+.mem-card .mc-title {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.9rem, 1.8vw, 1.2rem); margin-bottom: .3rem;
+}
+.mem-card .mc-body {
+  font-size: clamp(.62rem, 1.2vw, .8rem); font-weight: 600;
+  line-height: 1.7; color: rgba(17,23,44,.72);
+}
+
+.do-not-list {
+  list-style: none; display: flex; flex-direction: column;
+  gap: .42rem; max-width: min(88vw, 650px); width: 100%;
+}
+.do-not-list li {
+  display: flex; align-items: flex-start; gap: .55rem;
+  font-weight: 600; font-size: clamp(.72rem, 1.4vw, .9rem);
+  padding: .35em .85em; border-radius: 11px;
+  border: 2px solid var(--red); background: rgba(224,72,58,.06);
+  box-shadow: var(--shadow-sm);
+}
+.do-not-list li .icon { flex-shrink: 0; font-size: 1.05em; margin-top: .05em; }
+
+.gotcha-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(.5rem,1.4vw,1rem); width: 100%; max-width: min(90vw,700px);
+}
+.gotcha-card {
+  background: var(--paper); border: 2.5px solid var(--amber);
+  border-radius: 14px; padding: clamp(.55rem,1.3vw,.9rem);
+  box-shadow: var(--shadow-sm);
+}
+.gotcha-card .gc-icon { font-size: 1.4em; margin-bottom: .25rem; }
+.gotcha-card .gc-title {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.88rem,1.7vw,1.1rem); color: var(--navy); margin-bottom: .2rem;
+}
+.gotcha-card .gc-body {
+  font-size: clamp(.6rem,1.15vw,.78rem); font-weight: 600;
+  color: rgba(17,23,44,.7); line-height: 1.65;
+}
+</style>
+</head>
+<body data-ep-label="S2·E2 · Context Engineering" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ============ SLIDE 1: TITLE ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">SEASON 2 · EPISODE 2</span><span class="bn">সিজন ২ · এপিসোড ২</span></div>
+    <h1 class="auto" style="color:#fff;font-size:clamp(2.2rem,9vw,5.8rem);line-height:.9">
+      <span class="en">CONTEXT <span style="color:var(--amber)">ENGINEERING</span></span>
+      <span class="bn" style="color:#fff">কনটেক্সট <span style="color:var(--amber)">ইঞ্জিনিয়ারিং</span></span>
+    </h1>
+    <p class="auto" style="color:rgba(255,255,255,.62);font-family:'Caveat',cursive;font-weight:700;font-size:clamp(.95rem,2.2vw,1.45rem);letter-spacing:.06em"><span class="en">WRITING THE RULEBOOK</span><span class="bn">রুলবুক লেখা</span></p>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,680px)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">HABIB · BACKEND ENGINEER, NOP-STATION</span>
+        <span class="en">"I keep telling Claude we use Repository pattern and snake_case for DB columns. Every. Single. Session. Why won't it just remember?"</span>
+        <span class="bn">"আমি বারবার Claude-কে বলি যে আমরা Repository pattern এবং DB কলামে snake_case ব্যবহার করি। প্রতিটা সেশনে। কেন এটা মনে রাখে না?"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2: THE HOOK — HABIB'S PAIN ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">THE PAIN</span><span class="bn">সমস্যা</span></div>
+    <h2 class="auto"><span class="en">Starting From Zero — Every Time</span><span class="bn">প্রতিবার শূন্য থেকে শুরু</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:flex-start">
+      <div class="mini-panel pop" style="width:clamp(185px,30vw,320px)">
+        <div class="strip" style="background:var(--red)"><span class="en">HABIB'S SESSION · MON</span><span class="bn">মৌনিতাের সেশন · সোম</span></div>
+        <div style="text-align:left;font-size:clamp(.65rem,1.3vw,.84rem);font-weight:600;line-height:1.85;padding:.3rem .1rem">
+          <span class="en">"Use Repository pattern"<br>"snake_case for columns"<br>"Target .NET 8"<br>"Follow Clean Architecture"<br>"Write XML doc comments"</span>
+          <span class="bn">"Repository pattern ব্যবহার করো"<br>"কলামে snake_case"<br>".NET 8 টার্গেট করো"<br>"Clean Architecture মানো"<br>"XML doc কমেন্ট লিখো"</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(185px,30vw,320px)">
+        <div class="strip" style="background:var(--red)"><span class="en">HABIB'S SESSION · TUE</span><span class="bn">মৌনিতাের সেশন · মঙ্গল</span></div>
+        <div style="text-align:left;font-size:clamp(.65rem,1.3vw,.84rem);font-weight:600;line-height:1.85;padding:.3rem .1rem">
+          <span class="en">"Use Repository pattern"<br>"snake_case for columns"<br>"Target .NET 8"<br>"Follow Clean Architecture"<br>"Write XML doc comments"</span>
+          <span class="bn">"Repository pattern ব্যবহার করো"<br>"কলামে snake_case"<br>".NET 8 টার্গেট করো"<br>"Clean Architecture মানো"<br>"XML doc কমেন্ট লিখো"</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.4rem">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">HABIB</span>
+        <span class="en">"On Wednesday Claude still used PascalCase column names. I wasted 40 minutes fixing a migration."</span>
+        <span class="bn">"বুধবার Claude আবার PascalCase কলাম নাম ব্যবহার করল। ৪০ মিনিট নষ্ট হলো migration ঠিক করতে।"</span>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Claude doesn't remember between sessions. Each session starts with an empty context window. <strong>You are the memory.</strong> Unless you write it down.</span><span class="bn">Claude সেশনের মধ্যে মনে রাখে না। প্রতিটি সেশন খালি কনটেক্সট উইন্ডো দিয়ে শুরু। <strong>তুমিই মেমরি।</strong> যদি না লিখে রাখো।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3: WHAT IS CONTEXT? ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">THE CONCEPT</span><span class="bn">ধারণা</span></div>
+    <h2 class="auto"><span class="en">Context = What Claude Knows Before You Type</span><span class="bn">কনটেক্সট = তুমি টাইপ করার আগে Claude যা জানে</span></h2>
+    <div class="bigq auto" style="font-size:clamp(1.4rem,5vw,3.2rem);max-width:min(88vw,700px)">
+      <span class="en">Think of it as the <span style="color:var(--amber)">rulebook</span> you hand an apprentice before they touch the codebase.</span>
+      <span class="bn">ভাবো এটা সেই <span style="color:var(--amber)">রুলবুক</span> যা একজন শিক্ষানবিশকে কোডবেস স্পর্শ করার আগে দাও।</span>
+    </div>
+    <div class="row frag" style="margin-top:.6rem;align-items:stretch">
+      <div class="mini-panel pop">
+        <div class="strip" style="background:var(--blue)"><span class="en">WITHOUT CONTEXT</span><span class="bn">কনটেক্সট ছাড়া</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)"><span class="en">Guesses conventions.<br>Uses popular defaults.<br>Contradicts your team norms.<br>Needs correcting every session.</span><span class="bn">কনভেনশন অনুমান করে।<br>জনপ্রিয় ডিফল্ট ব্যবহার করে।<br>টিমের নিয়ম লঙ্ঘন করে।<br>প্রতি সেশনে সংশোধন দরকার।</span></div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--amber)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">WITH CONTEXT</span><span class="bn">কনটেক্সট সহ</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)"><span class="en">Knows your stack instantly.<br>Follows your conventions.<br>Uses correct patterns by default.<br>Team stays consistent.</span><span class="bn">তোমার স্ট্যাক তাৎক্ষণিক জানে।<br>তোমার কনভেনশন মানে।<br>ডিফল্টেই সঠিক প্যাটার্ন ব্যবহার।<br>টিম সামঞ্জস্যপূর্ণ থাকে।</span></div>
+      </div>
+    </div>
+    <div class="caption frag amber"><span class="en">The apprentice analogy: a great apprentice follows the house rules — but only if someone wrote them down and handed them over on day one.</span><span class="bn">শিক্ষানবিশের উপমা: একজন ভালো শিক্ষানবিশ ঘরের নিয়ম মানে — কিন্তু তখনই, যখন কেউ সেগুলো লিখে প্রথম দিনে দিয়েছে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: CLAUDE.md — THE FILE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">THE SOLUTION</span><span class="bn">সমাধান</span></div>
+    <h2 class="auto"><span class="en">Meet <code style="font-family:monospace;font-size:.82em">CLAUDE.md</code></span><span class="bn"><code style="font-family:monospace;font-size:.82em">CLAUDE.md</code> পরিচয়</span></h2>
+    <div class="row frag" style="margin-top:.4rem;align-items:flex-start">
+      <div class="mini-panel pop" style="width:clamp(185px,30vw,310px)">
+        <div class="strip" style="background:var(--sky)"><span class="en">WHAT IT IS</span><span class="bn">এটা কী</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">A Markdown file of project instructions. Lives at the repo root. Auto-loaded by Claude Code at the start of every session — no prompt needed.</span>
+          <span class="bn">প্রোজেক্ট নির্দেশনার একটি Markdown ফাইল। রেপো রুটে থাকে। প্রতিটি সেশনে Claude Code স্বয়ংক্রিয়ভাবে লোড করে — কোনো প্রম্পট লাগে না।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(185px,30vw,310px)">
+        <div class="strip" style="background:var(--green)"><span class="en">WHY COMMIT IT</span><span class="bn">কমিট করার কারণ</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">Checked into git so the whole team shares it. When Rafid adds a convention, Mouneeta and Ankan's sessions pick it up automatically after a pull.</span>
+          <span class="bn">git-এ কমিট করা থাকে তাই পুরো টিম শেয়ার করে। Rafid কোনো কনভেনশন যোগ করলে, pull করার পরে Mouneeta ও Ankan-এর সেশন স্বয়ংক্রিয়ভাবে পায়।</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.4rem">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-amber">AGENT · NEW SESSION</span>
+        <span class="en">"Loading CLAUDE.md… I see this is a nopCommerce plugin targeting .NET 8 with Repository pattern, snake_case columns, and Clean Architecture layers. Ready."</span>
+        <span class="bn">"CLAUDE.md লোড হচ্ছে… দেখছি এটা একটি nopCommerce প্লাগইন, .NET 8 টার্গেট, Repository pattern, snake_case কলাম, এবং Clean Architecture লেয়ার। প্রস্তুত।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5: THE HIERARCHY ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">THE HIERARCHY</span><span class="bn">অনুক্রম</span></div>
+    <h2 class="auto"><span class="en">Four Layers — Most Specific Wins</span><span class="bn">চারটি স্তর — সবচেয়ে নির্দিষ্ট জেতে</span></h2>
+    <div class="hierarchy-stack frag">
+      <div class="hier-level l-managed">
+        <div class="hl-label"><span class="en">Enterprise / Managed</span><span class="bn">এন্টারপ্রাইজ / ম্যানেজড</span></div>
+        <div class="hl-path"><span class="en">org-level policy — locked by admin</span><span class="bn">অর্গ-লেভেল পলিসি — অ্যাডমিন লক</span></div>
+        <span class="hier-badge" style="background:rgba(155,89,182,.15);color:#9b59b6"><span class="en">broadest</span><span class="bn">বিস্তৃত</span></span>
+      </div>
+      <div class="hier-level l-user">
+        <div class="hl-label"><span class="en">User — Personal</span><span class="bn">ব্যবহারকারী — ব্যক্তিগত</span></div>
+        <div class="hl-path">~/.claude/CLAUDE.md</div>
+        <span class="hier-badge" style="background:rgba(73,146,193,.12);color:var(--blue)"><span class="en">personal prefs</span><span class="bn">ব্যক্তিগত পছন্দ</span></span>
+      </div>
+      <div class="hier-level l-project">
+        <div class="hl-label"><span class="en">Project — Shared</span><span class="bn">প্রোজেক্ট — শেয়ার্ড</span></div>
+        <div class="hl-path">./CLAUDE.md &nbsp;(repo root)</div>
+        <span class="hier-badge" style="background:rgba(251,175,50,.15);color:#c47d00"><span class="en">team conventions</span><span class="bn">টিম কনভেনশন</span></span>
+      </div>
+      <div class="hier-level l-subdir" style="border-width:3px">
+        <div class="hl-label"><span class="en">Subdirectory</span><span class="bn">সাব-ডিরেক্টরি</span></div>
+        <div class="hl-path">./src/Payments/CLAUDE.md &nbsp;(example)</div>
+        <span class="hier-badge" style="background:rgba(46,175,125,.15);color:#1a7a55;font-size:clamp(.72rem,1.4vw,.88rem)"><span class="en">most specific — overrides above</span><span class="bn">সবচেয়ে নির্দিষ্ট — উপরেরটা ওভাররাইড</span></span>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">They stack — deeper files add to or override higher ones. Enterprise policy always wins over personal preferences. Subdir always wins over root.</span><span class="bn">এগুলো স্তূপ হয় — গভীর ফাইলগুলো উপরেরগুলোকে যোগ বা ওভাররাইড করে। এন্টারপ্রাইজ পলিসি সবসময় ব্যক্তিগত পছন্দের উপর জেতে। Subdir সবসময় root-এর উপর জেতে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: WHAT GOES IN CLAUDE.md ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">WHAT TO WRITE</span><span class="bn">কী লিখবে</span></div>
+    <h2 class="auto"><span class="en">The Four Sections That Matter</span><span class="bn">চারটি গুরুত্বপূর্ণ বিভাগ</span></h2>
+    <div class="row frag" style="margin-top:.3rem;align-items:flex-start;flex-wrap:wrap;gap:.6rem">
+      <div class="mini-panel pop" style="min-width:clamp(140px,20vw,200px)">
+        <div class="strip" style="background:var(--sky)"><span class="en">BUILD &amp; TEST</span><span class="bn">বিল্ড ও টেস্ট</span></div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem)"><span class="en">How to build, run, and test. Exact commands. No guessing.</span><span class="bn">বিল্ড, রান ও টেস্ট কমান্ড। হুবহু। অনুমানের দরকার নেই।</span></div>
+      </div>
+      <div class="mini-panel pop" style="min-width:clamp(140px,20vw,200px)">
+        <div class="strip" style="background:var(--blue)"><span class="en">CONVENTIONS</span><span class="bn">কনভেনশন</span></div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem)"><span class="en">Naming, formatting, patterns. What you'd tell a new hire on day one.</span><span class="bn">নামকরণ, ফরম্যাটিং, প্যাটার্ন। নতুন কাউকে প্রথম দিন কী বলতে।</span></div>
+      </div>
+      <div class="mini-panel pop" style="min-width:clamp(140px,20vw,200px)">
+        <div class="strip" style="background:var(--navy);color:#fff"><span class="en">ARCHITECTURE</span><span class="bn">আর্কিটেকচার</span></div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem)"><span class="en">Layer map. Where things live. Key entry points. Module boundaries.</span><span class="bn">লেয়ার ম্যাপ। জিনিস কোথায় থাকে। মূল এন্ট্রি পয়েন্ট। মডিউল সীমা।</span></div>
+      </div>
+      <div class="mini-panel pop" style="min-width:clamp(140px,20vw,200px);border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">DO NOT</span><span class="bn">করবেন না</span></div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem)"><span class="en">Hard guardrails. Never touch production DB. No jQuery. Never disable auth middleware.</span><span class="bn">কঠোর গার্ডরেইল। প্রোডাকশন DB স্পর্শ নয়। jQuery নয়। auth middleware বন্ধ নয়।</span></div>
+      </div>
+    </div>
+    <pre class="claude-pre frag" style="margin-top:.5rem">
+<span class="c-head">## Commands</span>
+<span class="c-key">build:</span>   <span class="c-val">dotnet build src/Nop.Plugin.Widgets.FeaturedBanner.sln</span>
+<span class="c-key">test:</span>    <span class="c-val">dotnet test --no-build --verbosity normal</span>
+<span class="c-key">watch:</span>   <span class="c-val">dotnet watch --project src/Nop.Plugin.Widgets.FeaturedBanner</span>
+
+<span class="c-head">## Conventions</span>
+<span class="c-val">- Repository pattern for all data access (IRepository&lt;T&gt;)</span>
+<span class="c-val">- snake_case for all database column names</span>
+<span class="c-val">- XML doc comments on all public methods</span></pre>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: WHAT DOESN'T BELONG ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">WHAT DOESN'T BELONG</span><span class="bn">যা রাখা উচিত নয়</span></div>
+    <h2 class="auto"><span class="en">Keep CLAUDE.md Lean</span><span class="bn">CLAUDE.md হালকা রাখো</span></h2>
+    <ul class="do-not-list">
+      <li class="frag pop"><span class="icon">🔑</span><div><span class="en"><strong>Secrets and API keys.</strong> Never. They belong in .env files and secret managers — not in a committed Markdown file.</span><span class="bn"><strong>সিক্রেট ও API কি।</strong> কখনো না। সেগুলো .env ফাইল ও সিক্রেট ম্যানেজারে — কমিট করা Markdown ফাইলে নয়।</span></div></li>
+      <li class="frag pop"><span class="icon">📂</span><div><span class="en"><strong>Giant file dumps.</strong> Don't paste 500 lines of schema. Link to the schema file instead: <code>See: src/Data/schema.sql</code></span><span class="bn"><strong>বিশাল ফাইল পেস্ট।</strong> ৫০০ লাইনের স্কিমা পেস্ট করবেন না। বরং লিঙ্ক করুন: <code>See: src/Data/schema.sql</code></span></div></li>
+      <li class="frag pop"><span class="icon">🎯</span><div><span class="en"><strong>Per-task instructions.</strong> "Today we're building the banner widget" belongs in the prompt, not in the shared rulebook.</span><span class="bn"><strong>প্রতি-টাস্কের নির্দেশনা।</strong> "আজ আমরা banner widget বানাচ্ছি" — এটা প্রম্পটে যাবে, শেয়ার্ড রুলবুকে নয়।</span></div></li>
+      <li class="frag pop"><span class="icon">📝</span><div><span class="en"><strong>Anything that changes per-run.</strong> Feature flags, ticket numbers, environment URLs, current sprint goals — these are dynamic, not structural.</span><span class="bn"><strong>প্রতি-রানে পরিবর্তিত জিনিস।</strong> ফিচার ফ্ল্যাগ, টিকেট নম্বর, পরিবেশ URL, বর্তমান স্প্রিন্ট লক্ষ্য — এগুলো গতিশীল, কাঠামোগত নয়।</span></div></li>
+    </ul>
+    <div class="caption frag amber"><span class="en">Rule of thumb: if it's true today AND will still be true six months from now, it belongs in CLAUDE.md. Otherwise, put it in the prompt.</span><span class="bn">থাম্বের নিয়ম: আজ সত্য এবং ছয় মাস পরেও সত্য থাকবে — তাহলে CLAUDE.md-এ। নইলে প্রম্পটে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8: MEMORY vs CLAUDE.md ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">TWO SYSTEMS</span><span class="bn">দুটি সিস্টেম</span></div>
+    <h2 class="auto"><span class="en">Memory vs <code style="font-family:monospace;font-size:.82em">CLAUDE.md</code></span><span class="bn">মেমরি বনাম <code style="font-family:monospace;font-size:.82em">CLAUDE.md</code></span></h2>
+    <div class="mem-grid frag">
+      <div class="mem-card" style="border-color:var(--sky)">
+        <div class="mc-title" style="color:var(--sky)"><span class="en">Claude Memory</span><span class="bn">Claude মেমরি</span></div>
+        <div class="mc-body">
+          <span class="en">Persistent facts Claude saves across sessions automatically. Three types:<br>• <strong>User</strong> — your personal preferences<br>• <strong>Project</strong> — project-specific facts Claude learned<br>• <strong>Feedback</strong> — corrections you gave it<br><br>Managed by Claude. Not in git. Personal to you.</span>
+          <span class="bn">Claude স্বয়ংক্রিয়ভাবে সেশন জুড়ে সংরক্ষিত তথ্য। তিন ধরন:<br>• <strong>ব্যবহারকারী</strong> — তোমার ব্যক্তিগত পছন্দ<br>• <strong>প্রোজেক্ট</strong> — Claude শেখা প্রোজেক্ট তথ্য<br>• <strong>ফিডব্যাক</strong> — তুমি যে সংশোধন দিয়েছ<br><br>Claude পরিচালিত। git-এ নেই। তোমার ব্যক্তিগত।</span>
+        </div>
+      </div>
+      <div class="mem-card" style="border-color:var(--amber)">
+        <div class="mc-title" style="color:#c47d00"><span class="en">CLAUDE.md</span><span class="bn">CLAUDE.md</span></div>
+        <div class="mc-body">
+          <span class="en">A committed Markdown file you write and own. Shared team rulebook.<br><br>• <strong>You write it</strong> — explicit, intentional<br>• <strong>Committed to git</strong> — whole team shares it<br>• <strong>Reviewed in PRs</strong> — evolves with the codebase<br><br>You control it completely. Transparent to everyone.</span>
+          <span class="bn">তুমি লেখা একটি কমিটেড Markdown ফাইল। শেয়ার্ড টিম রুলবুক।<br><br>• <strong>তুমি লিখো</strong> — সুস্পষ্ট, ইচ্ছাকৃত<br>• <strong>git-এ কমিটেড</strong> — পুরো টিম শেয়ার করে<br>• <strong>PR-এ রিভিউ</strong> — কোডবেসের সাথে বিবর্তিত<br><br>তুমি সম্পূর্ণ নিয়ন্ত্রণ করো। সবার কাছে স্বচ্ছ।</span>
+        </div>
+      </div>
+      <div class="mem-card" style="border-color:var(--green);grid-column:1/-1">
+        <div class="mc-title" style="color:var(--green)"><span class="en">Use both together</span><span class="bn">দুটো একসাথে ব্যবহার করো</span></div>
+        <div class="mc-body">
+          <span class="en">Memory is Claude's private notepad. CLAUDE.md is the team's shared contract. They complement each other — memory for personal shortcuts, CLAUDE.md for team standards that everyone agrees on.</span>
+          <span class="bn">মেমরি হলো Claude-এর প্রাইভেট নোটপ্যাড। CLAUDE.md হলো টিমের শেয়ার্ড চুক্তি। এরা পরস্পরের পরিপূরক — ব্যক্তিগত শর্টকাটের জন্য মেমরি, সবাই একমত টিম স্ট্যান্ডার্ডের জন্য CLAUDE.md।</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9: PROJECT vs USER INSTRUCTIONS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">PROJECT vs PERSONAL</span><span class="bn">প্রোজেক্ট বনাম ব্যক্তিগত</span></div>
+    <h2 class="auto"><span class="en">Shared Team Rules vs Personal Style</span><span class="bn">শেয়ার্ড টিম নিয়ম বনাম ব্যক্তিগত স্টাইল</span></h2>
+    <div class="row frag" style="align-items:flex-start;margin-top:.3rem">
+      <div class="mini-panel pop" style="width:clamp(195px,32vw,340px)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">PROJECT · ./CLAUDE.md</span><span class="bn">প্রোজেক্ট · ./CLAUDE.md</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.25vw,.83rem)"><span class="en">✓ Build &amp; test commands<br>✓ Architectural decisions<br>✓ Team coding conventions<br>✓ "DO NOT" rules the whole team agreed on<br>✓ Module structure overview<br><br><em>Rafid, Mouneeta, Ankan all read the same file.</em></span><span class="bn">✓ বিল্ড ও টেস্ট কমান্ড<br>✓ আর্কিটেকচারাল সিদ্ধান্ত<br>✓ টিম কোডিং কনভেনশন<br>✓ পুরো টিম একমত "করবেন না" নিয়ম<br>✓ মডিউল স্ট্রাকচার সারসংক্ষেপ<br><br><em>Rafid, Mouneeta, Ankan সবাই একই ফাইল পড়ে।</em></span></div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(195px,32vw,340px);border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)"><span class="en">USER · ~/.claude/CLAUDE.md</span><span class="bn">ব্যবহারকারী · ~/.claude/CLAUDE.md</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.25vw,.83rem)"><span class="en">✓ Preferred response language<br>✓ Personal formatting style<br>✓ "Always explain diffs before applying"<br>✓ Personal shortcuts and aliases<br>✓ Cross-project defaults<br><br><em>Applies to all your sessions, every project.</em></span><span class="bn">✓ পছন্দের উত্তরের ভাষা<br>✓ ব্যক্তিগত ফরম্যাটিং স্টাইল<br>✓ "প্রয়োগের আগে সবসময় diff ব্যাখ্যা করো"<br>✓ ব্যক্তিগত শর্টকাট ও এলিয়াস<br>✓ ক্রস-প্রোজেক্ট ডিফল্ট<br><br><em>তোমার সব সেশনে, প্রতিটি প্রোজেক্টে প্রযোজ্য।</em></span></div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.4rem">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">HABIB</span>
+        <span class="en">"I put 'always respond in short paragraphs' in my <em>~/.claude/CLAUDE.md</em>. That's mine. The Repository pattern rule lives in the repo's CLAUDE.md — it's everyone's."</span>
+        <span class="bn">"আমি 'সবসময় সংক্ষিপ্ত প্যারায় উত্তর দাও' আমার <em>~/.claude/CLAUDE.md</em>-এ রেখেছি। সেটা আমার। Repository pattern নিয়ম রেপোর CLAUDE.md-এ থাকে — সেটা সবার।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: TOKEN ECONOMICS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--navy);color:#fff"><span class="en">TOKEN ECONOMICS</span><span class="bn">টোকেন অর্থনীতি</span></div>
+    <h2 class="auto"><span class="en">Every Session Pays the CLAUDE.md Tax</span><span class="bn">প্রতিটি সেশন CLAUDE.md কর দেয়</span></h2>
+    <div class="bigq auto" style="font-size:clamp(1.2rem,4.5vw,2.8rem);max-width:min(88vw,700px)">
+      <span class="en">CLAUDE.md is loaded into the context window of <span style="color:var(--amber)">every single session</span>. Every token in it is billed every time.</span>
+      <span class="bn">CLAUDE.md <span style="color:var(--amber)">প্রতিটি সেশনের</span> কনটেক্সট উইন্ডোতে লোড হয়। এর প্রতিটি টোকেন প্রতিবার বিল হয়।</span>
+    </div>
+    <div class="row frag" style="margin-top:.5rem;align-items:stretch">
+      <div class="mini-panel pop" style="border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">DO THIS</span><span class="bn">এটা করো</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">Keep it under ~100 lines. Link to files for detail: <code>See architecture diagram: docs/arch.md</code><br>One crisp sentence per convention beats a paragraph every time.</span>
+          <span class="bn">~১০০ লাইনের মধ্যে রাখো। বিস্তারিতের জন্য ফাইল লিঙ্ক করো: <code>See architecture diagram: docs/arch.md</code><br>কনভেনশনের জন্য একটি স্পষ্ট বাক্য একটি প্যারার চেয়ে সবসময় ভালো।</span>
+        </div>
+      </div>
+      <div class="mini-panel pop" style="border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">NOT THIS</span><span class="bn">এটা নয়</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)">
+          <span class="en">A 1,200-line CLAUDE.md that inlines the full database schema, every entity doc, and lengthy explanations of every architectural decision made since 2019.</span>
+          <span class="bn">১,২০০ লাইনের CLAUDE.md যেখানে পুরো ডেটাবেস স্কিমা, প্রতিটি এন্টিটি ডক, এবং ২০১৯ সাল থেকে নেওয়া প্রতিটি আর্কিটেকচারাল সিদ্ধান্তের দীর্ঘ ব্যাখ্যা আছে।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag amber"><span class="en">A 50-line CLAUDE.md loaded 100 times costs fewer tokens than a 500-line one loaded 100 times. And shorter files are read more carefully anyway.</span><span class="bn">৫০ লাইনের CLAUDE.md ১০০ বার লোড করলে ৫০০ লাইনের চেয়ে কম টোকেন খরচ হয়। আর ছোট ফাইল আরও মনোযোগ দিয়ে পড়া হয়।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11: LIVE BUILD — PART 1 ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">LIVE BUILD · PART 1</span><span class="bn">লাইভ বিল্ড · পর্ব ১</span></div>
+    <h2 class="auto"><span class="en">Authoring a CLAUDE.md — Stack &amp; Commands</span><span class="bn">CLAUDE.md লেখা — স্ট্যাক ও কমান্ড</span></h2>
+    <div class="panel frag pop" style="margin-bottom:.4rem">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">RIFAT · SENIOR ENGINEER</span>
+        <span class="en">"Let's write the CLAUDE.md for our new nopCommerce loyalty plugin from scratch. Start with what the project is and how to build it."</span>
+        <span class="bn">"চলো আমাদের নতুন nopCommerce loyalty প্লাগইনের CLAUDE.md স্ক্র্যাচ থেকে লিখি। প্রোজেক্টটা কী এবং কীভাবে বিল্ড করতে হয় তা দিয়ে শুরু করি।"</span>
+      </div>
+    </div>
+    <pre class="claude-pre frag">
+<span class="c-head"># nop-station Loyalty Plugin — CLAUDE.md</span>
+
+<span class="c-head">## Stack</span>
+<span class="c-val">- .NET 8 · nopCommerce 4.70 plugin</span>
+<span class="c-val">- C# 12 · Entity Framework Core (Code First)</span>
+<span class="c-val">- Razor views (.cshtml) · Bootstrap 5 for admin UI</span>
+<span class="c-val">- SQL Server (dev) / PostgreSQL (prod)</span>
+<span class="c-val">- xUnit for tests</span>
+
+<span class="c-head">## Commands</span>
+<span class="c-key">build:   </span><span class="c-val">dotnet build Nop.Plugin.Misc.Loyalty.sln</span>
+<span class="c-key">test:    </span><span class="c-val">dotnet test --no-build --verbosity normal</span>
+<span class="c-key">migrate: </span><span class="c-val">dotnet ef migrations add &lt;Name&gt; -p src/Data -s src/Web</span>
+<span class="c-key">watch:   </span><span class="c-val">dotnet watch --project src/Web -- run</span>
+<span class="c-comment"># Always run tests before opening a PR</span></pre>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12: LIVE BUILD — PART 2 ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">LIVE BUILD · PART 2</span><span class="bn">লাইভ বিল্ড · পর্ব ২</span></div>
+    <h2 class="auto"><span class="en">Conventions, Architecture &amp; DO NOT</span><span class="bn">কনভেনশন, আর্কিটেকচার ও করবেন না</span></h2>
+    <pre class="claude-pre frag">
+<span class="c-head">## Conventions</span>
+<span class="c-val">- Repository pattern for all data access (IRepository&lt;T&gt; from Nop.Core)</span>
+<span class="c-val">- snake_case for ALL database column names (EF column attribute required)</span>
+<span class="c-val">- XML doc comments on every public method and class</span>
+<span class="c-val">- No raw SQL — use LINQ on IQueryable&lt;T&gt;</span>
+<span class="c-val">- Services go in src/Services, controllers in src/Controllers (plugin MVC)</span>
+
+<span class="c-head">## Architecture</span>
+<span class="c-val">src/</span>
+<span class="c-val">  Core/       — domain models, IRepository contracts, service interfaces</span>
+<span class="c-val">  Data/       — EF mappings, migrations, repository implementations</span>
+<span class="c-val">  Services/   — business logic (stateless, injected via DI)</span>
+<span class="c-val">  Controllers/ — thin; delegates everything to Services</span>
+<span class="c-val">  Views/      — Razor; no business logic in .cshtml</span>
+<span class="c-val">See full diagram: docs/architecture.md</span>
+
+<span class="c-head">## DO NOT</span>
+<span class="c-val">- Never query the production connection string directly</span>
+<span class="c-val">- Never add jQuery — nopCommerce uses vanilla JS + Ajax helpers</span>
+<span class="c-val">- Never disable or bypass nopCommerce permission checks</span>
+<span class="c-val">- Never commit appsettings.json with real credentials</span></pre>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13: GOTCHAS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">GOTCHAS</span><span class="bn">ফাঁদ</span></div>
+    <h2 class="auto"><span class="en">Three Ways Teams Get This Wrong</span><span class="bn">টিমগুলো যে তিন উপায়ে ভুল করে</span></h2>
+    <div class="gotcha-grid frag">
+      <div class="gotcha-card">
+        <div class="gc-icon">🕸️</div>
+        <div class="gc-title"><span class="en">Stale Instructions</span><span class="bn">পুরনো নির্দেশনা</span></div>
+        <div class="gc-body"><span class="en">You migrated from EF 6 to EF Core six months ago but CLAUDE.md still says "use ObjectContext." Claude follows it — confidently — and creates the wrong migration. Treat CLAUDE.md like code: review it when the architecture changes.</span><span class="bn">ছয় মাস আগে EF 6 থেকে EF Core-এ মাইগ্রেট করেছ কিন্তু CLAUDE.md এখনও বলে "ObjectContext ব্যবহার করো।" Claude আত্মবিশ্বাসের সাথে মানে — এবং ভুল migration তৈরি করে। CLAUDE.md-কে কোডের মতো দেখাও: আর্কিটেকচার পরিবর্তন হলে রিভিউ করো।</span></div>
+      </div>
+      <div class="gotcha-card">
+        <div class="gc-icon">⚔️</div>
+        <div class="gc-title"><span class="en">Contradictory Rules</span><span class="bn">পরস্পরবিরোধী নিয়ম</span></div>
+        <div class="gc-body"><span class="en">"Use async everywhere" in ## Conventions and "never make service methods async" in ## DO NOT. Claude picks one arbitrarily and is half-wrong either way. Audit for conflicts before committing.</span><span class="bn">## Conventions-এ "সর্বত্র async ব্যবহার করো" এবং ## DO NOT-এ "service method কখনো async করবেন না।" Claude যেকোনো একটি বেছে নেয় এবং যেভাবেই হোক অর্ধেক ভুল। কমিটের আগে দ্বন্দ্ব পরীক্ষা করো।</span></div>
+      </div>
+      <div class="gotcha-card">
+        <div class="gc-icon">🤯</div>
+        <div class="gc-title"><span class="en">Over-Stuffing</span><span class="bn">অতিরিক্ত ভরা</span></div>
+        <div class="gc-body"><span class="en">Adding every edge-case decision, every historical context note, every "we tried this once and it failed" anecdote. A 1,200-line CLAUDE.md buries the critical rules under noise. Claude weights all tokens equally — your most important rule competes with trivia.</span><span class="bn">প্রতিটি এজ-কেস সিদ্ধান্ত, প্রতিটি ঐতিহাসিক প্রসঙ্গ, প্রতিটি "একবার চেষ্টা করেছিলাম এবং ব্যর্থ হয়েছিলাম" গল্প যোগ করা। ১,২০০ লাইনের CLAUDE.md শব্দের নিচে গুরুত্বপূর্ণ নিয়ম চাপা দেয়। Claude সব টোকেন সমানভাবে ওজন দেয় — তোমার সবচেয়ে গুরুত্বপূর্ণ নিয়ম তুচ্ছ জিনিসের সাথে প্রতিযোগিতা করে।</span></div>
+      </div>
+      <div class="gotcha-card">
+        <div class="gc-icon">🔒</div>
+        <div class="gc-title"><span class="en">Forgetting to Commit It</span><span class="bn">কমিট করতে ভুলে যাওয়া</span></div>
+        <div class="gc-body"><span class="en">Mouneeta writes a great CLAUDE.md but never runs <code>git add CLAUDE.md</code>. Rafid's sessions have no context. The team loses the shared rulebook advantage entirely. Add CLAUDE.md to your repo init checklist.</span><span class="bn">Mouneeta দুর্দান্ত CLAUDE.md লেখে কিন্তু কখনো <code>git add CLAUDE.md</code> রান করে না। Rafid-এর সেশনে কোনো কনটেক্সট নেই। টিম শেয়ার্ড রুলবুকের সুবিধা সম্পূর্ণ হারায়। রেপো init চেকলিস্টে CLAUDE.md যোগ করো।</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14: WHEN CLAUDE IGNORES IT ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">ADVANCED TIP</span><span class="bn">উন্নত টিপ</span></div>
+    <h2 class="auto"><span class="en">When Claude Doesn't Follow the Rules</span><span class="bn">Claude নিয়ম না মানলে</span></h2>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">SHAZZAD · ENGINEER</span>
+        <span class="en">"I have 'snake_case columns' in CLAUDE.md but Claude keeps using PascalCase in new migrations. What's going on?"</span>
+        <span class="bn">"আমার CLAUDE.md-এ 'snake_case কলাম' আছে কিন্তু Claude নতুন migration-এ PascalCase ব্যবহার করতে থাকে। কী হচ্ছে?"</span>
+      </div>
+    </div>
+    <div class="row frag" style="margin-top:.4rem;align-items:flex-start">
+      <div class="mini-panel pop">
+        <div class="strip" style="background:var(--sky)"><span class="en">DIAGNOSE FIRST</span><span class="bn">আগে নির্ণয় করো</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)"><span class="en">Run <code>/status</code> in Claude Code to confirm CLAUDE.md loaded. Check for a conflicting user-level instruction. Verify the file is committed — not just saved.</span><span class="bn">CLAUDE.md লোড হয়েছে কিনা নিশ্চিত করতে Claude Code-এ <code>/status</code> রান করো। কোনো বিরোধী ব্যবহারকারী-স্তরের নির্দেশনা আছে কিনা চেক করো। ফাইলটি কমিটেড কিনা যাচাই করো — শুধু সেভ করা নয়।</span></div>
+      </div>
+      <div class="mini-panel pop">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">FIX IT</span><span class="bn">ঠিক করো</span></div>
+        <div class="bubble" style="font-size:clamp(.65rem,1.3vw,.85rem)"><span class="en">Make the rule more explicit: don't say "snake_case" — say "ALL database column names MUST use snake_case enforced via <code>[Column("column_name")]</code> attribute." Specificity wins.</span><span class="bn">নিয়মটি আরও স্পষ্ট করো: "snake_case" বলো না — বলো "সমস্ত ডেটাবেস কলাম নাম অবশ্যই <code>[Column("column_name")]</code> attribute-এর মাধ্যমে snake_case ব্যবহার করতে হবে।" নির্দিষ্টতা জেতে।</span></div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Vague rules lose to Claude's training data. Be <em>more specific</em> than you think is necessary — Claude will match the specificity level you provide.</span><span class="bn">অস্পষ্ট নিয়ম Claude-এর ট্রেনিং ডেটার কাছে হারে। তুমি যতটা প্রয়োজন মনে করো তার চেয়ে <em>বেশি নির্দিষ্ট</em> হও — Claude তোমার দেওয়া নির্দিষ্টতার স্তরে মিলাবে।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 15: SUBDIRECTORY CLAUDE.md IN PRACTICE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">PRO MOVE</span><span class="bn">প্রো কৌশল</span></div>
+    <h2 class="auto"><span class="en">Subdirectory CLAUDE.md — Scoped Rules</span><span class="bn">সাব-ডিরেক্টরি CLAUDE.md — স্কোপড নিয়ম</span></h2>
+    <div class="caption frag"><span class="en">When one module has fundamentally different conventions — use a subdirectory CLAUDE.md to override just the rules that differ, without polluting the root.</span><span class="bn">যখন একটি মডিউলের মৌলিকভাবে ভিন্ন কনভেনশন থাকে — সাব-ডিরেক্টরি CLAUDE.md ব্যবহার করো শুধু ভিন্ন নিয়মগুলো ওভাররাইড করতে, root দূষিত না করে।</span></div>
+    <div class="loop frag" style="margin-top:.3rem">
+      <div class="node" style="text-align:center"><code>./CLAUDE.md</code><br><span class="en" style="font-size:.7em;opacity:.7">team defaults</span><span class="bn" style="font-size:.7em;opacity:.7">টিম ডিফল্ট</span></div>
+      <div class="arr">+</div>
+      <div class="node" style="text-align:center;border-color:var(--green)"><code>./src/Payments/<br>CLAUDE.md</code><br><span class="en" style="font-size:.7em;opacity:.7">overrides</span><span class="bn" style="font-size:.7em;opacity:.7">ওভাররাইড</span></div>
+      <div class="arr">=</div>
+      <div class="node" style="text-align:center;border-color:var(--amber)"><span class="en" style="font-size:.85em">Final context<br>Claude sees in<br>Payments module</span><span class="bn" style="font-size:.85em">Payments module-এ<br>Claude যে চূড়ান্ত<br>কনটেক্সট দেখে</span></div>
+    </div>
+    <pre class="claude-pre frag" style="margin-top:.45rem">
+<span class="c-comment"># src/Payments/CLAUDE.md — overrides root for this module only</span>
+
+<span class="c-head">## Payments Module — Additional Rules</span>
+<span class="c-val">- All payment amounts stored as DECIMAL(18,4) — never float or double</span>
+<span class="c-val">- Every payment service method must log to IAuditLogger (PCI requirement)</span>
+<span class="c-val">- Card data NEVER stored — redirect to Stripe; never log card numbers</span>
+<span class="c-comment"># Root CLAUDE.md conventions still apply — these add/override only</span></pre>
+    <div class="caption frag"><span class="en">Rafid used this to give the Payments module PCI-specific guardrails without making those rules apply to the rest of the codebase.</span><span class="bn">Rafid এটা ব্যবহার করেছে Payments মডিউলে PCI-নির্দিষ্ট গার্ডরেইল দিতে, বাকি কোডবেসে সেই নিয়ম প্রয়োগ না করেই।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 16: TEAM WORKFLOW ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">TEAM WORKFLOW</span><span class="bn">টিম ওয়ার্কফ্লো</span></div>
+    <h2 class="auto"><span class="en">CLAUDE.md as a Living Document</span><span class="bn">CLAUDE.md একটি জীবন্ত দলিল হিসেবে</span></h2>
+    <div class="row frag" style="align-items:flex-start;margin-top:.35rem">
+      <div class="mini-panel pop" style="width:clamp(180px,28vw,300px)">
+        <div class="strip" style="background:var(--blue)"><span class="en">DAY ONE</span><span class="bn">প্রথম দিন</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.25vw,.82rem)"><span class="en">Rafid creates CLAUDE.md at repo init. Stack + Commands + bare conventions. Commits and announces in standup.</span><span class="bn">Rafid রেপো init-এ CLAUDE.md তৈরি করে। স্ট্যাক + কমান্ড + মূল কনভেনশন। কমিট করে এবং standup-এ জানায়।</span></div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(180px,28vw,300px)">
+        <div class="strip" style="background:var(--sky)"><span class="en">AS YOU WORK</span><span class="bn">কাজ করতে করতে</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.25vw,.82rem)"><span class="en">When Claude gets a convention wrong and you correct it in a PR, update CLAUDE.md in the same PR. Convention changes are code changes.</span><span class="bn">Claude কনভেনশন ভুল করলে এবং তুমি PR-এ ঠিক করলে, একই PR-এ CLAUDE.md আপডেট করো। কনভেনশন পরিবর্তন কোড পরিবর্তন।</span></div>
+      </div>
+      <div class="mini-panel pop" style="width:clamp(180px,28vw,300px)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">QUARTERLY</span><span class="bn">প্রতি তিন মাসে</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.25vw,.82rem)"><span class="en">Review CLAUDE.md as a team. Remove stale rules. Promote common prompts to permanent conventions. Keep it tight.</span><span class="bn">টিম হিসেবে CLAUDE.md রিভিউ করো। পুরনো নিয়ম সরাও। সাধারণ প্রম্পট স্থায়ী কনভেনশনে উন্নীত করো। টাইট রাখো।</span></div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.4rem">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-amber">RIFAT</span>
+        <span class="en">"We made a rule: if you find yourself typing the same instruction to Claude three sessions in a row, that instruction goes into CLAUDE.md in the next PR."</span>
+        <span class="bn">"আমরা একটা নিয়ম করেছি: তিনটি সেশনে একই নির্দেশনা টাইপ করতে দেখলে, পরের PR-এ সেই নির্দেশনা CLAUDE.md-এ যাবে।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 17: WRAP UP ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">WRAP UP</span><span class="bn">সারসংক্ষেপ</span></div>
+    <h2 class="auto"><span class="en">Writing the Rulebook</span><span class="bn">রুলবুক লেখা</span></h2>
+    <div class="row frag" style="margin-top:.4rem;flex-wrap:wrap">
+      <span class="tag" style="border-color:var(--amber)"><span class="en">CLAUDE.md</span><span class="bn">CLAUDE.md</span></span>
+      <span class="tag" style="border-color:var(--blue)"><span class="en">HIERARCHY</span><span class="bn">অনুক্রম</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">MEMORY</span><span class="bn">মেমরি</span></span>
+      <span class="tag" style="border-color:var(--green)"><span class="en">KEEP IT LEAN</span><span class="bn">হালকা রাখো</span></span>
+      <span class="tag" style="border-color:var(--red)"><span class="en">COMMIT IT</span><span class="bn">কমিট করো</span></span>
+    </div>
+    <div class="caption frag amber" style="margin-top:.4rem"><span class="en">Context engineering is not a one-time setup. It's a team habit — write it, commit it, review it, keep it tight.</span><span class="bn">কনটেক্সট ইঞ্জিনিয়ারিং এক-বারের সেটআপ নয়। এটি একটি টিম অভ্যাস — লিখো, কমিট করো, রিভিউ করো, টাইট রাখো।</span></div>
+    <div class="row frag" style="margin-top:.4rem;align-items:flex-start">
+      <div class="mini-panel" style="max-width:min(85vw,560px);border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)"><span class="en">KEY TAKEAWAYS</span><span class="bn">মূল শিক্ষা</span></div>
+        <div class="bubble" style="font-size:clamp(.63rem,1.25vw,.83rem);text-align:left">
+          <span class="en">1. CLAUDE.md auto-loads every session — no prompt needed<br>2. Four levels: Enterprise → User → Project → Subdirectory<br>3. Memory ≠ CLAUDE.md — they serve different purposes<br>4. Token tax: every line costs on every run — stay lean<br>5. Commit it to git — or the team can't benefit from it</span>
+          <span class="bn">১. CLAUDE.md প্রতিটি সেশনে স্বয়ংক্রিয়ভাবে লোড — কোনো প্রম্পট দরকার নেই<br>২. চারটি স্তর: এন্টারপ্রাইজ → ব্যবহারকারী → প্রোজেক্ট → সাব-ডিরেক্টরি<br>৩. মেমরি ≠ CLAUDE.md — এরা ভিন্ন উদ্দেশ্যে কাজ করে<br>৪. টোকেন কর: প্রতিটি লাইন প্রতিটি রানে খরচ হয় — হালকা রাখো<br>৫. git-এ কমিট করো — নইলে টিম উপকৃত হবে না</span>
+        </div>
+      </div>
+    </div>
+    <div class="char-summary frag">
+      <span class="en">Next → <strong>Episode 3:</strong> Building a Skill — The First Lesson.<br>Rafid turns a repeated workflow into a one-word slash command the whole team shares.</span>
+      <span class="bn b">পরবর্তী → <strong>এপিসোড ৩:</strong> স্কিল তৈরি — প্রথম পাঠ।<br>Rafid একটি বারবার ব্যবহৃত ওয়ার্কফ্লোকে একটি এক-শব্দের slash কমান্ডে পরিণত করে যা পুরো টিম শেয়ার করে।</span>
+    </div>
+  </div>
+</section>
+
+</main><!-- /deck -->
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<div class="hint">← → to navigate · space to advance</div>
+<script src="../../assets/deck.js"></script>
+<script data-goatcounter="https://jiteshsureka.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

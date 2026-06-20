@@ -7,6 +7,7 @@ HTML slide decks, navigated with arrow keys. Hosted on GitHub Pages at jiteshsur
 
 ```
 index.html                     — main landing page
+seasons/index.html             — seasons hub (lists all seasons)
 seasons/season-N/index.html    — season landing + episode list
 seasons/season-N/ep-N-*.html   — episode slide decks
 skills/index.html              — skills directory
@@ -53,7 +54,8 @@ Episode files live at: `seasons/season-N/ep-N-slug.html`
 
 | Season | Theme                              | Status       |
 |--------|------------------------------------|--------------|
-| 1      | Parallel Development with Agents   | In production |
+| 1      | Parallel Development with Agents   | Complete ✓    |
+| 2      | The Apprentice's Workshop (Skills & Context) | In production |
 
 ## Adding a new season
 

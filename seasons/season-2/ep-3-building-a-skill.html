@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S2·E3 — Building a Skill: The First Lesson · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+.step-loop {
+  display: flex; flex-wrap: wrap; align-items: center;
+  justify-content: center; gap: .45rem; max-width: min(92vw, 900px);
+}
+.step-loop .snode {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.9rem, 1.9vw, 1.3rem);
+  background: var(--paper); border: 2.5px solid var(--navy);
+  border-radius: 14px; padding: .35em 1em;
+  box-shadow: var(--shadow-sm); text-align: center;
+}
+.step-loop .snode.active { border-color: var(--sky); background: rgba(26,158,215,.1); }
+.step-loop .sarr { font-family: 'Caveat', cursive; font-size: 1.4rem; opacity: .55; }
+
+.cmp-row {
+  display: flex; gap: clamp(.6rem, 2vw, 1.4rem);
+  flex-wrap: wrap; justify-content: center; align-items: stretch;
+  width: 100%;
+}
+.cmp-panel {
+  background: var(--paper); border: 2.5px solid var(--navy);
+  border-radius: 18px; box-shadow: var(--shadow-md);
+  padding: clamp(.6rem, 1.6vw, 1.1rem) clamp(.8rem, 2vw, 1.4rem);
+  flex: 1; min-width: clamp(150px, 22vw, 260px); max-width: clamp(220px, 32vw, 340px);
+}
+.cmp-panel .cmp-title {
+  font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.9rem, 1.8vw, 1.25rem); margin-bottom: .4rem;
+}
+.cmp-panel pre {
+  font-size: clamp(.6rem, 1.2vw, .8rem); line-height: 1.65;
+  background: rgba(17,23,44,.06); border-radius: 8px;
+  padding: .5em .7em; white-space: pre-wrap; word-break: break-all;
+  border: none; box-shadow: none; margin: 0;
+}
+.cmp-panel.good { border-color: var(--green); }
+.cmp-panel.bad  { border-color: var(--red); }
+
+.skill-pre {
+  text-align: left;
+  font-family: monospace;
+  font-size: clamp(.65rem, 1.3vw, .85rem);
+  line-height: 1.7;
+  background: rgba(17,23,44,.06);
+  border-radius: 14px;
+  padding: .9em 1.2em;
+  max-width: min(90vw, 780px);
+  width: 100%;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 2px solid rgba(17,23,44,.12);
+  box-shadow: var(--shadow-sm);
+}
+
+.checklist {
+  list-style: none; display: flex; flex-direction: column;
+  gap: .45rem; text-align: left; max-width: min(88vw, 660px); width: 100%;
+}
+.checklist li {
+  font-weight: 600; font-size: clamp(.78rem, 1.6vw, 1rem);
+  padding: .35em .9em; border-radius: 12px;
+  border: 2px solid var(--navy); background: var(--paper);
+  box-shadow: var(--shadow-sm); display: flex; align-items: flex-start; gap: .5rem;
+}
+.checklist li.bad  { border-color: var(--red);   background: rgba(224,72,58,.07); }
+.checklist li.warn { border-color: var(--amber);  background: rgba(251,175,50,.09); }
+.checklist li .icon { font-size: 1.1em; flex-shrink: 0; padding-top: .05em; }
+</style>
+</head>
+<body data-ep-label="S2·E3 · Building a Skill" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ============ SLIDE 1: TITLE ============ -->
+<section class="slide" style="background:var(--navy)">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">SEASON 2 · EPISODE 3</span><span class="bn">সিজন ২ · এপিসোড ৩</span></div>
+    <h1 class="auto" style="color:#fff;font-size:clamp(2.4rem,9.5vw,5.8rem);line-height:.9">
+      <span class="en">BUILDING A <span style="color:var(--sky)">SKILL</span></span>
+      <span class="bn" style="color:#fff">একটি <span style="color:var(--sky)">স্কিল</span> তৈরি করা</span>
+    </h1>
+    <p class="auto" style="color:rgba(255,255,255,.6);font-family:'Caveat',cursive;font-weight:700;font-size:clamp(.95rem,2.2vw,1.4rem);letter-spacing:.06em">
+      <span class="en">THE FIRST LESSON</span><span class="bn">প্রথম পাঠ</span>
+    </p>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,700px)">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">SHAZZAD · ENGINEER, NOP-STATION</span>
+        <span class="en">"Every release Friday I spend 40 minutes doing the same migration check by hand. Same steps. Every. Single. Week."</span>
+        <span class="bn">"প্রতি রিলিজ শুক্রবার হাতে হাতে একই মাইগ্রেশন চেক করতে ৪০ মিনিট লাগে। একই ধাপ। প্রতি। সপ্তাহে।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 2: HOOK — THE PAIN ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">THE PAIN</span><span class="bn">সমস্যা</span></div>
+    <h2 class="auto"><span class="en">Ankan's Friday Ritual</span><span class="bn">অঙ্কনের শুক্রবারের রীতি</span></h2>
+    <div class="step-loop frag">
+      <div class="snode"><span class="en">1. Check pending migrations</span><span class="bn">১. মুলতুবি মাইগ্রেশন চেক করো</span></div>
+      <div class="sarr">→</div>
+      <div class="snode"><span class="en">2. Verify schema matches models</span><span class="bn">২. স্কিমা মডেলের সাথে মেলে কিনা যাচাই</span></div>
+      <div class="sarr">→</div>
+      <div class="snode"><span class="en">3. Run rollback dry-run</span><span class="bn">৩. রোলব্যাক ড্রাই-রান চালাও</span></div>
+      <div class="sarr">→</div>
+      <div class="snode"><span class="en">4. Confirm no data-loss risk</span><span class="bn">৪. ডেটা-লসের ঝুঁকি নেই নিশ্চিত করো</span></div>
+      <div class="sarr">→</div>
+      <div class="snode"><span class="en">5. Write sign-off note</span><span class="bn">৫. সাইন-অফ নোট লেখো</span></div>
+    </div>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">HABIB · BACKEND ENGINEER</span>
+        <span class="en">"You do this manually every week? One missed step and the release goes sideways. There has to be a better way."</span>
+        <span class="bn">"তুমি প্রতি সপ্তাহ হাতে করো? একটা ধাপ মিস হলে রিলিজ বরবাদ। একটা ভালো উপায় থাকতে হবে।"</span>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Error-prone, slow, and undo-able in one line: <strong>encode it as a Claude Code skill.</strong></span><span class="bn">ভুলপ্রবণ, ধীর, এবং এক লাইনে সমাধানযোগ্য: <strong>এটাকে Claude Code স্কিল হিসেবে এনকোড করো।</strong></span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 3: WHEN TO MAKE A SKILL ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">THE RULE</span><span class="bn">নিয়ম</span></div>
+    <h2 class="auto"><span class="en">When Should You Create a Skill?</span><span class="bn">কখন স্কিল তৈরি করা উচিত?</span></h2>
+    <div class="bigq auto" style="font-size:clamp(1.5rem,5.5vw,3.5rem)">
+      <span class="en">Any repeated multi-step procedure worth capturing once and reusing forever.</span>
+      <span class="bn">যেকোনো বারবার করা বহু-ধাপের পদ্ধতি যা একবার ধরে রাখা এবং বারবার ব্যবহার করার মতো।</span>
+    </div>
+    <div class="row frag" style="margin-top:.6rem;flex-wrap:wrap;gap:.7rem">
+      <span class="tag" style="border-color:var(--sky)"><span class="en">✓ Pre-release checks</span><span class="bn">✓ প্রি-রিলিজ চেক</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">✓ Code review checklists</span><span class="bn">✓ কোড রিভিউ চেকলিস্ট</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">✓ Changelog generation</span><span class="bn">✓ চেঞ্জলগ তৈরি</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">✓ Incident runbooks</span><span class="bn">✓ ইনসিডেন্ট রানবুক</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">✓ Onboarding walkthroughs</span><span class="bn">✓ অনবোর্ডিং ওয়াকথ্রু</span></span>
+      <span class="tag" style="border-color:var(--sky)"><span class="en">✓ Deploy verifications</span><span class="bn">✓ ডিপ্লয় যাচাই</span></span>
+    </div>
+    <div class="caption frag amber"><span class="en">Golden signal: if you've done it by hand more than twice and typed the same instructions to Claude more than once — it's skill material.</span><span class="bn">সোনালী সংকেত: যদি দুইবারের বেশি হাতে করেছ এবং একবারের বেশি Claude-কে একই নির্দেশনা টাইপ করেছ — এটা স্কিলের উপাদান।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 4: THE 4 STEPS OVERVIEW ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">THE BLUEPRINT</span><span class="bn">নির্দেশিকা</span></div>
+    <h2 class="auto"><span class="en">4 Steps to Any Skill</span><span class="bn">যেকোনো স্কিলের ৪টি ধাপ</span></h2>
+    <div class="loop frag" style="gap:.6rem;flex-wrap:wrap;justify-content:center;max-width:min(92vw,860px)">
+      <div class="node" style="border-color:var(--sky);background:rgba(26,158,215,.1)">
+        <strong>1</strong><br>
+        <span class="en">Name &amp; Folder</span><span class="bn">নাম ও ফোল্ডার</span>
+      </div>
+      <div class="arr">→</div>
+      <div class="node" style="border-color:var(--blue);background:rgba(73,146,193,.1)">
+        <strong>2</strong><br>
+        <span class="en">Frontmatter</span><span class="bn">ফ্রন্টম্যাটার</span>
+      </div>
+      <div class="arr">→</div>
+      <div class="node" style="border-color:var(--amber);background:rgba(251,175,50,.1)">
+        <strong>3</strong><br>
+        <span class="en">Body</span><span class="bn">বডি</span>
+      </div>
+      <div class="arr">→</div>
+      <div class="node" style="border-color:var(--green);background:rgba(46,175,125,.1)">
+        <strong>4</strong><br>
+        <span class="en">Test</span><span class="bn">পরীক্ষা</span>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">One file. One job. Four parts. That's the entire skill authoring contract.</span><span class="bn">একটি ফাইল। একটি কাজ। চারটি অংশ। এটাই সম্পূর্ণ স্কিল অথরিং চুক্তি।</span></div>
+    <div class="panel frag pop">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">RIFAT · SENIOR ENGINEER</span>
+        <span class="en">"Think of a skill as a permanent sticky note for Claude — a precise, reusable instruction set that never lives in someone's head."</span>
+        <span class="bn">"স্কিলকে Claude-এর জন্য একটি স্থায়ী স্টিকি নোট মনে করো — একটি নির্ভুল, পুনর্ব্যবহারযোগ্য নির্দেশনা সেট যা কারো মাথায় থাকে না।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 5: STEP 1 — NAME & FOLDER ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">STEP 1 OF 4</span><span class="bn">ধাপ ১ / ৪</span></div>
+    <h2 class="auto"><span class="en">Name &amp; Folder</span><span class="bn">নাম ও ফোল্ডার</span></h2>
+    <pre class="skill-pre frag">
+# Create the skill directory and file
+mkdir -p .claude/skills/migration-check
+touch .claude/skills/migration-check/SKILL.md
+</pre>
+    <div class="row frag" style="margin-top:.5rem;align-items:stretch;gap:1rem">
+      <div class="mini-panel" style="border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">GOOD NAMES</span><span class="bn">ভালো নাম</span></div>
+        <ul style="list-style:none;padding:.3rem 0;font-family:monospace;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:2;text-align:left">
+          <li>migration-check</li>
+          <li>release-notes</li>
+          <li>pr-review-checklist</li>
+          <li>db-backup-verify</li>
+        </ul>
+      </div>
+      <div class="mini-panel" style="border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">BAD NAMES</span><span class="bn">খারাপ নাম</span></div>
+        <ul style="list-style:none;padding:.3rem 0;font-family:monospace;font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:2;text-align:left;color:var(--red)">
+          <li>MyScript</li>
+          <li>stuff</li>
+          <li>do the thing</li>
+          <li>check migrations and also verify schema and rollback</li>
+        </ul>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Kebab-case name = the skill's identity. It becomes the slash command: <code>/migration-check</code>. Keep it a single, clear job.</span><span class="bn">কেবাব-কেস নাম = স্কিলের পরিচয়। এটাই স্ল্যাশ কমান্ড হবে: <code>/migration-check</code>। একটাই স্পষ্ট কাজ রাখো।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 6: STEP 2 — FRONTMATTER ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">STEP 2 OF 4</span><span class="bn">ধাপ ২ / ৪</span></div>
+    <h2 class="auto"><span class="en">Frontmatter — The Trigger</span><span class="bn">ফ্রন্টম্যাটার — ট্রিগার</span></h2>
+    <div class="caption frag"><span class="en">The <code>description</code> field is the trigger. Pack it with the words a user would actually say to invoke this skill.</span><span class="bn"><code>description</code> ফিল্ডই ট্রিগার। এতে সেই শব্দগুলো ভরো যা কোনো ব্যবহারকারী এই স্কিল ডাকতে আসলে বলবে।</span></div>
+    <div class="cmp-row frag" style="margin-top:.4rem">
+      <div class="cmp-panel good">
+        <div class="cmp-title" style="color:var(--green)"><span class="en">✓ GOOD description</span><span class="bn">✓ ভালো বিবরণ</span></div>
+        <pre>---
+name: migration-check
+description: >
+  Run the pre-release database
+  migration check. Use when
+  asked to "check migrations
+  before release", "verify db
+  migrations", "pre-release db
+  check", or "migration sign-off".
+---</pre>
+      </div>
+      <div class="cmp-panel bad">
+        <div class="cmp-title" style="color:var(--red)"><span class="en">✗ BAD description</span><span class="bn">✗ খারাপ বিবরণ</span></div>
+        <pre>---
+name: migration-check
+description: >
+  Checks migrations.
+---</pre>
+        <div style="font-size:clamp(.6rem,1.2vw,.78rem);color:var(--red);font-weight:600;margin-top:.4rem;padding:.3em .5em;background:rgba(224,72,58,.06);border-radius:6px">
+          <span class="en">Too vague — Claude won't know when to use it. No trigger phrases, no context.</span>
+          <span class="bn">অনেক অস্পষ্ট — Claude জানবে না কখন ব্যবহার করতে হবে। কোনো ট্রিগার বাক্য নেই, কোনো প্রসঙ্গ নেই।</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 7: STEP 3 — BODY ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy)"><span class="en">STEP 3 OF 4</span><span class="bn">ধাপ ৩ / ৪</span></div>
+    <h2 class="auto"><span class="en">Body — The Instructions</span><span class="bn">বডি — নির্দেশনা</span></h2>
+    <div class="caption frag"><span class="en">Numbered Markdown steps. Be explicit: what to check, which tools to use, what the expected output looks like.</span><span class="bn">ক্রমিক Markdown ধাপ। স্পষ্ট হও: কী চেক করতে হবে, কোন টুল ব্যবহার করতে হবে, প্রত্যাশিত আউটপুট কেমন হবে।</span></div>
+    <pre class="skill-pre frag">
+## Steps
+
+1. Run `python manage.py showmigrations --list` and collect
+   every unapplied migration.
+
+2. For each unapplied migration, open the file and verify:
+   - No column drop without a safe default
+   - No table rename without an alias period
+   - All new NOT NULL columns have a DB-level default
+
+3. Execute `python manage.py migrate --run-syncdb --dry-run`
+   and confirm exit code 0.
+
+4. Run `python manage.py migrate --fake-initial --dry-run`
+   to simulate rollback path. Confirm no errors.
+
+5. Output a sign-off block:
+   ```
+   Migration Check — PASS/FAIL
+   Checked: &lt;date&gt;
+   Unapplied: &lt;N&gt;
+   Risk: LOW | MEDIUM | HIGH
+   Notes: …
+   ```
+</pre>
+  </div>
+</section>
+
+<!-- ============ SLIDE 8: STEP 4 — TEST ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--green);color:#fff"><span class="en">STEP 4 OF 4</span><span class="bn">ধাপ ৪ / ৪</span></div>
+    <h2 class="auto"><span class="en">Test — Does It Trigger?</span><span class="bn">পরীক্ষা — এটা ট্রিগার হয়?</span></h2>
+    <div class="row frag" style="align-items:stretch;gap:1rem;margin-top:.3rem">
+      <div class="mini-panel" style="border-color:var(--sky)">
+        <div class="strip" style="background:var(--sky)"><span class="en">NATURAL LANGUAGE</span><span class="bn">স্বাভাবিক ভাষা</span></div>
+        <div class="bubble" style="font-size:clamp(.68rem,1.4vw,.92rem)">
+          <span class="en">"Can you check migrations before we release tonight?"</span>
+          <span class="bn">"আজ রাতের রিলিজের আগে কি মাইগ্রেশন চেক করতে পারবে?"</span>
+        </div>
+        <div style="font-size:clamp(.6rem,1.2vw,.78rem);color:var(--green);font-weight:700;margin-top:.4rem">
+          <span class="en">→ Claude reads description, recognises match, invokes skill</span>
+          <span class="bn">→ Claude বিবরণ পড়ে, মিল দেখে, স্কিল চালু করে</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="border-color:var(--blue)">
+        <div class="strip" style="background:var(--blue)"><span class="en">EXPLICIT INVOKE</span><span class="bn">সরাসরি চালু</span></div>
+        <div class="bubble" style="font-family:monospace;font-size:clamp(.72rem,1.4vw,.9rem)">
+          /migration-check
+        </div>
+        <div style="font-size:clamp(.6rem,1.2vw,.78rem);color:var(--blue);font-weight:700;margin-top:.4rem">
+          <span class="en">→ Loads SKILL.md directly, runs all steps in order</span>
+          <span class="bn">→ সরাসরি SKILL.md লোড করে, সব ধাপ ক্রমে চালায়</span>
+        </div>
+      </div>
+    </div>
+    <div class="panel frag pop" style="margin-top:.5rem">
+      <svg class="char bob"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-amber">SHAZZAD</span>
+        <span class="en">"First try — it triggered perfectly on 'verify db migrations'. Ran all five steps, produced the sign-off block. 40 minutes to 90 seconds."</span>
+        <span class="bn">"প্রথমবার — 'verify db migrations'-এ নিখুঁতভাবে ট্রিগার হলো। পাঁচটি ধাপ চালাল, সাইন-অফ ব্লক তৈরি করল। ৪০ মিনিট থেকে ৯০ সেকেন্ড।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 9: LIVE BUILD — INTRO ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">LIVE BUILD</span><span class="bn">লাইভ বিল্ড</span></div>
+    <h2 class="auto"><span class="en">Building "release-notes" End to End</span><span class="bn">"release-notes" শুরু থেকে শেষ পর্যন্ত তৈরি</span></h2>
+    <div class="caption frag"><span class="en">Goal: gather all merged PRs since the last git tag, group them by type (feat/fix/chore/docs), and write a formatted CHANGELOG entry automatically.</span><span class="bn">লক্ষ্য: শেষ git ট্যাগের পর থেকে মার্জ হওয়া সব PR সংগ্রহ করো, ধরন অনুযায়ী (feat/fix/chore/docs) গোষ্ঠীভুক্ত করো, এবং স্বয়ংক্রিয়ভাবে ফর্ম্যাটেড CHANGELOG এন্ট্রি লেখো।</span></div>
+    <div class="row frag" style="margin-top:.4rem">
+      <span class="tag" style="border-color:var(--navy)"><span class="en">FOLDER: .claude/skills/release-notes/</span><span class="bn">ফোল্ডার: .claude/skills/release-notes/</span></span>
+    </div>
+    <div class="row frag" style="margin-top:.3rem">
+      <span class="tag" style="border-color:var(--sky)"><span class="en">FILE: SKILL.md</span><span class="bn">ফাইল: SKILL.md</span></span>
+      <span class="tag" style="border-color:var(--amber)"><span class="en">INVOKED BY: "generate release notes" / /release-notes</span><span class="bn">ট্রিগার: "generate release notes" / /release-notes</span></span>
+    </div>
+    <div class="caption frag amber"><span class="en">Let's build the full SKILL.md — frontmatter and body — right now.</span><span class="bn">এখনই সম্পূর্ণ SKILL.md তৈরি করা যাক — ফ্রন্টম্যাটার এবং বডি।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 10: LIVE BUILD — FRONTMATTER ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">LIVE BUILD · PART 1</span><span class="bn">লাইভ বিল্ড · অংশ ১</span></div>
+    <h2 class="auto"><span class="en">SKILL.md — Frontmatter</span><span class="bn">SKILL.md — ফ্রন্টম্যাটার</span></h2>
+    <pre class="skill-pre frag">
+---
+name: release-notes
+description: >
+  Generate release notes or a CHANGELOG entry for the
+  current release. Use when asked to "generate release
+  notes", "write changelog", "create CHANGELOG entry",
+  "summarise what changed since last tag", or
+  "draft release notes for vX.Y.Z".
+  Gathers merged PRs since the last git tag, groups
+  them by type, and writes a formatted Markdown block.
+---
+</pre>
+    <div class="caption frag"><span class="en">Notice: the description contains every phrase a developer would naturally type. It acts as a semantic search key — the richer it is, the more reliably Claude picks this skill.</span><span class="bn">লক্ষ্য করো: বিবরণে প্রতিটি বাক্য আছে যা একজন ডেভেলপার স্বাভাবিকভাবে টাইপ করতে পারে। এটা একটি সিমান্টিক সার্চ কী হিসেবে কাজ করে — যত সমৃদ্ধ, Claude তত নির্ভরযোগ্যভাবে এই স্কিল বেছে নেয়।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 11: LIVE BUILD — BODY ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">LIVE BUILD · PART 2</span><span class="bn">লাইভ বিল্ড · অংশ ২</span></div>
+    <h2 class="auto"><span class="en">SKILL.md — Body</span><span class="bn">SKILL.md — বডি</span></h2>
+    <pre class="skill-pre frag" style="font-size:clamp(.58rem,1.1vw,.75rem)">
+## Steps
+
+1. Find the last git tag:
+   `git describe --tags --abbrev=0`
+
+2. List all merge commits since that tag:
+   `git log &lt;tag&gt;..HEAD --merges --oneline`
+
+3. For each merge commit, extract the PR title and number.
+   Group by conventional-commit prefix:
+   - `feat:` → ✨ Features
+   - `fix:`  → 🐛 Bug Fixes
+   - `docs:` → 📝 Documentation
+   - `chore:` / other → 🔧 Maintenance
+
+4. Write a Markdown CHANGELOG block in this format:
+   ```
+   ## [vX.Y.Z] — YYYY-MM-DD
+   ### ✨ Features
+   - PR #123 — Add payment retry logic
+   ### 🐛 Bug Fixes
+   - PR #118 — Fix null pointer in OrderService
+   ### 🔧 Maintenance
+   - PR #115 — Bump dependencies
+   ```
+
+5. Ask: "Should I append this to CHANGELOG.md?" and
+   wait for confirmation before writing to disk.
+</pre>
+  </div>
+</section>
+
+<!-- ============ SLIDE 12: ITERATION ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff"><span class="en">ITERATION</span><span class="bn">পুনরাবৃত্তি</span></div>
+    <h2 class="auto"><span class="en">When Things Go Wrong</span><span class="bn">যখন কিছু ঠিক না হয়</span></h2>
+    <div class="cmp-row frag" style="margin-top:.3rem">
+      <div class="cmp-panel" style="border-color:var(--amber)">
+        <div class="cmp-title" style="color:var(--amber)"><span class="en">Problem: doesn't trigger</span><span class="bn">সমস্যা: ট্রিগার হয় না</span></div>
+        <div style="font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.7">
+          <span class="en"><strong>Fix:</strong> Sharpen the description. Add more natural-language variants of the trigger phrase. Think of how a new teammate would phrase the request.</span>
+          <span class="bn"><strong>সমাধান:</strong> বিবরণ তীক্ষ্ণ করো। ট্রিগার বাক্যের আরও স্বাভাবিক রূপ যোগ করো। নতুন একজন টিমমেট কীভাবে অনুরোধ করতো তা ভাবো।</span>
+        </div>
+      </div>
+      <div class="cmp-panel" style="border-color:var(--red)">
+        <div class="cmp-title" style="color:var(--red)"><span class="en">Problem: Claude wanders</span><span class="bn">সমস্যা: Claude ঘুরে বেড়ায়</span></div>
+        <div style="font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.7">
+          <span class="en"><strong>Fix:</strong> Tighten the body. Replace open-ended steps with precise commands. Add the exact output format you expect — Claude mirrors structure when you show it one.</span>
+          <span class="bn"><strong>সমাধান:</strong> বডি আঁটো করো। অস্পষ্ট ধাপ নির্দিষ্ট কমান্ড দিয়ে প্রতিস্থাপন করো। তুমি যে আউটপুট ফর্ম্যাট চাও তা হুবহু দাও — তুমি দেখালে Claude কাঠামো অনুসরণ করে।</span>
+        </div>
+      </div>
+      <div class="cmp-panel" style="border-color:var(--blue)">
+        <div class="cmp-title" style="color:var(--blue)"><span class="en">Problem: inconsistent output</span><span class="bn">সমস্যা: অসামঞ্জস্যপূর্ণ আউটপুট</span></div>
+        <div style="font-size:clamp(.65rem,1.3vw,.85rem);font-weight:600;line-height:1.7">
+          <span class="en"><strong>Fix:</strong> Add an <code>## Example Output</code> section at the end of the body. One concrete example eliminates most ambiguity.</span>
+          <span class="bn"><strong>সমাধান:</strong> বডির শেষে <code>## Example Output</code> বিভাগ যোগ করো। একটা কংক্রিট উদাহরণ বেশিরভাগ অস্পষ্টতা দূর করে।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">A skill is a living document. Version 1 is a draft — expect to iterate 2–3 times before it's fully reliable.</span><span class="bn">একটি স্কিল একটি জীবন্ত ডকুমেন্ট। সংস্করণ ১ একটি খসড়া — সম্পূর্ণ নির্ভরযোগ্য হওয়ার আগে ২-৩ বার পুনরাবৃত্তির প্রত্যাশা রাখো।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 13: SCOPING ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--navy);color:#fff"><span class="en">DESIGN PRINCIPLE</span><span class="bn">ডিজাইন নীতি</span></div>
+    <h2 class="auto"><span class="en">One Skill, One Job</span><span class="bn">এক স্কিল, এক কাজ</span></h2>
+    <div class="bigq auto" style="font-size:clamp(1.4rem,5vw,3rem)">
+      <span class="en">Don't build a mega-skill.</span><span class="bn">মেগা-স্কিল তৈরি করো না।</span>
+    </div>
+    <div class="row frag" style="margin-top:.5rem;align-items:stretch;gap:1rem">
+      <div class="mini-panel" style="border-color:var(--red)">
+        <div class="strip" style="background:var(--red)"><span class="en">MEGA-SKILL (avoid)</span><span class="bn">মেগা-স্কিল (এড়াও)</span></div>
+        <div style="font-family:monospace;font-size:clamp(.62rem,1.2vw,.8rem);font-weight:700;padding:.4rem;color:var(--red)">pre-release-everything</div>
+        <div class="bubble" style="font-size:clamp(.6rem,1.2vw,.78rem)">
+          <span class="en">Checks migrations + runs tests + generates release notes + deploys to staging + writes Slack message + notifies team</span>
+          <span class="bn">মাইগ্রেশন চেক + টেস্ট চালায় + রিলিজ নোট তৈরি + স্টেজিংয়ে ডিপ্লয় + Slack মেসেজ লেখে + টিম নোটিফাই করে</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="border-color:var(--green)">
+        <div class="strip" style="background:var(--green)"><span class="en">FOCUSED SKILLS (do this)</span><span class="bn">ফোকাসড স্কিল (এটা করো)</span></div>
+        <ul style="list-style:none;padding:.3rem 0;font-family:monospace;font-size:clamp(.62rem,1.2vw,.8rem);font-weight:700;line-height:2;text-align:left">
+          <li style="color:var(--green)">migration-check</li>
+          <li style="color:var(--green)">run-test-suite</li>
+          <li style="color:var(--green)">release-notes</li>
+          <li style="color:var(--green)">deploy-staging</li>
+          <li style="color:var(--green)">notify-team</li>
+        </ul>
+      </div>
+    </div>
+    <div class="caption frag"><span class="en">Small skills compose. Mega-skills fail silently — one step fails and the rest becomes noise.</span><span class="bn">ছোট স্কিল মিলিয়ে কাজ করে। মেগা-স্কিল নীরবে ব্যর্থ হয় — একটা ধাপ ব্যর্থ হলে বাকিটা অর্থহীন।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 14: GOTCHAS ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff"><span class="en">GOTCHAS</span><span class="bn">সতর্কতা</span></div>
+    <h2 class="auto"><span class="en">The Four Common Mistakes</span><span class="bn">চারটি সাধারণ ভুল</span></h2>
+    <ul class="checklist">
+      <li class="bad frag pop">
+        <span class="icon">✗</span>
+        <div>
+          <strong><span class="en">Generic description</span><span class="bn">অস্পষ্ট বিবরণ</span></strong><br>
+          <span class="en">"Checks stuff." Claude will never auto-trigger this. Fill it with actual phrases.</span>
+          <span class="bn">"জিনিস চেক করে।" Claude কখনো স্বয়ংক্রিয়ভাবে এটা ট্রিগার করবে না। আসল বাক্য দিয়ে পূরণ করো।</span>
+        </div>
+      </li>
+      <li class="bad frag pop">
+        <span class="icon">✗</span>
+        <div>
+          <strong><span class="en">Body too long / no structure</span><span class="bn">বডি অনেক লম্বা / কোনো কাঠামো নেই</span></strong><br>
+          <span class="en">A wall of prose. Number your steps. Claude executes ordered lists reliably; paragraphs, less so.</span>
+          <span class="bn">গদ্যের দেয়াল। ধাপে নম্বর দাও। Claude ক্রমিক তালিকা নির্ভরযোগ্যভাবে চালায়; অনুচ্ছেদ কম।</span>
+        </div>
+      </li>
+      <li class="bad frag pop">
+        <span class="icon">✗</span>
+        <div>
+          <strong><span class="en">No example output</span><span class="bn">কোনো উদাহরণ আউটপুট নেই</span></strong><br>
+          <span class="en">Without a template, Claude invents format. Show what "done" looks like — copy-pasteable output block.</span>
+          <span class="bn">টেমপ্লেট ছাড়া Claude নিজেই ফর্ম্যাট তৈরি করে। "শেষ" কেমন দেখায় তা দেখাও — কপি-পেস্টযোগ্য আউটপুট ব্লক।</span>
+        </div>
+      </li>
+      <li class="warn frag pop">
+        <span class="icon">⚠️</span>
+        <div>
+          <strong><span class="en">Wrong folder</span><span class="bn">ভুল ফোল্ডার</span></strong><br>
+          <span class="en">Skills must live in <code>.claude/skills/&lt;name&gt;/SKILL.md</code>. Drop it anywhere else and Claude won't find it.</span>
+          <span class="bn">স্কিল অবশ্যই <code>.claude/skills/&lt;name&gt;/SKILL.md</code>-তে থাকতে হবে। অন্য কোথাও রাখলে Claude খুঁজে পাবে না।</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ SLIDE 15: COMPLETE SKILL.MD REFERENCE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--navy);color:#fff"><span class="en">REFERENCE</span><span class="bn">রেফারেন্স</span></div>
+    <h2 class="auto"><span class="en">The Full Anatomy of a SKILL.md</span><span class="bn">SKILL.md-এর সম্পূর্ণ রূপ</span></h2>
+    <pre class="skill-pre frag" style="font-size:clamp(.6rem,1.15vw,.78rem)">
+---
+name: release-notes               # ← kebab-case, becomes /release-notes
+description: >
+  Generate release notes or a     # ← trigger phrases users would say
+  CHANGELOG entry. Use when
+  asked to "write changelog",
+  "release notes for vX.Y.Z",
+  "summarise since last tag".
+---
+
+## Steps                          # ← numbered, imperative
+
+1. Identify the last git tag …
+2. List merge commits since tag …
+3. Group by conventional prefix …
+4. Write formatted Markdown block …
+5. Confirm before writing to disk …
+
+## Example Output                 # ← concrete template (optional but powerful)
+
+## [v1.4.0] — 2026-06-20
+### ✨ Features
+- PR #42 — Add skill authoring guide
+### 🐛 Bug Fixes
+- PR #41 — Fix trigger on bilingual decks
+</pre>
+  </div>
+</section>
+
+<!-- ============ SLIDE 16: THE BIG PICTURE ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--sky);color:#fff"><span class="en">BIG PICTURE</span><span class="bn">বড় ছবি</span></div>
+    <h2 class="auto"><span class="en">Skills Are Team Infrastructure</span><span class="bn">স্কিল হলো টিমের অবকাঠামো</span></h2>
+    <div class="caption frag"><span class="en">A skill committed to <code>.claude/skills/</code> is available to every developer on the team — not just the person who wrote it.</span><span class="bn"><code>.claude/skills/</code>-এ কমিট করা একটি স্কিল টিমের প্রতিটি ডেভেলপারের কাছে পাওয়া যায় — শুধু যে লিখেছে তার কাছে নয়।</span></div>
+    <div class="row frag" style="margin-top:.5rem;flex-wrap:wrap;gap:.7rem;justify-content:center">
+      <div class="mini-panel" style="min-width:clamp(130px,20vw,220px)">
+        <div class="strip" style="background:var(--sky)"><span class="en">COMMIT ONCE</span><span class="bn">একবার কমিট</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.3vw,.82rem)">
+          <span class="en">git add .claude/skills/<br>→ on main forever</span>
+          <span class="bn">git add .claude/skills/<br>→ মেইনে চিরকাল</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="min-width:clamp(130px,20vw,220px)">
+        <div class="strip" style="background:var(--blue)"><span class="en">TEAM PICKS IT UP</span><span class="bn">টিম ব্যবহার করে</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.3vw,.82rem)">
+          <span class="en">Rafid, Mouneeta, Ankan — all invoke /migration-check without re-reading the steps</span>
+          <span class="bn">রাফিদ, মৌনিতা, অঙ্কন — সবাই ধাপ না পড়েও /migration-check চালু করে</span>
+        </div>
+      </div>
+      <div class="mini-panel" style="min-width:clamp(130px,20vw,220px)">
+        <div class="strip" style="background:var(--amber);color:var(--navy)"><span class="en">KNOWLEDGE LIVES IN REPO</span><span class="bn">জ্ঞান রিপোতে থাকে</span></div>
+        <div class="bubble" style="font-size:clamp(.62rem,1.3vw,.82rem)">
+          <span class="en">No tribal knowledge. No "ask Ankan". The skill is the runbook.</span>
+          <span class="bn">কোনো অলিখিত জ্ঞান নেই। "অঙ্কনকে জিজ্ঞেস করো" নেই। স্কিলই রানবুক।</span>
+        </div>
+      </div>
+    </div>
+    <div class="caption frag amber"><span class="en">Skills turn individual expertise into institutional memory — stored in version control, not in someone's brain.</span><span class="bn">স্কিল ব্যক্তিগত দক্ষতাকে প্রাতিষ্ঠানিক স্মৃতিতে পরিণত করে — ভার্সন কন্ট্রোলে সংরক্ষিত, কারো মাথায় নয়।</span></div>
+  </div>
+</section>
+
+<!-- ============ SLIDE 17: WRAP-UP ============ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto"><span class="en">WRAP UP</span><span class="bn">সারসংক্ষেপ</span></div>
+    <h2 class="auto"><span class="en">What You Now Know</span><span class="bn">তুমি এখন কী জানো</span></h2>
+    <div class="row frag" style="flex-wrap:wrap;gap:.6rem;margin-top:.3rem">
+      <span class="tag" style="border-color:var(--sky)"><span class="en">NAME · .claude/skills/&lt;name&gt;/SKILL.md</span><span class="bn">নাম · .claude/skills/&lt;name&gt;/SKILL.md</span></span>
+      <span class="tag" style="border-color:var(--blue)"><span class="en">FRONTMATTER · trigger-rich description</span><span class="bn">ফ্রন্টম্যাটার · ট্রিগার-সমৃদ্ধ বিবরণ</span></span>
+      <span class="tag" style="border-color:var(--amber)"><span class="en">BODY · numbered steps + example output</span><span class="bn">বডি · ক্রমিক ধাপ + উদাহরণ আউটপুট</span></span>
+      <span class="tag" style="border-color:var(--green)"><span class="en">TEST · natural phrase or /skill-name</span><span class="bn">পরীক্ষা · স্বাভাবিক বাক্য বা /skill-name</span></span>
+    </div>
+    <div class="row frag" style="flex-wrap:wrap;gap:.6rem;margin-top:.2rem">
+      <span class="tag" style="border-color:var(--navy)"><span class="en">ONE SKILL = ONE JOB</span><span class="bn">এক স্কিল = এক কাজ</span></span>
+      <span class="tag" style="border-color:var(--navy)"><span class="en">ITERATE THE DESCRIPTION FIRST</span><span class="bn">আগে বিবরণ পুনরাবৃত্তি করো</span></span>
+      <span class="tag" style="border-color:var(--navy)"><span class="en">COMMIT TO REPO = TEAM SKILL</span><span class="bn">রিপোতে কমিট = টিম স্কিল</span></span>
+    </div>
+    <div class="char-summary frag">
+      <span class="en">Next → <strong>Episode 4:</strong> Progressive Disclosure — Tools of the Trade.<br>Which built-in tools Claude Code ships with, when to reach for each, and how to compose them inside a skill body.</span>
+      <span class="bn b">পরবর্তী → <strong>এপিসোড ৪:</strong> প্রগ্রেসিভ ডিসক্লোজার — ট্রেডের টুল।<br>Claude Code যে বিল্ট-ইন টুল নিয়ে আসে, কখন কোনটা ব্যবহার করতে হবে, এবং স্কিল বডিতে কীভাবে সেগুলো সাজাতে হবে।</span>
+    </div>
+  </div>
+</section>
+
+</main><!-- /deck -->
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<div class="hint">← → to navigate · space to advance</div>
+<script src="../../assets/deck.js"></script>
+<script data-goatcounter="https://jiteshsureka.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>

@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S2·Bonus — The Autonomous Workshop · agents-101</title>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../assets/storybook.css">
+<style>
+/* ---- episode accent ---- */
+:root { --accent-ep: #8B5CF6; }
+
+/* ---- code block ---- */
+pre.code-block {
+  background: var(--navy); color: #e2e8f0;
+  border: 2px solid var(--navy); border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  padding: clamp(.7rem,1.8vw,1.2rem) clamp(.9rem,2vw,1.4rem);
+  font-family: 'SF Mono','Fira Code',monospace;
+  font-size: clamp(.6rem,1.3vw,.86rem); line-height: 1.65;
+  text-align: left; max-width: min(92vw, 820px); width: 100%;
+  overflow-x: auto; white-space: pre;
+}
+pre.code-block .comment { color: #64748b; }
+pre.code-block .cmd     { color: var(--amber); }
+pre.code-block .flag    { color: #7dd3fc; }
+pre.code-block .path    { color: #86efac; }
+pre.code-block .note    { color: #c4b5fd; }
+pre.code-block .str     { color: #fca5a5; }
+pre.code-block .key     { color: var(--amber); }
+pre.code-block .val     { color: #86efac; }
+pre.code-block .ev      { color: #c4b5fd; }
+
+/* ---- three building blocks row ---- */
+.blocks-row {
+  display: flex; gap: clamp(.7rem,1.8vw,1.2rem);
+  flex-wrap: wrap; justify-content: center;
+  max-width: min(92vw, 900px); width: 100%;
+}
+.block-card {
+  flex: 1; min-width: clamp(200px,28vw,340px);
+  border: 2.5px solid var(--navy); border-radius: 20px;
+  background: var(--paper); box-shadow: var(--shadow-md); overflow: hidden;
+}
+.bc-head {
+  padding: .45em 1em; font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(1rem,2.1vw,1.3rem); color: #fff;
+}
+.bc-body { padding: clamp(.7rem,1.8vw,1.1rem); display: flex; flex-direction: column; gap: .45rem; }
+.bc-row  { display: flex; align-items: flex-start; gap: .45rem; font-size: clamp(.8rem,1.65vw,.98rem); line-height: 1.45; }
+.bc-icon { flex-shrink: 0; font-size: 1.05em; }
+
+/* ---- flow diagram (fan-out loop) ---- */
+.fan-flow {
+  display: flex; flex-direction: column; align-items: center;
+  gap: .45rem; max-width: min(88vw,660px); width: 100%;
+}
+.ff-step {
+  border: 2px solid var(--navy); border-radius: 12px;
+  background: var(--paper); box-shadow: var(--shadow-sm);
+  padding: .38em 1.2em; width: 100%; text-align: center;
+  font-size: clamp(.82rem,1.7vw,1rem); font-weight: 600;
+}
+.ff-step.accent { background: rgba(139,92,246,.1); border-color: #8B5CF6; }
+.ff-arrow { font-size: 1.1rem; color: rgba(17,23,44,.35); }
+.ff-fan {
+  display: flex; gap: .5rem; flex-wrap: wrap; justify-content: center; width: 100%;
+}
+.ff-mini {
+  border: 2px solid #8B5CF6; border-radius: 10px;
+  background: rgba(139,92,246,.08);
+  padding: .28em .8em; font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.82rem,1.7vw,1.05rem); color: #6d28d9;
+}
+
+/* ---- hook event pill ---- */
+.ev-pill {
+  display: inline-flex; align-items: center; gap: .35rem;
+  border: 2px solid #8B5CF6; border-radius: 999px;
+  padding: .25em .85em; font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.88rem,1.8vw,1.1rem); color: #5b21b6;
+  background: rgba(139,92,246,.07);
+}
+
+/* ---- use-case grid ---- */
+.uc-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(clamp(180px,22vw,300px),1fr));
+  gap: clamp(.6rem,1.5vw,1rem); max-width: min(92vw,820px); width: 100%;
+}
+.uc-card {
+  border: 2px solid var(--navy); border-radius: 16px;
+  background: var(--paper); box-shadow: var(--shadow-sm);
+  padding: clamp(.6rem,1.5vw,1rem);
+}
+.uc-icon { font-size: 1.5em; margin-bottom: .3rem; }
+.uc-title { font-family: 'Caveat', cursive; font-weight: 700; font-size: clamp(.95rem,1.95vw,1.2rem); margin-bottom: .2rem; }
+.uc-desc  { font-size: clamp(.76rem,1.55vw,.92rem); line-height: 1.45; color: rgba(17,23,44,.75); }
+
+/* ---- pipeline loop ---- */
+.pipeline {
+  display: flex; flex-direction: column; align-items: center;
+  gap: .4rem; max-width: min(88vw,680px); width: 100%;
+}
+.pl-step {
+  border: 2px solid var(--navy); border-radius: 12px;
+  background: var(--paper); box-shadow: var(--shadow-sm);
+  padding: .4em 1.4em; width: 100%; text-align: center;
+  font-size: clamp(.82rem,1.7vw,1rem); font-weight: 600;
+}
+.pl-step.violet { background: rgba(139,92,246,.1); border-color: #8B5CF6; }
+.pl-step.amber  { background: rgba(251,175,50,.12); border-color: var(--amber); }
+.pl-arrow { font-size: 1.1rem; color: rgba(17,23,44,.35); }
+.pl-fan {
+  display: flex; gap: .4rem; flex-wrap: wrap; justify-content: center; width: 100%;
+}
+.pl-sub {
+  border: 2px solid var(--blue); border-radius: 9px;
+  background: rgba(73,146,193,.07);
+  padding: .25em .7em; font-family: 'Caveat', cursive; font-weight: 700;
+  font-size: clamp(.8rem,1.65vw,1rem); color: #2563eb;
+}
+
+/* ---- checklist ---- */
+.checklist {
+  list-style: none; display: flex; flex-direction: column;
+  gap: .5rem; text-align: left; max-width: min(88vw,660px); width: 100%;
+}
+.checklist li {
+  font-weight: 600; font-size: clamp(.82rem,1.7vw,1.05rem);
+  padding: .38em .9em; border-radius: 12px;
+  border: 2px solid var(--navy); background: var(--paper);
+  box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: .55rem;
+}
+.checklist li.yes { border-color: var(--green); background: rgba(46,175,125,.08); }
+.checklist li.no  { border-color: var(--red);   background: rgba(224,72,58,.08); }
+.checklist li.warn{ border-color: var(--amber);  background: rgba(251,175,50,.09); }
+.checklist li .icon { font-size: 1.1em; flex-shrink: 0; }
+
+/* ---- season-close wrap ---- */
+.close-tags {
+  display: flex; flex-wrap: wrap; gap: .55rem; justify-content: center;
+  max-width: min(88vw, 680px);
+}
+.close-tags .tag {
+  font-size: clamp(.9rem,1.85vw,1.15rem); padding: .32em 1em;
+  background: rgba(139,92,246,.13); color: #5b21b6;
+  border: 2px solid #8B5CF6;
+}
+
+/* ---- meta celebration layout ---- */
+.meta-row {
+  display: flex; gap: 1.2rem; flex-wrap: wrap; justify-content: center;
+  max-width: min(92vw, 800px); width: 100%;
+}
+.meta-bubble {
+  flex: 1; min-width: clamp(200px,28vw,360px);
+}
+</style>
+</head>
+<body data-ep-label="S2·Bonus · The Autonomous Workshop" data-index-path="../../index.html">
+
+<main id="deck">
+
+<!-- ============================================================ SLIDE 1 — TITLE -->
+<section class="slide" style="background: var(--navy);">
+  <div class="content">
+    <div class="kicker auto" style="background:#8B5CF6;color:#fff;">
+      <span class="en">S2 · BONUS EPISODE</span>
+      <span class="bn">S2 · বোনাস এপিসোড</span>
+    </div>
+    <h1 class="auto" style="color:#fff; font-size:clamp(2.2rem,9vw,5.5rem); line-height:.93; max-width:min(90vw,820px);">
+      <span class="en">The <span style="color:#8B5CF6;">Autonomous</span> Workshop.</span>
+      <span class="bn">স্বায়ত্তশাসিত <span style="color:#8B5CF6;">কর্মশালা।</span></span>
+    </h1>
+    <p class="auto" style="color:rgba(255,255,255,.68); font-family:'Caveat',cursive; font-weight:700; font-size:clamp(1rem,2.3vw,1.45rem); letter-spacing:.05em;">
+      <span class="en">SKILLS · SUBAGENTS · HOOKS — COMPOSING THE WHOLE SYSTEM</span>
+      <span class="bn">স্কিল · সাবএজেন্ট · হুক — পুরো সিস্টেম একত্রিত</span>
+    </p>
+    <div class="panel frag pop" style="background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.22);max-width:min(88vw,680px); margin-top:1.2rem;">
+      <svg class="char bob"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who" style="color:#a78bfa;">HABIB · LEAD ARCHITECT, NOP-STATION</span>
+        <span class="en">"What if the workshop ran itself — skills firing automatically, work fanning out to subagents, and only the final summary ever reaching a human?"</span>
+        <span class="bn">"কর্মশালা যদি নিজেই চলত — স্কিল স্বয়ংক্রিয়ভাবে সক্রিয় হত, কাজ সাবএজেন্টে ছড়িয়ে যেত, আর মানুষের কাছে শুধু চূড়ান্ত সারসংক্ষেপ পৌঁছাত?"</span>
+      </div>
+    </div>
+    <svg class="char bob" style="position:absolute;right:clamp(1rem,6vw,5rem);bottom:0;opacity:.14;"><use href="#ch-dev"/></svg>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 2 — HOOK -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#8B5CF6;color:#fff;">
+      <span class="en">THE QUESTION</span>
+      <span class="bn">প্রশ্নটা</span>
+    </div>
+    <h2 class="auto">
+      <span class="en">What does "automated" really mean?</span>
+      <span class="bn">"স্বয়ংক্রিয়" মানে আসলে কী?</span>
+    </h2>
+    <div class="panel frag" style="max-width:min(88vw,680px);width:100%;">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-sky">RIFAT</span>
+        <span class="en">"I've been using Claude Code for months. It's fast. But I'm still the one typing the trigger every time. I want it to just… know when to act."</span>
+        <span class="bn">"মাসের পর মাস Claude Code ব্যবহার করছি। দ্রুত। কিন্তু প্রতিবার আমিই টাইপ করি। চাই যে এটা নিজেই বুঝুক কখন কাজ করতে হবে।"</span>
+      </div>
+    </div>
+    <div class="panel frag" style="max-width:min(88vw,680px);width:100%; margin-top:.6rem;">
+      <svg class="char"><use href="#ch-agent"/></svg>
+      <div class="bubble tail-l">
+        <span class="who" style="color:#8B5CF6;">HABIB</span>
+        <span class="en">"That's the gap Skills, Subagents, and Hooks together close. Today we wire them all up."</span>
+        <span class="bn">"এই ফাঁকটাই স্কিল, সাবএজেন্ট এবং হুক মিলিয়ে বন্ধ করে। আজ আমরা সব একসাথে জুড়ব।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 3 — THREE BUILDING BLOCKS -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto">
+      <span class="en">THE THREE BUILDING BLOCKS</span>
+      <span class="bn">তিনটি মূল উপাদান</span>
+    </div>
+    <h2 class="auto">
+      <span class="en">Skills. Subagents. Hooks.</span>
+      <span class="bn">স্কিল। সাবএজেন্ট। হুক।</span>
+    </h2>
+    <div class="blocks-row frag">
+      <div class="block-card">
+        <div class="bc-head" style="background:#8B5CF6;">
+          <span class="en">SKILLS</span><span class="bn">স্কিল</span>
+        </div>
+        <div class="bc-body">
+          <div class="bc-row"><span class="bc-icon">📋</span><span class="en">Reusable slash-command procedures stored in <code>.claude/skills/</code></span><span class="bn">পুনর্ব্যবহারযোগ্য স্ল্যাশ-কমান্ড প্রক্রিয়া <code>.claude/skills/</code>-এ থাকে</span></div>
+          <div class="bc-row"><span class="bc-icon">🔁</span><span class="en">Invoked by name — <code>/code-review</code>, <code>/new-episode</code>, etc.</span><span class="bn">নাম দিয়ে ডাকা হয় — <code>/code-review</code>, <code>/new-episode</code></span></div>
+          <div class="bc-row"><span class="bc-icon">🧠</span><span class="en">Carry the "how" so you don't repeat instructions every session.</span><span class="bn">"কীভাবে" করতে হয় সেটা ধরে রাখে।</span></div>
+        </div>
+      </div>
+      <div class="block-card">
+        <div class="bc-head" style="background:var(--blue);">
+          <span class="en">SUBAGENTS</span><span class="bn">সাবএজেন্ট</span>
+        </div>
+        <div class="bc-body">
+          <div class="bc-row"><span class="bc-icon">🤖</span><span class="en">Parallel workers spawned via the <strong>Agent tool</strong> inside a skill or session.</span><span class="bn">Agent tool দিয়ে spawn করা সমান্তরাল কর্মী।</span></div>
+          <div class="bc-row"><span class="bc-icon">📦</span><span class="en">Each gets its own context window — focused, scoped, fast.</span><span class="bn">প্রতিটার নিজস্ব context window।</span></div>
+          <div class="bc-row"><span class="bc-icon">⚡</span><span class="en">Callback to Season 1: swarms, GAN pattern, worktrees.</span><span class="bn">সিজন ১-এর swarm প্যাটার্ন — এখন skills-এর ভেতরে।</span></div>
+        </div>
+      </div>
+      <div class="block-card">
+        <div class="bc-head" style="background:var(--amber);color:var(--navy);">
+          <span class="en">HOOKS</span><span class="bn">হুক</span>
+        </div>
+        <div class="bc-body">
+          <div class="bc-row"><span class="bc-icon">⚙️</span><span class="en">Shell commands the <strong>harness runs automatically</strong> on lifecycle events.</span><span class="bn">লাইফসাইকেল ইভেন্টে হার্নেস স্বয়ংক্রিয়ভাবে চালায়।</span></div>
+          <div class="bc-row"><span class="bc-icon">🔒</span><span class="en">Harness — not Claude — executes them. Enforced reliably.</span><span class="bn">হার্নেস চালায় — Claude না। নির্ভরযোগ্যভাবে প্রয়োগ হয়।</span></div>
+          <div class="bc-row"><span class="bc-icon">🎯</span><span class="en">The missing trigger layer: they start the whole chain.</span><span class="bn">অনুপস্থিত ট্রিগার স্তর: পুরো চেইন শুরু করে।</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 4 — SUBAGENTS INSIDE SKILLS -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--blue);color:#fff;">
+      <span class="en">SUBAGENTS · INSIDE A SKILL</span>
+      <span class="bn">সাবএজেন্ট · স্কিলের ভেতরে</span>
+    </div>
+    <h2 class="auto">
+      <span class="en">A skill fans work out. Subagents fan it back in.</span>
+      <span class="bn">স্কিল কাজ ছড়িয়ে দেয়। সাবএজেন্ট ফলাফল ফেরত আনে।</span>
+    </h2>
+    <div class="fan-flow frag">
+      <div class="ff-step accent">
+        <span class="en">Skill invoked — e.g. <code>/code-review</code></span>
+        <span class="bn">স্কিল ডাকা হয় — যেমন <code>/code-review</code></span>
+      </div>
+      <div class="ff-arrow">↓</div>
+      <div class="ff-step">
+        <span class="en">Skill reads changed files → identifies scope</span>
+        <span class="bn">স্কিল পরিবর্তিত ফাইল পড়ে → স্কোপ চিহ্নিত করে</span>
+      </div>
+      <div class="ff-arrow">↓  spawn in parallel</div>
+      <div class="ff-fan">
+        <div class="ff-mini"><span class="en">Reviewer A</span><span class="bn">রিভিউয়ার এ</span></div>
+        <div class="ff-mini"><span class="en">Reviewer B</span><span class="bn">রিভিউয়ার বি</span></div>
+        <div class="ff-mini"><span class="en">Reviewer C</span><span class="bn">রিভিউয়ার সি</span></div>
+        <div class="ff-mini"><span class="en">…</span><span class="bn">…</span></div>
+      </div>
+      <div class="ff-arrow">↓  results collected</div>
+      <div class="ff-step accent">
+        <span class="en">Skill aggregates → single report → human reviews only the summary</span>
+        <span class="bn">স্কিল একত্রিত করে → একটাই রিপোর্ট → মানুষ শুধু সারসংক্ষেপ দেখে</span>
+      </div>
+    </div>
+    <p class="caption frag">
+      <span class="en">The skill is the coordinator. Subagents are the workers. Each subagent gets a focused, scoped prompt — no shared memory needed.</span>
+      <span class="bn">স্কিল সমন্বয়কারী। সাবএজেন্ট কর্মী। প্রতিটা সাবএজেন্ট কেন্দ্রীভূত prompt পায় — শেয়ার্ড মেমরি দরকার নেই।</span>
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 5 — HOOKS: THE KEY NEW PIECE -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy);">
+      <span class="en">HOOKS · THE KEY NEW PIECE</span>
+      <span class="bn">হুক · মূল নতুন অংশ</span>
+    </div>
+    <h2 class="auto">
+      <span class="en">The harness runs hooks. Not Claude.</span>
+      <span class="bn">হার্নেস হুক চালায়। Claude না।</span>
+    </h2>
+    <div class="strip frag" style="max-width:min(88vw,700px);width:100%;gap:.55rem;">
+      <span class="ev-pill">SessionStart</span>
+      <span class="ev-pill">PostToolUse</span>
+      <span class="ev-pill">Stop</span>
+      <span class="ev-pill">PreToolUse</span>
+      <span class="ev-pill">Notification</span>
+    </div>
+    <pre class="code-block frag"><span class="comment">// .claude/settings.json — hook configuration</span>
+{
+  <span class="key">"hooks"</span>: {
+    <span class="ev">"SessionStart"</span>: [
+      {
+        <span class="key">"hooks"</span>: [{
+          <span class="key">"type"</span>: <span class="val">"command"</span>,
+          <span class="key">"command"</span>: <span class="str">"cat CLAUDE.md project-context.md"</span>
+        }]
+      }
+    ],
+    <span class="ev">"PostToolUse"</span>: [
+      {
+        <span class="key">"matcher"</span>: <span class="val">"Write|Edit"</span>,
+        <span class="key">"hooks"</span>: [{
+          <span class="key">"type"</span>: <span class="val">"command"</span>,
+          <span class="key">"command"</span>: <span class="str">"npm test --bail"</span>
+        }]
+      }
+    ]
+  }
+}</pre>
+    <p class="caption frag">
+      <span class="en">The harness executes these shell commands — Claude never decides whether to skip them. That's what makes hooks reliable.</span>
+      <span class="bn">হার্নেস এই শেল কমান্ড চালায় — Claude কখনো সেগুলো এড়িয়ে যাওয়ার সিদ্ধান্ত নিতে পারে না। এটাই হুককে নির্ভরযোগ্য করে।</span>
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 6 — HOOK USE-CASES -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy);">
+      <span class="en">HOOKS · USE-CASES</span>
+      <span class="bn">হুক · ব্যবহারের উদাহরণ</span>
+    </div>
+    <h2 class="auto">
+      <span class="en">What can you hook?</span>
+      <span class="bn">কী হুক করা যায়?</span>
+    </h2>
+    <div class="uc-grid frag">
+      <div class="uc-card">
+        <div class="uc-icon">🧪</div>
+        <div class="uc-title"><span class="en">Auto-run tests after edits</span><span class="bn">এডিটের পরে স্বয়ংক্রিয় টেস্ট</span></div>
+        <div class="uc-desc"><span class="en"><code>PostToolUse / Write</code> → <code>npm test</code>. Never ship a red suite again.</span><span class="bn"><code>PostToolUse / Write</code> → <code>npm test</code>। লাল স্যুট আর ship করা যাবে না।</span></div>
+      </div>
+      <div class="uc-card">
+        <div class="uc-icon">📂</div>
+        <div class="uc-title"><span class="en">Load project context on start</span><span class="bn">শুরুতে প্রজেক্ট context লোড</span></div>
+        <div class="uc-desc"><span class="en"><code>SessionStart</code> → <code>cat CLAUDE.md</code>. Every session knows the codebase.</span><span class="bn"><code>SessionStart</code> → <code>cat CLAUDE.md</code>। প্রতিটা সেশন কোডবেস জানে।</span></div>
+      </div>
+      <div class="uc-card">
+        <div class="uc-icon">🔐</div>
+        <div class="uc-title"><span class="en">Block commits of secrets</span><span class="bn">সিক্রেট commit আটকানো</span></div>
+        <div class="uc-desc"><span class="en"><code>PreToolUse / Bash(git commit)</code> → scan diff for API keys. Exit 1 to block.</span><span class="bn"><code>PreToolUse</code> → API key স্ক্যান। Exit 1 করলে commit আটকায়।</span></div>
+      </div>
+      <div class="uc-card">
+        <div class="uc-icon">✨</div>
+        <div class="uc-title"><span class="en">Format on save</span><span class="bn">সেভে ফরম্যাট</span></div>
+        <div class="uc-desc"><span class="en"><code>PostToolUse / Write</code> → <code>prettier --write $FILE</code>. Consistent style, zero effort.</span><span class="bn"><code>PostToolUse / Write</code> → <code>prettier --write</code>। শূন্য প্রচেষ্টায় সামঞ্জস্যপূর্ণ শৈলী।</span></div>
+      </div>
+    </div>
+    <p class="caption frag">
+      <span class="en">Each hook is a shell command. Any tool that runs from a terminal can become a hook. The harness is the glue.</span>
+      <span class="bn">প্রতিটা হুক একটা শেল কমান্ড। টার্মিনালে চলে এমন যেকোনো টুল হুক হতে পারে। হার্নেস আঠা।</span>
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 7 — COMPOSITION -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#8B5CF6;color:#fff;">
+      <span class="en">COMPOSITION · THE FULL LOOP</span>
+      <span class="bn">সংমিশ্রণ · পূর্ণ চক্র</span>
+    </div>
+    <h2 class="auto">
+      <span class="en">Hook → Skill → Subagents → Human.</span>
+      <span class="bn">হুক → স্কিল → সাবএজেন্ট → মানুষ।</span>
+    </h2>
+    <div class="pipeline frag">
+      <div class="pl-step violet">
+        <span class="en">HOOK fires on event (e.g. <code>PostToolUse</code> after file write)</span>
+        <span class="bn">HOOK ইভেন্টে সক্রিয় হয় (যেমন ফাইল write-এর পরে)</span>
+      </div>
+      <div class="pl-arrow">↓</div>
+      <div class="pl-step">
+        <span class="en">Hook command triggers a SKILL (e.g. <code>claude -p "/code-review"</code>)</span>
+        <span class="bn">Hook কমান্ড একটা SKILL ট্রিগার করে</span>
+      </div>
+      <div class="pl-arrow">↓  skill spawns in parallel</div>
+      <div class="pl-fan">
+        <div class="pl-sub"><span class="en">Subagent: file-A</span><span class="bn">সাবএজেন্ট: ফাইল-এ</span></div>
+        <div class="pl-sub"><span class="en">Subagent: file-B</span><span class="bn">সাবএজেন্ট: ফাইল-বি</span></div>
+        <div class="pl-sub"><span class="en">Subagent: file-C</span><span class="bn">সাবএজেন্ট: ফাইল-সি</span></div>
+      </div>
+      <div class="pl-arrow">↓  results aggregated</div>
+      <div class="pl-step">
+        <span class="en">SKILL collects outputs → composes single report</span>
+        <span class="bn">SKILL আউটপুট সংগ্রহ করে → একটাই রিপোর্ট তৈরি</span>
+      </div>
+      <div class="pl-arrow">↓</div>
+      <div class="pl-step amber">
+        <span class="en">HUMAN reviews only the summary — never the raw work</span>
+        <span class="bn">মানুষ শুধু সারসংক্ষেপ দেখে — কাঁচা কাজ না</span>
+      </div>
+    </div>
+    <p class="caption frag">
+      <span class="en">This is autonomy at the workflow level — not just one agent but a chain that fires, works, and surfaces results automatically.</span>
+      <span class="bn">এটা ওয়ার্কফ্লো স্তরে স্বায়ত্তশাসন — শুধু একটা এজেন্ট না, একটা চেইন যা স্বয়ংক্রিয়ভাবে সক্রিয় হয়।</span>
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 8 — LIVE BUILD: THE PIPELINE (HOOK CONFIG) -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy);">
+      <span class="en">LIVE BUILD · PR REVIEW PIPELINE · STEP 1</span>
+      <span class="bn">লাইভ বিল্ড · PR রিভিউ পাইপলাইন · ধাপ ১</span>
+    </div>
+    <h2 class="auto">
+      <span class="en">The hook config: fire on every PR file write.</span>
+      <span class="bn">হুক কনফিগ: প্রতিটা PR ফাইল write-এ সক্রিয়।</span>
+    </h2>
+    <pre class="code-block frag"><span class="comment">// .claude/settings.json — PR auto-review hook</span>
+{
+  <span class="key">"hooks"</span>: {
+    <span class="ev">"PostToolUse"</span>: [
+      {
+        <span class="comment">// Fires whenever Claude writes or edits any source file</span>
+        <span class="key">"matcher"</span>: <span class="val">"Write|Edit"</span>,
+        <span class="key">"hooks"</span>: [
+          {
+            <span class="key">"type"</span>: <span class="val">"command"</span>,
+            <span class="comment">// Run in headless mode; --max-turns caps cost</span>
+            <span class="key">"command"</span>: <span class="str">"claude -p '/code-review' --max-turns 30"</span>
+          }
+        ]
+      }
+    ]
+  }
+}</pre>
+    <p class="caption frag">
+      <span class="en">The harness sees the <code>Write</code> tool complete, then immediately shells out to run the skill — no prompt from the developer needed.</span>
+      <span class="bn">হার্নেস <code>Write</code> tool সম্পন্ন হতে দেখে, তারপর স্বয়ংক্রিয়ভাবে শেল করে স্কিল চালায় — ডেভেলপারের prompt দরকার নেই।</span>
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 9 — LIVE BUILD: SKILL BODY -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy);">
+      <span class="en">LIVE BUILD · PR REVIEW PIPELINE · STEP 2</span>
+      <span class="bn">লাইভ বিল্ড · PR রিভিউ পাইপলাইন · ধাপ ২</span>
+    </div>
+    <h2 class="auto">
+      <span class="en">The skill spawns one reviewer per changed file.</span>
+      <span class="bn">স্কিল প্রতিটা পরিবর্তিত ফাইলে একজন রিভিউয়ার spawn করে।</span>
+    </h2>
+    <pre class="code-block frag"><span class="comment"># .claude/skills/code-review/index.md  (skill prompt body)</span>
+
+<span class="comment">## What to do</span>
+<span class="val">1.</span> Run `git diff --name-only HEAD` to get changed files.
+<span class="val">2.</span> For each file, spawn a subagent with this prompt:
+   <span class="str">"Review {{file}} for correctness, security, and style.</span>
+<span class="str">    Output: file path, severity (critical/warn/info), finding, fix."</span>
+<span class="val">3.</span> Collect all subagent outputs.
+<span class="val">4.</span> Aggregate into one Markdown report grouped by severity.
+<span class="val">5.</span> Print the report and exit.
+
+<span class="comment">## Constraints</span>
+- Spawn at most <span class="val">10</span> subagents concurrently (rate-limit guard).
+- Each subagent gets <span class="flag">--max-turns 15</span>.
+- If zero files changed, print "nothing to review" and exit <span class="val">0</span>.</pre>
+    <p class="caption frag">
+      <span class="en">The skill is plain Markdown — readable, editable, version-controlled. No code to maintain. The Agent tool does the spawning.</span>
+      <span class="bn">স্কিল সাধারণ Markdown — পাঠযোগ্য, সম্পাদনযোগ্য, version-controlled। রক্ষণাবেক্ষণের কোড নেই।</span>
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 10 — LIVE BUILD: THE AGGREGATED REPORT -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--amber);color:var(--navy);">
+      <span class="en">LIVE BUILD · PR REVIEW PIPELINE · STEP 3</span>
+      <span class="bn">লাইভ বিল্ড · PR রিভিউ পাইপলাইন · ধাপ ৩</span>
+    </div>
+    <h2 class="auto">
+      <span class="en">What the human actually sees.</span>
+      <span class="bn">মানুষ আসলে কী দেখে।</span>
+    </h2>
+    <pre class="code-block frag"><span class="comment">## PR Review Report — 2026-06-20 — 4 files reviewed</span>
+
+<span class="note">### CRITICAL</span>
+<span class="path">src/auth/token.ts:42</span>   JWT secret falls back to hardcoded string.
+                        Fix: throw if SECRET env var is absent.
+
+<span class="note">### WARN</span>
+<span class="path">src/api/users.ts:87</span>   No pagination on user list endpoint — will OOM at scale.
+<span class="path">src/hooks/useData.ts:23</span> Missing dependency array in useEffect.
+
+<span class="note">### INFO</span>
+<span class="path">src/utils/format.ts:11</span> `toFixed(2)` instead of `Intl.NumberFormat` — locale-unsafe.
+
+<span class="comment">---</span>
+<span class="val">3 subagents ran in parallel. Total wall-clock: 18 s.</span></pre>
+    <div class="panel frag" style="max-width:min(88vw,600px);">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">SHAZZAD</span>
+        <span class="en">"Four files reviewed in 18 seconds, one clean report. I didn't type a single command."</span>
+        <span class="bn">"চারটা ফাইল ১৮ সেকেন্ডে রিভিউ, একটাই পরিষ্কার রিপোর্ট। একটা কমান্ডও টাইপ করিনি।"</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 11 — META MOMENT -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#8B5CF6;color:#fff;">
+      <span class="en">META MOMENT</span>
+      <span class="bn">মেটা মুহূর্ত</span>
+    </div>
+    <h2 class="auto">
+      <span class="en">This season was built the same way.</span>
+      <span class="bn">এই সিজন একইভাবে তৈরি হয়েছিল।</span>
+    </h2>
+    <div class="meta-row frag">
+      <div class="meta-bubble">
+        <div class="bubble" style="border-color:#8B5CF6;background:rgba(139,92,246,.06);">
+          <div class="who" style="color:#8B5CF6;">HABIB (PLANNER MODEL)</div>
+          <span class="en">"I have 8 episode outlines. Spawning 8 Sonnet subagents — one per episode. Each gets the outline, the brand tokens, and the bilingual rules. Go."</span>
+          <span class="bn">"আমার কাছে ৮টা এপিসোড আউটলাইন আছে। ৮টা Sonnet সাবএজেন্ট spawn করছি। প্রতিটা পায় আউটলাইন, ব্র্যান্ড টোকেন এবং দ্বিভাষিক নিয়ম।"</span>
+        </div>
+      </div>
+      <div class="meta-bubble">
+        <div class="bubble" style="border-color:var(--blue);background:rgba(73,146,193,.06);">
+          <div class="who c-blue">RIFAT (SENIOR REVIEWER)</div>
+          <span class="en">"One pass over all 8 drafts. Cross-episode consistency, tone, accuracy. One consolidated note file back to the planner."</span>
+          <span class="bn">"৮টা ড্রাফটে এক পাস। ক্রস-এপিসোড সামঞ্জস্য, টোন, নির্ভুলতা। প্ল্যানারের কাছে একটাই সংহত নোট।"</span>
+        </div>
+      </div>
+    </div>
+    <p class="caption frag">
+      <span class="en">The "manager model" from S1E1 — now fully automated. A planner distributed 8 episodes to parallel subagents, then one senior model reviewed the whole season in one pass.</span>
+      <span class="bn">S1E1-এর "ম্যানেজার মডেল" — এখন সম্পূর্ণ স্বয়ংক্রিয়। একটা প্ল্যানার ৮টা এপিসোড সমান্তরাল সাবএজেন্টে বিতরণ করেছিল, তারপর একটা সিনিয়র মডেল এক পাসে পুরো সিজন রিভিউ করেছিল।</span>
+    </p>
+    <div class="strip frag" style="margin-top:.6rem;">
+      <svg class="char bob" style="width:clamp(52px,8vw,72px);height:auto;"><use href="#ch-agent"/></svg>
+      <svg class="char bob" style="width:clamp(52px,8vw,72px);height:auto;animation-delay:.3s;"><use href="#ch-dev"/></svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 12 — COST & SAFETY AT AUTONOMOUS SCALE -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--navy);color:#fff;">
+      <span class="en">COST &amp; SAFETY · AT AUTONOMOUS SCALE</span>
+      <span class="bn">খরচ এবং নিরাপত্তা · স্বায়ত্তশাসিত স্কেলে</span>
+    </div>
+    <h2 class="auto">
+      <span class="en">Power demands guardrails.</span>
+      <span class="bn">শক্তির জন্য গার্ডরেল দরকার।</span>
+    </h2>
+    <ul class="checklist frag">
+      <li class="yes">
+        <span class="icon">💰</span>
+        <span class="en"><strong>Spend caps</strong> — set token or dollar limits per session and per skill run. Stop runaway cost before it compounds.</span>
+        <span class="bn"><strong>খরচ সীমা</strong> — প্রতি সেশন ও স্কিল রানে টোকেন বা ডলার সীমা নির্ধারণ করো।</span>
+      </li>
+      <li class="yes">
+        <span class="icon">🔢</span>
+        <span class="en"><strong>Bounded subagent counts</strong> — cap concurrent spawns (<code>--max-turns</code>, <code>-P 10</code>). Never unbounded.</span>
+        <span class="bn"><strong>সীমাবদ্ধ সাবএজেন্ট সংখ্যা</strong> — concurrent spawn সীমাবদ্ধ করো। কখনো অসীম না।</span>
+      </li>
+      <li class="yes">
+        <span class="icon">🚦</span>
+        <span class="en"><strong>Approval gates</strong> — for risky actions (deploys, DB writes), require a human <code>y/n</code> before the hook chain proceeds.</span>
+        <span class="bn"><strong>অনুমোদন গেট</strong> — ঝুঁকিপূর্ণ কাজে hook chain চালু হওয়ার আগে মানুষের অনুমোদন নাও।</span>
+      </li>
+      <li class="yes">
+        <span class="icon">🔭</span>
+        <span class="en"><strong>Observability</strong> — log every hook event, every subagent spawn, every cost delta. Invisible work is unmanageable. (S1E6 callback)</span>
+        <span class="bn"><strong>পর্যবেক্ষণযোগ্যতা</strong> — প্রতিটা হুক ইভেন্ট, spawn, খরচ পরিবর্তন লগ করো।</span>
+      </li>
+    </ul>
+    <p class="caption frag">
+      <span class="en">Autonomy without observability is a black box. Observability without caps is a blank cheque. You need both.</span>
+      <span class="bn">পর্যবেক্ষণ ছাড়া স্বায়ত্তশাসন একটা কালো বাক্স। সীমা ছাড়া পর্যবেক্ষণ একটা ফাঁকা চেক। দুটোই দরকার।</span>
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 13 — GOTCHAS -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:var(--red);color:#fff;">
+      <span class="en">WATCH OUT · GOTCHAS</span>
+      <span class="bn">সতর্ক থাকো · ফাঁদসমূহ</span>
+    </div>
+    <h2 class="auto" style="color:var(--red);">
+      <span class="en">Autonomy bites back when you're not careful.</span>
+      <span class="bn">অসাবধান হলে স্বায়ত্তশাসন কামড়ায়।</span>
+    </h2>
+    <ul class="checklist frag">
+      <li class="no">
+        <span class="icon">🔄</span>
+        <span class="en"><strong>Runaway loops</strong> — a <code>PostToolUse</code> hook that itself triggers a Write can recurse infinitely. Always check: does this hook produce output that could re-trigger itself?</span>
+        <span class="bn"><strong>লুপ রানওয়ে</strong> — <code>PostToolUse</code> হুক যদি নিজেই Write ট্রিগার করে, তাহলে অসীম পুনরাবৃত্তি হয়।</span>
+      </li>
+      <li class="no">
+        <span class="icon">💸</span>
+        <span class="en"><strong>Unbounded subagent spawning</strong> — a skill that loops over files without a concurrency cap can exhaust API rate limits and budget in minutes.</span>
+        <span class="bn"><strong>অসীম সাবএজেন্ট spawn</strong> — concurrency cap ছাড়া ফাইলের উপর loop করা স্কিল মিনিটে বাজেট শেষ করতে পারে।</span>
+      </li>
+      <li class="no">
+        <span class="icon">🧱</span>
+        <span class="en"><strong>Hooks that block real work</strong> — a slow hook (e.g. full test suite on every keystroke) turns automation into a drag. Match hook cost to event frequency.</span>
+        <span class="bn"><strong>হুক যা কাজ আটকায়</strong> — ধীর হুক (প্রতিটা কীস্ট্রোকে পূর্ণ টেস্ট) automation-কে বোঝায় পরিণত করে।</span>
+      </li>
+      <li class="warn">
+        <span class="icon">🧑‍⚖️</span>
+        <span class="en"><strong>No human checkpoint on risky actions</strong> — autonomous is not the same as unchecked. Delete, deploy, and send always need a gate.</span>
+        <span class="bn"><strong>ঝুঁকিপূর্ণ কাজে কোনো মানবিক চেকপয়েন্ট নেই</strong> — স্বায়ত্তশাসন মানে অনিয়ন্ত্রিত না।</span>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 14 — DESIGN PRINCIPLES -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#8B5CF6;color:#fff;">
+      <span class="en">DESIGN PRINCIPLES</span>
+      <span class="bn">ডিজাইন নীতি</span>
+    </div>
+    <h2 class="auto">
+      <span class="en">Build the workshop to last.</span>
+      <span class="bn">কর্মশালা দীর্ঘস্থায়ী করো।</span>
+    </h2>
+    <div class="strip frag" style="max-width:min(88vw,760px);width:100%;flex-direction:column;gap:.65rem;">
+      <div class="mini-panel" style="border-color:#8B5CF6;">
+        <div class="tag" style="background:#8B5CF6;">
+          <span class="en">Smallest possible trigger</span><span class="bn">সম্ভব ক্ষুদ্রতম ট্রিগার</span>
+        </div>
+        <p><span class="en">Match hooks to specific tool matchers (<code>"Write|Edit"</code> not <code>"*"</code>). Surgical beats broad.</span><span class="bn">হুক নির্দিষ্ট tool matcher-এ match করো। সার্জিক্যাল সেরা।</span></p>
+      </div>
+      <div class="mini-panel" style="border-color:var(--blue);">
+        <div class="tag" style="background:var(--blue);">
+          <span class="en">Skills are specs, not scripts</span><span class="bn">স্কিল স্পেসিফিকেশন, স্ক্রিপ্ট না</span>
+        </div>
+        <p><span class="en">Write skills in plain language. Claude reads them as instructions, not code to execute. Easier to maintain and update.</span><span class="bn">স্কিল সাধারণ ভাষায় লেখো। Claude সেগুলো নির্দেশ হিসেবে পড়ে।</span></p>
+      </div>
+      <div class="mini-panel" style="border-color:var(--amber);">
+        <div class="tag" style="background:var(--amber);color:var(--navy);">
+          <span class="en">Human in the loop at the end</span><span class="bn">শেষে মানুষ লুপে থাকে</span>
+        </div>
+        <p><span class="en">The goal isn't to remove humans — it's to remove toil. A good autonomous workshop surfaces a clear decision, not raw output.</span><span class="bn">লক্ষ্য মানুষ সরানো না — কষ্টকর কাজ সরানো।</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 15 — THE ANATOMY OF A MATURE WORKSHOP -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto">
+      <span class="en">THE MATURE WORKSHOP</span>
+      <span class="bn">পরিণত কর্মশালা</span>
+    </div>
+    <h2 class="auto">
+      <span class="en">What nop-station runs today.</span>
+      <span class="bn">nop-station আজ যা চালায়।</span>
+    </h2>
+    <div class="panel frag" style="max-width:min(88vw,700px);width:100%;">
+      <svg class="char"><use href="#ch-dev"/></svg>
+      <div class="bubble tail-l">
+        <span class="who c-blue">SHAZZAD</span>
+        <span class="en">"SessionStart loads context. PostToolUse/Write runs tests and the review skill. Stop sends a Slack summary. The only time I open Claude is to look at what it built."</span>
+        <span class="bn">"SessionStart context লোড করে। PostToolUse/Write টেস্ট এবং রিভিউ স্কিল চালায়। Stop Slack সারসংক্ষেপ পাঠায়। Claude আমি শুধু দেখার জন্য খুলি।"</span>
+      </div>
+    </div>
+    <div class="strip frag" style="max-width:min(88vw,700px);width:100%;margin-top:.8rem;gap:.55rem;flex-wrap:wrap;">
+      <div class="mini-panel" style="min-width:clamp(140px,18vw,220px);border-color:#8B5CF6;">
+        <div class="tag" style="background:#8B5CF6;"><span class="en">On start</span><span class="bn">শুরুতে</span></div>
+        <p style="font-size:clamp(.75rem,1.5vw,.9rem);"><span class="en">Load CLAUDE.md + git log</span><span class="bn">CLAUDE.md + git log লোড</span></p>
+      </div>
+      <div class="mini-panel" style="min-width:clamp(140px,18vw,220px);border-color:var(--blue);">
+        <div class="tag" style="background:var(--blue);"><span class="en">On write</span><span class="bn">লেখার পরে</span></div>
+        <p style="font-size:clamp(.75rem,1.5vw,.9rem);"><span class="en">Tests + review skill</span><span class="bn">টেস্ট + রিভিউ স্কিল</span></p>
+      </div>
+      <div class="mini-panel" style="min-width:clamp(140px,18vw,220px);border-color:var(--amber);">
+        <div class="tag" style="background:var(--amber);color:var(--navy);"><span class="en">On stop</span><span class="bn">শেষে</span></div>
+        <p style="font-size:clamp(.75rem,1.5vw,.9rem);"><span class="en">Slack summary + cost report</span><span class="bn">Slack সারসংক্ষেপ + খরচ</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 16 — RECAP BIGQ -->
+<section class="slide">
+  <div class="content">
+    <div class="kicker auto" style="background:#8B5CF6;color:#fff;">
+      <span class="en">THE BIG QUESTION</span>
+      <span class="bn">বড় প্রশ্ন</span>
+    </div>
+    <p class="bigq frag" style="max-width:min(88vw,740px);">
+      <span class="en">"How much of your daily craft can be<br>turned into a skill, distributed to subagents,<br>and triggered by a hook —<br>leaving only the <em>judgement</em> for you?"</span>
+      <span class="bn">"তোমার দৈনন্দিন কাজের কতটুকু<br>স্কিলে পরিণত করা যায়, সাবএজেন্টে বিতরণ করা যায়,<br>এবং হুক দিয়ে ট্রিগার করা যায় —<br>শুধু <em>বিচার-বুদ্ধি</em> তোমার জন্য রেখে?"</span>
+    </p>
+    <p class="caption frag">
+      <span class="en">That's the design challenge of the autonomous workshop. It's never "automate everything" — it's "automate the routine so humans focus on the irreplaceable."</span>
+      <span class="bn">এটাই স্বায়ত্তশাসিত কর্মশালার ডিজাইন চ্যালেঞ্জ। লক্ষ্য "সব স্বয়ংক্রিয়" না — "রুটিন স্বয়ংক্রিয় করো যাতে মানুষ অপরিহার্যে মনোযোগ দেয়।"</span>
+    </p>
+  </div>
+</section>
+
+<!-- ============================================================ SLIDE 17 — SEASON CLOSE / WRAP-UP -->
+<section class="slide" style="background: var(--navy);">
+  <div class="content">
+    <div class="kicker auto" style="background:#8B5CF6;color:#fff;">
+      <span class="en">SEASON 2 COMPLETE</span>
+      <span class="bn">সিজন ২ সম্পন্ন</span>
+    </div>
+    <h2 class="auto" style="color:#fff; max-width:min(88vw,720px);">
+      <span class="en">You've taught Claude your craft.<br>Now go build your own workshop.</span>
+      <span class="bn">তুমি Claude-কে তোমার দক্ষতা শিখিয়েছ।<br>এখন নিজের কর্মশালা তৈরি করো।</span>
+    </h2>
+    <div class="close-tags frag" style="margin-top:1rem;">
+      <span class="tag">SKILLS</span>
+      <span class="tag">SUBAGENTS</span>
+      <span class="tag">HOOKS</span>
+      <span class="tag">AUTONOMY</span>
+      <span class="tag">COMPOSITION</span>
+      <span class="tag">GUARDRAILS</span>
+    </div>
+    <div class="char-summary frag" style="color:rgba(255,255,255,.8); max-width:min(86vw,640px); margin-top:1.2rem;">
+      <span class="en">Start with one hook. Wire it to one skill. Watch the loop run once without you. That's the first step into the autonomous workshop.</span>
+      <span class="bn">একটা হুক দিয়ে শুরু করো। একটা স্কিলে সংযুক্ত করো। একবার তোমার ছাড়া লুপ চলতে দেখো। এটাই স্বায়ত্তশাসিত কর্মশালায় প্রথম পদক্ষেপ।</span>
+    </div>
+    <div class="strip frag" style="margin-top:1.2rem;">
+      <svg class="char bob" style="width:clamp(56px,9vw,80px);height:auto;"><use href="#ch-agent"/></svg>
+      <svg class="char bob" style="width:clamp(56px,9vw,80px);height:auto;animation-delay:.25s;"><use href="#ch-dev"/></svg>
+    </div>
+  </div>
+</section>
+
+</main><!-- /deck -->
+
+<div id="bar" class="progress"></div>
+<div id="counter" class="counter"></div>
+<div class="hint">← → to navigate · space to advance</div>
+<script src="../../assets/deck.js"></script>
+<script data-goatcounter="https://jiteshsureka.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</body>
+</html>
